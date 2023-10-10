@@ -15,8 +15,8 @@
  */
 
 // Import JavaScript modules
-import { registerSettings } from './settings.js';
-import { preloadTemplates } from './preloadTemplates.js';
+import { registerSettings } from './helpers/settings.js';
+import { preloadTemplates } from './helpers/preloadTemplates.js';
 
 // Initialize system
 Hooks.once('init', async () => {

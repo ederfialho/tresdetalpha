@@ -1,10 +1,49 @@
 {
   "Actor": {
-    "types": [],
-    "templates": {}
+    "types": ["personagem", "npc"],
+    "htmlFields": ["descricao"],
+    "templates": {
+      "commom": {
+        "caracteristicas": {
+          "forca": {
+            "value": 0,
+            "bonus": 0
+          },
+          "habilidade": {
+            "value": 0,
+            "bonus": 0
+          },
+          "resistencia": {
+            "value": 0,
+            "bonus": 0
+          },
+          "armadura": {
+            "value": 0,
+            "bonus": 0
+          },
+          "poderDeFogo": {
+            "value": 0,
+            "bonus": 0
+          }
+        }
+      }
+    },
+    "personagem": {
+      "templates": ["caracteristicas"]
+    },
+    "npc": {
+      "templates": ["caracteristicas"]
+    }
   },
   "Item": {
-    "types": [],
-    "templates": {}
+    "types": ["objeto", "magia", "pericia", "vantagem", "vantagemUnica", "desvantagem"],
+    "htmlFields": ["descricao"],
+    "templates": {},
+    "objeto": {},
+    "magia": {},
+    "pericia": {},
+    "vantagem": {},
+    "vantagemUnica": {},
+    "desvantagem": {}
   }
 }

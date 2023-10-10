@@ -1,23 +1,18 @@
 {
   "id": "tresdetalpha",
-  "title": "<human readable title for tresdetalpha>",
-  "description": "<description of the package>",
-  "authors": [
-    {
-      "name": "<your name>",
-      "email": "<optionally your e-mail address>",
-      "discord": "<optionally your discord username>"
-    }
-  ],
-  "url": "This is auto replaced",
-  "license": "<please choose an appropriate license. https://choosealicense.com/ is a great place to get more information if you are unsure>",
-  "readme": "<optionally the URL to your readme>",
-  "bugs": "<optionally the URL to your issue list>",
-  "changelog": "<optionally the URL to your changelog>",
-  "version": "This is auto replaced",
+  "name": "tresdetalpha",
+  "title": "3D&T Alpha",
+  "description": "Sistema NÃO OFICIAL de 3D&T Alpha, mas devidamente autorizado, para FoundryVTT!",
+  "authors": [{ "name": "Éder DZR13 Fialho" }],
+  "url": "https://github.com/ederfialho/tresdetalpha",
+  "license": "LICENSE.txt",
+  "readme": "https://github.com/ederfialho/tresdetalpha#readme",
+  "bugs": "https://github.com/ederfialho/tresdetalpha/issues",
+  "version": "0.0.1",
   "compatibility": {
-    "minimum": "10",
-    "verified": "10"
+    "minimum": "11",
+    "verified": "11",
+    "maximum": "11"
   },
   "scripts": [],
   "esmodules": [
@@ -29,9 +24,9 @@
   "packs": [],
   "languages": [
     {
-      "lang": "en",
-      "name": "English",
-      "path": "lang/en.json"
+      "lang": "pt-BR",
+      "name": "Português Brasileiro",
+      "path": "lang/pt-BR.json"
     }
   ],
   "relationships": {
@@ -41,10 +36,10 @@
   "socket": false,
   "manifest": "This is auto replaced",
   "download": "This is auto replaced",
-  "background": "<optionally a relative filepath to a background image to use for worlds created with this system>",
+  "background": "systems/tresdetalpha/assets/3detalpha.png",
   "initiative": "<inititative roll formula for your system>",
-  "gridDistance": 1,
+  "gridDistance": 1.5,
   "gridUnits": "m",
-  "primaryTokenAttribute": "<optionally the attribute to use as primary resource in tokens by default>",
-  "secondaryTokenAttribute": "<optionally the attribute to use as secondary resource in tokens by default>"
+  "primaryTokenAttribute": "pontos.vida",
+  "secondaryTokenAttribute": "pontos.mana"
 }
