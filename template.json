@@ -1,49 +1,73 @@
 {
   "Actor": {
-    "types": ["personagem", "npc"],
-    "htmlFields": ["descricao"],
+    "types": ["character", "npc"],
     "templates": {
-      "commom": {
-        "caracteristicas": {
-          "forca": {
-            "value": 0,
-            "bonus": 0
-          },
-          "habilidade": {
-            "value": 0,
-            "bonus": 0
-          },
-          "resistencia": {
-            "value": 0,
-            "bonus": 0
-          },
-          "armadura": {
-            "value": 0,
-            "bonus": 0
-          },
-          "poderDeFogo": {
-            "value": 0,
-            "bonus": 0
-          }
+      "base": {
+        "health": {
+          "value": 10,
+          "min": 0,
+          "max": 10
+        },
+        "power": {
+          "value": 5,
+          "min": 0,
+          "max": 5
+        },
+        "biography": ""
+      }
+    },
+    "character": {
+      "templates": ["base"],
+      "attributes": {
+        "level": {
+          "value": 1
+        }
+      },
+      "abilities": {
+        "str": {
+          "value": 10
+        },
+        "dex": {
+          "value": 10
+        },
+        "con": {
+          "value": 10
+        },
+        "int": {
+          "value": 10
+        },
+        "wis": {
+          "value": 10
+        },
+        "cha": {
+          "value": 10
         }
       }
     },
-    "personagem": {
-      "templates": ["caracteristicas"]
-    },
     "npc": {
-      "templates": ["caracteristicas"]
+      "templates": ["base"],
+      "cr": 0
     }
   },
   "Item": {
-    "types": ["objeto", "magia", "pericia", "vantagem", "vantagemUnica", "desvantagem"],
-    "htmlFields": ["descricao"],
-    "templates": {},
-    "objeto": {},
-    "magia": {},
-    "pericia": {},
-    "vantagem": {},
-    "vantagemUnica": {},
-    "desvantagem": {}
+    "types": ["item", "feature", "spell"],
+    "templates": {
+      "base": {
+        "description": ""
+      }
+    },
+    "item": {
+      "templates": ["base"],
+      "quantity": 1,
+      "weight": 0,
+      "formula": "d20 + @str.mod + ceil(@lvl / 2)"
+    },
+    "feature": {
+      "templates": ["base"]
+    },
+    "spell": {
+      "templates": ["base"],
+      "spellLevel": 1
+    }
   }
 }
