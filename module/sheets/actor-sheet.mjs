@@ -68,8 +68,8 @@ export class TresDeTAlphaActorSheet extends ActorSheet {
    */
   _prepareCharacterData(context) {
     // Handle ability scores.
-    for (let [k, v] of Object.entries(context.system.abilities)) {
-      v.label = game.i18n.localize(CONFIG.TRESDETALPHA.abilities[k]) ?? k;
+    for (let [k, v] of Object.entries(context.system.caracteristicas)) {
+      v.label = game.i18n.localize(CONFIG.TRESDETALPHA.caracteristicas[k]) ?? k;
     }
   }
 
@@ -153,7 +153,7 @@ export class TresDeTAlphaActorSheet extends ActorSheet {
     // Active Effect management
     html.find(".effect-control").click(ev => onManageActiveEffect(ev, this.actor));
 
-    // Rollable abilities.
+    // Rollable caracteristicas.
     html.find('.rollable').click(this._onRoll.bind(this));
 
     // Drag events for macros.

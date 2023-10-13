@@ -4,7 +4,7 @@ export const TRESDETALPHA = {};
  * The set of Ability Scores used within the sytem.
  * @type {Object}
  */
- TRESDETALPHA.abilities = {
+ TRESDETALPHA.caracteristicas = {
   "str": "TRESDETALPHA.AbilityStr",
   "dex": "TRESDETALPHA.AbilityDex",
   "con": "TRESDETALPHA.AbilityCon",
