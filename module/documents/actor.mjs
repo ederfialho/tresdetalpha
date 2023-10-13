@@ -25,7 +25,7 @@ export class TresDeTAlphaActor extends Actor {
    * you'll want to handle most of your calculated/derived data in this step.
    * Data calculated in this step should generally not exist in template.json
    * (such as ability modifiers rather than ability scores) and should be
-   * available both inside and outside of character sheets (such as if an actor
+   * available both inside and outside of personagem sheets (such as if an actor
    * is queried and has a roll executed directly from it).
    */
   prepareDerivedData() {
@@ -33,7 +33,7 @@ export class TresDeTAlphaActor extends Actor {
     const systemData = actorData.system;
     const flags = actorData.flags.tresdetalpha || {};
 
-    // Make separate methods for each Actor type (character, npc, etc.) to keep
+    // Make separate methods for each Actor type (personagem, npc, etc.) to keep
     // things organized.
     this._prepareCharacterData(actorData);
     this._prepareNpcData(actorData);
@@ -43,7 +43,7 @@ export class TresDeTAlphaActor extends Actor {
    * Prepare Character type specific data
    */
   _prepareCharacterData(actorData) {
-    if (actorData.type !== 'character') return;
+    if (actorData.type !== 'personagem') return;
 
     // Make modifications to data here. For example:
     const systemData = actorData.system;
@@ -72,7 +72,7 @@ export class TresDeTAlphaActor extends Actor {
   getRollData() {
     const data = super.getRollData();
 
-    // Prepare character roll data.
+    // Prepare personagem roll data.
     this._getCharacterRollData(data);
     this._getNpcRollData(data);
 
@@ -80,10 +80,10 @@ export class TresDeTAlphaActor extends Actor {
   }
 
   /**
-   * Prepare character roll data.
+   * Prepare personagem roll data.
    */
   _getCharacterRollData(data) {
-    if (this.type !== 'character') return;
+    if (this.type !== 'personagem') return;
 
     // Copy the ability scores to the top level, so that rolls can use
     // formulas like `@str.mod + 4`.

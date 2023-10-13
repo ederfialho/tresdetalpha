@@ -36,6 +36,6 @@
   "initiative": "<inititative roll formula for your system>",
   "gridDistance": 1.5,
   "gridUnits": "m",
-  "primaryTokenAttribute": "health",
-  "secondaryTokenAttribute": "power"
+  "primaryTokenAttribute": "ponto.vida",
+  "secondaryTokenAttribute": "ponto.mana"
 }
