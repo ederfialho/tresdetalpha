@@ -47,6 +47,11 @@
   "TRESDETALPHA.Pontos.vida.abreviacao": "PV",
 
   "TRESDETALPHA.Add": "Adicionar",
+  "TRESDETALPHA.Aba.caracteristica": "Características",
+  "TRESDETALPHA.Aba.descricao": "Descrição",
+  "TRESDETALPHA.Aba.item": "Itens",
+  "TRESDETALPHA.Aba.magia": "Magias",
+  "TRESDETALPHA.Aba.efeito": "Efeitos",
 
   "tresdetalpha.TresDeTAlphaActorSheet": "Ficha Personagem Padrão",
   "tresdetalpha.TresDeTAlphaItemSheet": "Ficha Item Padrão",
