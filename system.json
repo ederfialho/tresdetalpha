@@ -14,8 +14,8 @@
     "verified": "11.313",
     "maximum": "11"
   },
-  "esmodules": ["module/boilerplate.mjs"],
-  "styles": ["css/boilerplate.css"],
+  "esmodules": ["module/tresdetalpha.mjs"],
+  "styles": ["css/tresdetalpha.css"],
   "scripts": [],
   "packs": [],
   "languages": [
@@ -31,6 +31,6 @@
   "background": "systems/tresdetalpha/assets/3detalpha.png",
   "gridDistance": 1.5,
   "gridUnits": "m",
-  "primaryTokenAttribute": "health",
-  "secondaryTokenAttribute": "power"
+  "primaryTokenAttribute": "vida",
+  "secondaryTokenAttribute": "mana"
 }

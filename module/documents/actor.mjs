@@ -31,7 +31,7 @@ export class BoilerplateActor extends Actor {
   prepareDerivedData() {
     const actorData = this;
     const systemData = actorData.system;
-    const flags = actorData.flags.boilerplate || {};
+    const flags = actorData.flags.tresdetalpha || {};
 
     // Make separate methods for each Actor type (character, npc, etc.) to keep
     // things organized.

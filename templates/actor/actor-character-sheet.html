@@ -14,20 +14,20 @@
         and it will add a small amount of padding, a border, and will
         center all of its child elements content and text. --}}
         <div class="resource flex-group-center">
-          <label for="system.health.value" class="resource-label">Health</label>
+          <label for="system.vida.value" class="resource-label">Health</label>
           <div class="resource-content flexrow flex-center flex-between">
-          <input type="text" name="system.health.value" value="{{system.health.value}}" data-dtype="Number"/>
+          <input type="text" name="system.vida.value" value="{{system.vida.value}}" data-dtype="Number"/>
           <span> / </span>
-          <input type="text" name="system.health.max" value="{{system.health.max}}" data-dtype="Number"/>
+          <input type="text" name="system.vida.max" value="{{system.vida.max}}" data-dtype="Number"/>
           </div>
         </div>
 
         <div class="resource flex-group-center">
-          <label for="system.power.value" class="resource-label">Power</label>
+          <label for="system.mana.value" class="resource-label">Power</label>
           <div class="resource-content flexrow flex-center flex-between">
-          <input type="text" name="system.power.value" value="{{system.power.value}}" data-dtype="Number"/>
+          <input type="text" name="system.mana.value" value="{{system.mana.value}}" data-dtype="Number"/>
           <span> / </span>
-          <input type="text" name="system.power.max" value="{{system.power.max}}" data-dtype="Number"/>
+          <input type="text" name="system.mana.max" value="{{system.mana.max}}" data-dtype="Number"/>
           </div>
         </div>
 
@@ -77,7 +77,7 @@
         {{!-- For the main features list, span the right two columns --}}
         <section class="main grid-span-2">
           {{!-- This is a Handlebars partial. They're stored in the `/parts` folder next to this sheet, and defined in module/helpers/templates.mjs --}}
-          {{> "systems/boilerplate/templates/actor/parts/actor-features.html"}}
+          {{> "systems/tresdetalpha/templates/actor/parts/actor-features.html"}}
         </section>
 
       </section>
@@ -91,17 +91,17 @@
 
     {{!-- Owned Items Tab --}}
     <div class="tab items" data-group="primary" data-tab="items">
-       {{> "systems/boilerplate/templates/actor/parts/actor-items.html"}}
+       {{> "systems/tresdetalpha/templates/actor/parts/actor-items.html"}}
     </div>
 
     {{!-- Owned Spells Tab --}}
     <div class="tab spells" data-group="primary" data-tab="spells">
-      {{> "systems/boilerplate/templates/actor/parts/actor-spells.html"}}
+      {{> "systems/tresdetalpha/templates/actor/parts/actor-spells.html"}}
     </div>
 
     {{!-- Active Effects Tab --}}
     <div class="tab effects flexcol" data-group="primary" data-tab="effects">
-      {{> "systems/boilerplate/templates/actor/parts/actor-effects.html"}}
+      {{> "systems/tresdetalpha/templates/actor/parts/actor-effects.html"}}
     </div>
 
   </section>

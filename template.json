@@ -3,12 +3,12 @@
     "types": ["character", "npc"],
     "templates": {
       "base": {
-        "health": {
+        "vida": {
           "value": 10,
           "min": 0,
           "max": 10
         },
-        "power": {
+        "mana": {
           "value": 5,
           "min": 0,
           "max": 5
