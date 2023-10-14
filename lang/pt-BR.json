@@ -1,0 +1,55 @@
+{
+  "TRESDETALPHA.AbilityStr": "Strength",
+  "TRESDETALPHA.AbilityCon": "Constitution",
+  "TRESDETALPHA.AbilityDex": "Dexterity",
+  "TRESDETALPHA.AbilityInt": "Intelligence",
+  "TRESDETALPHA.AbilityWis": "Wisdom",
+  "TRESDETALPHA.AbilityCha": "Charisma",
+
+  "TRESDETALPHA.AbilityStrAbbr": "str",
+  "TRESDETALPHA.AbilityConAbbr": "con",
+  "TRESDETALPHA.AbilityDexAbbr": "dex",
+  "TRESDETALPHA.AbilityIntAbbr": "int",
+  "TRESDETALPHA.AbilityWisAbbr": "wis",
+  "TRESDETALPHA.AbilityChaAbbr": "cha",
+
+  "TRESDETALPHA.EffectCreate": "Create Effect",
+  "TRESDETALPHA.EffectToggle": "Toggle Effect",
+  "TRESDETALPHA.EffectEdit": "Edit Effect",
+  "TRESDETALPHA.EffectDelete": "Delete Effect",
+
+  "TYPES.Actor.personagem": "Personagem do Jogador",
+  "TYPES.Actor.npc": "Personagem do Mestre",
+  "TYPES.Item.objeto": "Objeto",
+  "TYPES.Item.magia": "Magia",
+  "TYPES.Item.pericia": "Perícia",
+  "TYPES.Item.vantagem": "Vantagem",
+  "TYPES.Item.vantagemUnica": "Vantagem Única",
+  "TYPES.Item.desvantagem": "Desvantagem",
+
+  "TRESDETALPHA.Caracteristicas.forca.label": "Força",
+  "TRESDETALPHA.Caracteristicas.forca.abreviacao": "F",
+  "TRESDETALPHA.Caracteristicas.habilidade.label": "Habilidade",
+  "TRESDETALPHA.Caracteristicas.habilidade.abreviacao": "H",
+  "TRESDETALPHA.Caracteristicas.resistencia.label": "Resistência",
+  "TRESDETALPHA.Caracteristicas.resistencia.abreviacao": "R",
+  "TRESDETALPHA.Caracteristicas.armadura.label": "Armadura",
+  "TRESDETALPHA.Caracteristicas.armadura.abreviacao": "A",
+  "TRESDETALPHA.Caracteristicas.poderDeFogo.label": "Poder de Fogo",
+  "TRESDETALPHA.Caracteristicas.poderDeFogo.abreviacao": "PdF",
+  "TRESDETALPHA.Pontos.experiencia.label": "Ponto(s) de Experiência",
+  "TRESDETALPHA.Pontos.experiencia.abreviacao": "XP",
+  "TRESDETALPHA.Pontos.mana.nome": "Mana",
+  "TRESDETALPHA.Pontos.mana.label": "Ponto(s) de Mana",
+  "TRESDETALPHA.Pontos.mana.abreviacao": "PM",
+  "TRESDETALPHA.Pontos.vida.nome": "Vida",
+  "TRESDETALPHA.Pontos.vida.label": "Ponto(s) de Vida",
+  "TRESDETALPHA.Pontos.vida.abreviacao": "PV",
+
+  "TRESDETALPHA.Add": "Adicionar",
+
+  "tresdetalpha.TresDeTAlphaActorSheet": "Ficha Personagem Padrão",
+  "tresdetalpha.TresDeTAlphaItemSheet": "Ficha Item Padrão",
+  
+  "Settings": {}
+}
