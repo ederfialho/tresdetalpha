@@ -71,11 +71,23 @@
       "templates": ["base"],
       "spellLevel": 1
     },
-    "objeto": {},
-    "magia": {},
-    "pericia": {},
-    "vantagem": {},
-    "vantagemUnica": {},
-    "desvantagem": {}
+    "objeto": {
+      "templates": ["base"]
+    },
+    "magia": {
+      "templates": ["base"]
+    },
+    "pericia": {
+      "templates": ["base"]
+    },
+    "vantagem": {
+      "templates": ["base"]
+    },
+    "vantagemUnica": {
+      "templates": ["base"]
+    },
+    "desvantagem": {
+      "templates": ["base"]
+    }
   }
 }

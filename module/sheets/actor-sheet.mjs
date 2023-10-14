@@ -84,6 +84,7 @@ export class TresDeTAlphaActorSheet extends ActorSheet {
     // Initialize containers.
     const gear = [];
     const features = [];
+    const vantagems = [];
     const spells = {
       0: [],
       1: [],
@@ -108,6 +109,12 @@ export class TresDeTAlphaActorSheet extends ActorSheet {
       else if (i.type === 'feature') {
         features.push(i);
       }
+
+      // Append to vantagens.
+      else if (i.type === 'vantagem') {
+        vantagems.push(i);
+      }
+
       // Append to spells.
       else if (i.type === 'spell') {
         if (i.system.spellLevel != undefined) {
@@ -119,6 +126,7 @@ export class TresDeTAlphaActorSheet extends ActorSheet {
     // Assign and return
     context.gear = gear;
     context.features = features;
+    context.vantagems = vantagems;
     context.spells = spells;
   }
 
@@ -180,7 +188,7 @@ export class TresDeTAlphaActorSheet extends ActorSheet {
     // Grab any data associated with this control.
     const data = duplicate(header.dataset);
     // Initialize a default name.
-    const name = `New ${type.capitalize()}`;
+    const name = `Novo(a) ${type.capitalize()}`;
     // Prepare the item object.
     const itemData = {
       name: name,
