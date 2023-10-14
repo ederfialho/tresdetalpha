@@ -1,12 +1,12 @@
 // Import document classes.
-import { TresDeTAlphaActor } from "./documents/actor.mjs";
-import { TresDeTAlphaItem } from "./documents/item.mjs";
+import { BoilerplateActor } from "./documents/actor.mjs";
+import { BoilerplateItem } from "./documents/item.mjs";
 // Import sheet classes.
-import { TresDeTAlphaActorSheet } from "./sheets/actor-sheet.mjs";
-import { TresDeTAlphaItemSheet } from "./sheets/item-sheet.mjs";
+import { BoilerplateActorSheet } from "./sheets/actor-sheet.mjs";
+import { BoilerplateItemSheet } from "./sheets/item-sheet.mjs";
 // Import helper/utility classes and constants.
 import { preloadHandlebarsTemplates } from "./helpers/templates.mjs";
-import { TRESDETALPHA } from "./helpers/config.mjs";
+import { BOILERPLATE } from "./helpers/config.mjs";
 
 /* -------------------------------------------- */
 /*  Init Hook                                   */
@@ -16,33 +16,33 @@ Hooks.once('init', async function() {
 
   // Add utility classes to the global game object so that they're more easily
   // accessible in global contexts.
-  game.tresdetalpha = {
-    TresDeTAlphaActor,
-    TresDeTAlphaItem,
+  game.boilerplate = {
+    BoilerplateActor,
+    BoilerplateItem,
     rollItemMacro
   };
 
   // Add custom constants for configuration.
-  CONFIG.TRESDETALPHA = TRESDETALPHA;
+  CONFIG.BOILERPLATE = BOILERPLATE;
 
   /**
    * Set an initiative formula for the system
    * @type {String}
    */
   CONFIG.Combat.initiative = {
-    formula: "1d20 + @caracteristicas.dex.mod",
+    formula: "1d20 + @abilities.dex.mod",
     decimals: 2
   };
 
   // Define custom Document classes
-  CONFIG.Actor.documentClass = TresDeTAlphaActor;
-  CONFIG.Item.documentClass = TresDeTAlphaItem;
+  CONFIG.Actor.documentClass = BoilerplateActor;
+  CONFIG.Item.documentClass = BoilerplateItem;
 
   // Register sheet application classes
   Actors.unregisterSheet("core", ActorSheet);
-  Actors.registerSheet("tresdetalpha", TresDeTAlphaActorSheet, { makeDefault: true });
+  Actors.registerSheet("boilerplate", BoilerplateActorSheet, { makeDefault: true });
   Items.unregisterSheet("core", ItemSheet);
-  Items.registerSheet("tresdetalpha", TresDeTAlphaItemSheet, { makeDefault: true });
+  Items.registerSheet("boilerplate", BoilerplateItemSheet, { makeDefault: true });
 
   // Preload Handlebars templates.
   return preloadHandlebarsTemplates();
@@ -97,7 +97,7 @@ async function createItemMacro(data, slot) {
   const item = await Item.fromDropData(data);
 
   // Create the macro command using the uuid.
-  const command = `game.tresdetalpha.rollItemMacro("${data.uuid}");`;
+  const command = `game.boilerplate.rollItemMacro("${data.uuid}");`;
   let macro = game.macros.find(m => (m.name === item.name) && (m.command === command));
   if (!macro) {
     macro = await Macro.create({
@@ -105,7 +105,7 @@ async function createItemMacro(data, slot) {
       type: "script",
       img: item.img,
       command: command,
-      flags: { "tresdetalpha.itemMacro": true }
+      flags: { "boilerplate.itemMacro": true }
     });
   }
   game.user.assignHotbarMacro(macro, slot);

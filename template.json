@@ -1,27 +1,29 @@
 {
   "Actor": {
-    "types": ["personagem", "npc"],
+    "types": ["character", "npc"],
     "templates": {
       "base": {
-        "ponto.vida": {
-          "value": 0,
-          "bonus": 0
+        "health": {
+          "value": 10,
+          "min": 0,
+          "max": 10
         },
-        "ponto.mana": {
-          "value": 0,
-          "bonus": 0
+        "power": {
+          "value": 5,
+          "min": 0,
+          "max": 5
         },
         "biography": ""
       }
     },
-    "personagem": {
+    "character": {
       "templates": ["base"],
       "attributes": {
         "level": {
           "value": 1
         }
       },
-      "caracteristicas": {
+      "abilities": {
         "str": {
           "value": 10
         },

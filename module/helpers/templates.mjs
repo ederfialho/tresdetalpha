@@ -7,9 +7,9 @@
   return loadTemplates([
 
     // Actor partials.
-    "systems/tresdetalpha/templates/actor/parts/actor-features.html",
-    "systems/tresdetalpha/templates/actor/parts/actor-items.html",
-    "systems/tresdetalpha/templates/actor/parts/actor-spells.html",
-    "systems/tresdetalpha/templates/actor/parts/actor-effects.html",
+    "systems/boilerplate/templates/actor/parts/actor-features.html",
+    "systems/boilerplate/templates/actor/parts/actor-items.html",
+    "systems/boilerplate/templates/actor/parts/actor-spells.html",
+    "systems/boilerplate/templates/actor/parts/actor-effects.html",
   ]);
 };

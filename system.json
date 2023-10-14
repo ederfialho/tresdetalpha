@@ -11,31 +11,26 @@
   "version": "0.0.1",
   "compatibility": {
     "minimum": "11",
-    "verified": "11",
+    "verified": "11.313",
     "maximum": "11"
   },
+  "esmodules": ["module/boilerplate.mjs"],
+  "styles": ["css/boilerplate.css"],
   "scripts": [],
-  "esmodules": ["module/tresdetalpha.js"],
-  "styles": ["css/tresdetalpha.css"],
   "packs": [],
   "languages": [
     {
-      "lang": "pt-BR",
-      "name": "Português Brasileiro",
-      "path": "lang/pt-BR.json"
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
     }
   ],
-  "relationships": {
-    "requires": [],
-    "conflicts": []
-  },
   "socket": false,
   "manifest": "This is auto replaced",
   "download": "This is auto replaced",
   "background": "systems/tresdetalpha/assets/3detalpha.png",
-  "initiative": "<inititative roll formula for your system>",
   "gridDistance": 1.5,
   "gridUnits": "m",
-  "primaryTokenAttribute": "ponto.vida",
-  "secondaryTokenAttribute": "ponto.mana"
+  "primaryTokenAttribute": "health",
+  "secondaryTokenAttribute": "power"
 }

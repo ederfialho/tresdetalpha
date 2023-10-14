@@ -2,12 +2,12 @@
  * Extend the basic ItemSheet with some very simple modifications
  * @extends {ItemSheet}
  */
-export class TresDeTAlphaItemSheet extends ItemSheet {
+export class BoilerplateItemSheet extends ItemSheet {
 
   /** @override */
   static get defaultOptions() {
     return mergeObject(super.defaultOptions, {
-      classes: ["tresdetalpha", "sheet", "item"],
+      classes: ["boilerplate", "sheet", "item"],
       width: 520,
       height: 480,
       tabs: [{ navSelector: ".sheet-tabs", contentSelector: ".sheet-body", initial: "description" }]
@@ -16,7 +16,7 @@ export class TresDeTAlphaItemSheet extends ItemSheet {
 
   /** @override */
   get template() {
-    const path = "systems/tresdetalpha/templates/item";
+    const path = "systems/boilerplate/templates/item";
     // Return a single sheet for all item types.
     // return `${path}/item-sheet.html`;
 

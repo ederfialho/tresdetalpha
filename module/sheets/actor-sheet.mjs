@@ -4,13 +4,13 @@ import {onManageActiveEffect, prepareActiveEffectCategories} from "../helpers/ef
  * Extend the basic ActorSheet with some very simple modifications
  * @extends {ActorSheet}
  */
-export class TresDeTAlphaActorSheet extends ActorSheet {
+export class BoilerplateActorSheet extends ActorSheet {
 
   /** @override */
   static get defaultOptions() {
     return mergeObject(super.defaultOptions, {
-      classes: ["tresdetalpha", "sheet", "actor"],
-      template: "systems/tresdetalpha/templates/actor/actor-sheet.html",
+      classes: ["boilerplate", "sheet", "actor"],
+      template: "systems/boilerplate/templates/actor/actor-sheet.html",
       width: 600,
       height: 600,
       tabs: [{ navSelector: ".sheet-tabs", contentSelector: ".sheet-body", initial: "features" }]
@@ -19,7 +19,7 @@ export class TresDeTAlphaActorSheet extends ActorSheet {
 
   /** @override */
   get template() {
-    return `systems/tresdetalpha/templates/actor/actor-${this.actor.type}-sheet.html`;
+    return `systems/boilerplate/templates/actor/actor-${this.actor.type}-sheet.html`;
   }
 
   /* -------------------------------------------- */
@@ -39,8 +39,8 @@ export class TresDeTAlphaActorSheet extends ActorSheet {
     context.system = actorData.system;
     context.flags = actorData.flags;
 
-    // Prepare personagem data and items.
-    if (actorData.type == 'personagem') {
+    // Prepare character data and items.
+    if (actorData.type == 'character') {
       this._prepareItems(context);
       this._prepareCharacterData(context);
     }
@@ -68,8 +68,8 @@ export class TresDeTAlphaActorSheet extends ActorSheet {
    */
   _prepareCharacterData(context) {
     // Handle ability scores.
-    for (let [k, v] of Object.entries(context.system.caracteristicas)) {
-      v.label = game.i18n.localize(CONFIG.TRESDETALPHA.caracteristicas[k]) ?? k;
+    for (let [k, v] of Object.entries(context.system.abilities)) {
+      v.label = game.i18n.localize(CONFIG.BOILERPLATE.abilities[k]) ?? k;
     }
   }
 
@@ -153,7 +153,7 @@ export class TresDeTAlphaActorSheet extends ActorSheet {
     // Active Effect management
     html.find(".effect-control").click(ev => onManageActiveEffect(ev, this.actor));
 
-    // Rollable caracteristicas.
+    // Rollable abilities.
     html.find('.rollable').click(this._onRoll.bind(this));
 
     // Drag events for macros.
