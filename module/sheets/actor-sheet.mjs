@@ -39,8 +39,8 @@ export class BoilerplateActorSheet extends ActorSheet {
     context.system = actorData.system;
     context.flags = actorData.flags;
 
-    // Prepare character data and items.
-    if (actorData.type == 'character') {
+    // Prepare personagem data and items.
+    if (actorData.type == 'personagem') {
       this._prepareItems(context);
       this._prepareCharacterData(context);
     }
