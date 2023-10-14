@@ -55,7 +55,7 @@
     }
   },
   "Item": {
-    "types": ["item", "feature", "spell"],
+    "types": ["item", "feature", "spell", "objeto", "magia", "pericia", "vantagem", "vantagemUnica", "desvantagem"],
     "templates": {
       "base": {
         "description": ""
@@ -73,6 +73,12 @@
     "spell": {
       "templates": ["base"],
       "spellLevel": 1
-    }
+    },
+    "objeto": {},
+    "magia": {},
+    "pericia": {},
+    "vantagem": {},
+    "vantagemUnica": {},
+    "desvantagem": {}
   }
 }
