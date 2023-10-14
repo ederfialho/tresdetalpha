@@ -48,6 +48,7 @@ export class TresDeTAlphaActorSheet extends ActorSheet {
     // Prepare NPC data and items.
     if (actorData.type == 'npc') {
       this._prepareItems(context);
+      this._prepareCharacterData(context);
     }
 
     // Add roll data for TinyMCE editors.

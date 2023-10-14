@@ -48,7 +48,28 @@
     },
     "npc": {
       "templates": ["base"],
-      "cr": 0
+      "attributes": {
+        "level": {
+          "value": 1
+        }
+      },
+      "abilities": {
+        "forca": {
+          "value": 0
+        },
+        "habilidade": {
+          "value": 0
+        },
+        "resistencia": {
+          "value": 0
+        },
+        "armadura": {
+          "value": 0
+        },
+        "poderDeFogo": {
+          "value": 0
+        }
+      }
     }
   },
   "Item": {
