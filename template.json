@@ -4,14 +4,19 @@
     "templates": {
       "base": {
         "vida": {
-          "value": 10,
+          "value": 1,
           "min": 0,
-          "max": 10
+          "max": 1
         },
-        "mana": {
-          "value": 5,
+        "magia": {
+          "value": 1,
           "min": 0,
-          "max": 5
+          "max": 1
+        },
+        "experiencia" : {
+          "value": 0,
+          "min": 0,
+          "max": 0
         },
         "biography": ""
       }
