@@ -29,23 +29,20 @@
         }
       },
       "abilities": {
-        "str": {
-          "value": 10
+        "forca": {
+          "value": 0
         },
-        "dex": {
-          "value": 10
+        "habilidade": {
+          "value": 0
         },
-        "con": {
-          "value": 10
+        "resistencia": {
+          "value": 0
         },
-        "int": {
-          "value": 10
+        "armadura": {
+          "value": 0
         },
-        "wis": {
-          "value": 10
-        },
-        "cha": {
-          "value": 10
+        "poderDeFogo": {
+          "value": 0
         }
       }
     },
@@ -65,7 +62,7 @@
       "templates": ["base"],
       "quantity": 1,
       "weight": 0,
-      "formula": "d20 + @str.mod + ceil(@lvl / 2)"
+      "formula": "d20 + @forca.mod + ceil(@lvl / 2)"
     },
     "feature": {
       "templates": ["base"]

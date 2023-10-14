@@ -6,11 +6,11 @@
   "TRESDETALPHA.AbilityWis": "Wisdom",
   "TRESDETALPHA.AbilityCha": "Charisma",
 
-  "TRESDETALPHA.AbilityStrAbbr": "str",
-  "TRESDETALPHA.AbilityConAbbr": "con",
-  "TRESDETALPHA.AbilityDexAbbr": "dex",
-  "TRESDETALPHA.AbilityIntAbbr": "int",
-  "TRESDETALPHA.AbilityWisAbbr": "wis",
+  "TRESDETALPHA.AbilityStrAbbr": "forca",
+  "TRESDETALPHA.AbilityConAbbr": "resistencia",
+  "TRESDETALPHA.AbilityDexAbbr": "habilidade",
+  "TRESDETALPHA.AbilityIntAbbr": "armadura",
+  "TRESDETALPHA.AbilityWisAbbr": "poderDeFogo",
   "TRESDETALPHA.AbilityChaAbbr": "cha",
 
   "TRESDETALPHA.EffectCreate": "Create Effect",

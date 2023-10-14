@@ -5,19 +5,17 @@ export const TRESDETALPHA = {};
  * @type {Object}
  */
  TRESDETALPHA.abilities = {
-  "str": "TRESDETALPHA.AbilityStr",
-  "dex": "TRESDETALPHA.AbilityDex",
-  "con": "TRESDETALPHA.AbilityCon",
-  "int": "TRESDETALPHA.AbilityInt",
-  "wis": "TRESDETALPHA.AbilityWis",
-  "cha": "TRESDETALPHA.AbilityCha"
+  "forca": "TRESDETALPHA.Caracteristicas.forca.label",
+  "habilidade": "TRESDETALPHA.Caracteristicas.habilidade.label",
+  "resistencia": "TRESDETALPHA.Caracteristicas.resistencia.label",
+  "armadura": "TRESDETALPHA.Caracteristicas.armadura.label",
+  "poderDeFogo": "TRESDETALPHA.Caracteristicas.poderDeFogo.label"
 };
 
 TRESDETALPHA.abilityAbbreviations = {
-  "str": "TRESDETALPHA.AbilityStrAbbr",
-  "dex": "TRESDETALPHA.AbilityDexAbbr",
-  "con": "TRESDETALPHA.AbilityConAbbr",
-  "int": "TRESDETALPHA.AbilityIntAbbr",
-  "wis": "TRESDETALPHA.AbilityWisAbbr",
-  "cha": "TRESDETALPHA.AbilityChaAbbr"
+  "forca": "TRESDETALPHA.Caracteristicas.forca.abreviacao",
+  "habilidade": "TRESDETALPHA.Caracteristicas.habilidade.abreviacao",
+  "resistencia": "TRESDETALPHA.Caracteristicas.resistencia.abreviacao",
+  "armadura": "TRESDETALPHA.Caracteristicas.armadura.abreviacao",
+  "poderDeFogo": "TRESDETALPHA.Caracteristicas.poderDeFogo.abreviacao"
 };
