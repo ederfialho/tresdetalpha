@@ -13,7 +13,7 @@
           "min": 0,
           "max": 1
         },
-        "experiencia" : {
+        "experiencia": {
           "value": 0,
           "min": 0,
           "max": 0
@@ -24,8 +24,24 @@
     "personagem": {
       "templates": ["base"],
       "attributes": {
-        "level": {
-          "value": 1
+        "tipoDeDano": {
+          "forca": {
+            "value": ""
+          },
+          "poderDeFogo": {
+            "value": ""
+          }
+        },
+        "forcaDeAtaque": {
+          "forca": {
+            "value": 0
+          },
+          "poderDeFogo": {
+            "value": 0
+          }
+        },
+        "forcaDefesa": {
+          "value": 0
         }
       },
       "abilities": {
@@ -49,8 +65,24 @@
     "npc": {
       "templates": ["base"],
       "attributes": {
-        "level": {
-          "value": 1
+        "tipoDeDano": {
+          "forca": {
+            "value": ""
+          },
+          "poderDeFogo": {
+            "value": ""
+          }
+        },
+        "forcaDeAtaque": {
+          "forca": {
+            "value": 0
+          },
+          "poderDeFogo": {
+            "value": 0
+          }
+        },
+        "forcaDefesa": {
+          "value": 0
         }
       },
       "abilities": {
@@ -73,7 +105,17 @@
     }
   },
   "Item": {
-    "types": ["item", "feature", "spell", "objeto", "magia", "pericia", "vantagem", "vantagemUnica", "desvantagem"],
+    "types": [
+      "item",
+      "feature",
+      "spell",
+      "objeto",
+      "magia",
+      "pericia",
+      "vantagem",
+      "vantagemUnica",
+      "desvantagem"
+    ],
     "templates": {
       "base": {
         "description": ""

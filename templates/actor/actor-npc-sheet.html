@@ -70,36 +70,41 @@
             {{localize "TRESDETALPHA.Tipo.dano.label"}}
           </strong>
           <div class="ability flexrow flex-group-center">
-            <label class="resource-label rollable align-left">
+            <label for="system.attributes.tipoDeDano.forca.value" class="resource-label rollable align-left">
               {{localize "TRESDETALPHA.Caracteristicas.forca.label"}}
             </label>
-            <input type="text" style="width:150px" name="tipoDanoForca" value="" data-dtype="String" />
+            <input type="text" style="width:150px" name="system.attributes.tipoDeDano.forca.value"
+              value="{{system.attributes.tipoDeDano.forca.value}}" data-dtype="String" />
           </div>
           <div class="ability flexrow flex-group-center">
-            <label class="resource-label rollable align-left">
+            <label for="system.attributes.tipoDeDano.poderDeFogo.value" class="resource-label rollable align-left">
               {{localize "TRESDETALPHA.Caracteristicas.poderDeFogo.label"}}
             </label>
-            <input type="text" style="width:150px" name="tipoDanoPoderDeFogo" value="" data-dtype="String" />
+            <input type="text" style="width:150px" name="system.attributes.tipoDeDano.poderDeFogo.value"
+              value="{{system.attributes.tipoDeDano.poderDeFogo.value}}" data-dtype="String" />
           </div>
-          <div>
-            <label class="resource-label rollable align-left">
+          <div class="ability flexrow flex-group-center">
+            <label for="system.attributes.forcaDefesa.value" class="resource-label rollable align-left">
               {{localize "TRESDETALPHA.Forca.defesa.label"}} ({{localize "TRESDETALPHA.Forca.defesa.abreviacao"}})&nbsp;
             </label>
-            <input type="text" style="width:145px" name="forcaDefesa" value="" data-dtype="Number" />
+            <input type="text" style="width:145px" name="system.attributes.forcaDefesa.value"
+              value="{{system.attributes.forcaDefesa.value}}" data-dtype="Number" />
           </div>
           <div>
             <strong>
               {{localize "TRESDETALPHA.Forca.ataque.label"}} ({{localize "TRESDETALPHA.Forca.ataque.abreviacao"}})&nbsp;
             </strong>
-            <label class="resource-label rollable align-left">
+            <label for="system.attributes.forcaDeAtaque.forca.value" class="resource-label rollable align-left">
               {{localize "TRESDETALPHA.Caracteristicas.forca.abreviacao"}}:&nbsp;
             </label>
-            <input type="text" style="width:40px" name="forcaAtaqueForca" value="" data-dtype="Number" />
+            <input type="text" style="width:40px; text-align: center;" name="system.attributes.forcaDeAtaque.forca.value"
+              value="{{system.attributes.forcaDeAtaque.forca.value}}" data-dtype="Number" />
             <span>&nbsp;</span>
-            <label class="resource-label rollable align-left">
+            <label for="system.attributes.forcaDeAtaque.poderDeFogo.value" class="resource-label rollable align-left">
               {{localize "TRESDETALPHA.Caracteristicas.poderDeFogo.abreviacao"}}:&nbsp;
             </label>
-            <input type="text" style="width:40px" name="forcaAtaquePoderDeFogo" value="" data-dtype="Number" />
+            <input type="text" style="width:40px; text-align: center;" name="system.attributes.forcaDeAtaque.poderDeFogo.value"
+              value="{{system.attributes.forcaDeAtaque.poderDeFogo.value}}" data-dtype="Number" />
           </div>
         </div>
         
