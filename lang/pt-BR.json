@@ -26,6 +26,11 @@
   "TRESDETALPHA.Pontos.vida.nome": "Vida",
   "TRESDETALPHA.Pontos.vida.label": "Ponto(s) de Vida",
   "TRESDETALPHA.Pontos.vida.abreviacao": "PV",
+  "TRESDETALPHA.Forca.ataque.label": "Força de Ataque",
+  "TRESDETALPHA.Forca.ataque.abreviacao": "FA",
+  "TRESDETALPHA.Forca.defesa.label": "Força de Defesa",
+  "TRESDETALPHA.Forca.defesa.abreviacao": "FD",
+  "TRESDETALPHA.Tipo.dano.label": "Tipo de Dano",
 
   "TRESDETALPHA.Add": "Adicionar",
   "TRESDETALPHA.Aba.caracteristica": "Características",

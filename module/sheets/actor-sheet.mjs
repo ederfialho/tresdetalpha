@@ -88,6 +88,7 @@ export class TresDeTAlphaActorSheet extends ActorSheet {
     const vantagems = [];
     const desvantagems = [];
     const vantagemUnica = [];
+    const pericias = [];
     const spells = {
       0: [],
       1: [],
@@ -128,6 +129,11 @@ export class TresDeTAlphaActorSheet extends ActorSheet {
         vantagemUnica.push(i);
       }
 
+      // Append to vantagens.
+      else if (i.type === 'pericia') {
+        pericias.push(i);
+      }
+
       // Append to spells.
       else if (i.type === 'spell') {
         if (i.system.spellLevel != undefined) {
@@ -143,6 +149,7 @@ export class TresDeTAlphaActorSheet extends ActorSheet {
     context.desvantagems = desvantagems;
     context.vantagemUnica = vantagemUnica;
     context.spells = spells;
+    context.pericias = pericias;
   }
 
   /* -------------------------------------------- */
