@@ -1,11 +1,14 @@
 {
   "TYPES.Actor.personagem": "Personagem do Jogador",
   "TYPES.Actor.npc": "Personagem do Mestre",
-  "TYPES.Item.objetos": "Objetos",
-  "TYPES.Item.magias": "Magias",
+  "TYPES.Item.objeto": "Objeto",
+  "TYPES.Item.magia": "Magia",
+  "TYPES.Item.pericia": "Perícia",
   "TYPES.Item.pericias": "Perícias",
+  "TYPES.Item.vantagem": "Vantagem",
   "TYPES.Item.vantagens": "Vantagens",
   "TYPES.Item.vantagemUnica": "Vantagem Única",
+  "TYPES.Item.desvantagem": "Desvantagem",
   "TYPES.Item.desvantagens": "Desvantagens",
 
   "TRESDETALPHA.Caracteristicas.forca.label": "Força",
@@ -33,7 +36,9 @@
   "TRESDETALPHA.Tipo.dano.label": "Tipo de Dano",
 
   "TRESDETALPHA.Add": "Adicionar",
-  "TRESDETALPHA.Aba.caracteristica": "Características",
+  "TRESDETALPHA.Nome": "Nome",
+  "TRESDETALPHA.Custo": "Custo",
+  "TRESDETALPHA.Aba.caracteristica": "Característica",
   "TRESDETALPHA.Aba.descricao": "Descrição",
   "TRESDETALPHA.Aba.item": "Itens",
   "TRESDETALPHA.Aba.magia": "Magias",
