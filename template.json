@@ -141,25 +141,24 @@
       "templates": ["base"]
     },
     "pericia": {
-      "templates": ["base"]
+      "templates": ["base"],
+      "nome":"",
+      "custo": 2
     },
     "vantagem": {
       "templates": ["base"],
       "nome":"",
-      "custo": 0,
-      "descricao": ""
+      "custo": 0
     },
     "vantagemUnica": {
       "templates": ["base"],
       "nome":"",
-      "custo": 0,
-      "descricao": ""
+      "custo": 0
     },
     "desvantagem": {
       "templates": ["base"],
       "nome":"",
-      "custo": 0,
-      "descricao": ""
+      "custo": 0
     }
   }
 }

@@ -15,7 +15,7 @@
     "maximum": "11"
   },
   "esmodules": ["module/tresdetalpha.mjs"],
-  "styles": ["css/tresdetalpha.css"],
+  "styles": ["styles/tresdetalpha.css"],
   "scripts": [],
   "packs": [],
   "languages": [
