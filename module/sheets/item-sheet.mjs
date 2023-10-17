@@ -8,8 +8,8 @@ export class TresDeTAlphaItemSheet extends ItemSheet {
   static get defaultOptions() {
     return mergeObject(super.defaultOptions, {
       classes: ["tresdetalpha", "sheet", "item"],
-      width: 520,
-      height: 480,
+      width: 550,
+      height: 550,
       tabs: [{ navSelector: ".sheet-tabs", contentSelector: ".sheet-body", initial: "description" }]
     });
   }

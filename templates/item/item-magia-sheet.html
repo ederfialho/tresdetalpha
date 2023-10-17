@@ -1,15 +1,25 @@
-<form class="{{cssClass}}" autocomplete="off">
+<form class="{{cssClass}}" autocomplete="off" width="800" height="800" >
   <header class="sheet-header">
     <img class="profile-img" src="{{item.img}}" data-edit="img" title="{{item.name}}"/>
     <div class="header-fields">
       <h1 class="charname"><input name="name" type="text" value="{{item.name}}" placeholder={{localize "TRESDETALPHA.Nome"}}/></h1>
-      <div class="grid grid-3col">
+      <div class="grid grid-2col">
         <div class="resource flex-group-center">
+          <label class="resource-label">{{localize "TRESDETALPHA.Escola"}}</label>
+          <input type="text" name="system.escola" value="{{system.escola}}" data-dtype="String"/>
           <label class="resource-label">{{localize "TRESDETALPHA.Custo"}}</label>
-          <input type="text" name="system.custo" value="{{system.custo}}" data-dtype="Number"/>
+          <input type="text" name="system.custo" value="{{system.custo}}" data-dtype="String"/>
+          <label class="resource-label">{{localize "TRESDETALPHA.Exigencias"}}</label>
+          <input type="text" name="system.exigencias" value="{{system.exigencias}}" data-dtype="String"/>
         </div>
-        <div class="item-subtitle" style="text-align: center;">
-          <h4 class="item-type">{{localize "TYPES.Item.vantagem"}}</h4>
+        <div class="resource flex-group-center">
+          <div class="item-subtitle" style="text-align: center;">
+            <h4 class="item-type">{{localize "TYPES.Item.magia"}}</h4>
+          </div>
+          <label class="resource-label">{{localize "TRESDETALPHA.Alcance"}}</label>
+          <input type="text" name="system.alcance" value="{{system.alcance}}" data-dtype="String"/>
+          <label class="resource-label">{{localize "TRESDETALPHA.Duracao"}}</label>
+          <input type="text" name="system.duracao" value="{{system.duracao}}" data-dtype="String"/>
         </div>
       </div>
     </div>

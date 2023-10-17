@@ -102,7 +102,7 @@
           </div>
           <div>
             <strong>
-              {{localize "TRESDETALPHA.Forca.ataque.label"}} ({{localize "TRESDETALPHA.Forca.ataque.abreviacao"}})&nbsp;
+              {{localize "TRESDETALPHA.Forca.ataque.label"}} ({{localize "TRESDETALPHA.Forca.ataque.abreviacao"}})&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </strong>
             <label for="system.attributes.forcaDeAtaque.forca.value" class="resource-label rollable align-left">
               {{localize "TRESDETALPHA.Caracteristicas.forca.abreviacao"}}:&nbsp;
@@ -119,8 +119,7 @@
               value="{{system.attributes.forcaDeAtaque.poderDeFogo.value}}" data-dtype="Number" />
           </div>
         </div>
-
-        {{!-- For the main features list, span the right two columns --}}
+        
         <section class="main grid-span-2">
           {{!-- This is a Handlebars partial. They're stored in the `/parts` folder next to this sheet, and defined in
           module/helpers/templates.mjs --}}
@@ -146,14 +145,14 @@
       {{editor system.biography target="system.biography" rollData=rollData button=true owner=owner editable=editable}}
     </div>
 
-    {{!-- Owned Items Tab --}}
-    <div class="tab items" data-group="primary" data-tab="items">
-      {{> "systems/tresdetalpha/templates/actor/parts/actor-items.html"}}
-    </div>
-
     {{!-- Owned Spells Tab --}}
     <div class="tab spells" data-group="primary" data-tab="spells">
       {{> "systems/tresdetalpha/templates/actor/parts/actor-spells.html"}}
+    </div>
+
+    {{!-- Owned Items Tab --}}
+    <div class="tab items" data-group="primary" data-tab="items">
+      {{> "systems/tresdetalpha/templates/actor/parts/actor-items.html"}}
     </div>
 
     {{!-- Active Effects Tab --}}

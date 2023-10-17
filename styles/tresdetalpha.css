@@ -443,6 +443,11 @@
   line-height: 26px;
   margin: 0;
 }
+.tresdetalpha.sheet.item .sheet-header .item-subtitle .item-type-om {
+  font-size: 22px;
+  line-height: 22px;
+  margin: 0;
+}
 .tresdetalpha.sheet.item .sheet-header .item-subtitle .item-status {
   font-size: 16px;
   line-height: 24px;

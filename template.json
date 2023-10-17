@@ -106,58 +106,49 @@
   },
   "Item": {
     "types": [
-      "item",
-      "feature",
-      "spell",
-      "objeto",
-      "magia",
-      "pericia",
       "vantagem",
+      "desvantagem",
       "vantagemUnica",
-      "desvantagem"
+      "pericia",
+      "magia",
+      "objetoMagico"
     ],
     "templates": {
       "base": {
         "description": ""
       }
     },
-    "item": {
+    "objetoMagico": {
       "templates": ["base"],
-      "quantity": 1,
-      "weight": 0,
-      "formula": "d20 + @forca.mod + ceil(@lvl / 2)"
-    },
-    "feature": {
-      "templates": ["base"]
-    },
-    "spell": {
-      "templates": ["base"],
-      "spellLevel": 1
-    },
-    "objeto": {
-      "templates": ["base"]
+      "custo": 0,
+      "tipo": ""
     },
     "magia": {
-      "templates": ["base"]
+      "templates": ["base"],
+      "escola": "",
+      "custo": "",
+      "alcance": "",
+      "duracao": "",
+      "exigencias": ""
     },
     "pericia": {
       "templates": ["base"],
-      "nome":"",
+      "nome": "",
       "custo": 2
     },
     "vantagem": {
       "templates": ["base"],
-      "nome":"",
+      "nome": "",
       "custo": 0
     },
     "vantagemUnica": {
       "templates": ["base"],
-      "nome":"",
+      "nome": "",
       "custo": 0
     },
     "desvantagem": {
       "templates": ["base"],
-      "nome":"",
+      "nome": "",
       "custo": 0
     }
   }

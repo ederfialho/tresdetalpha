@@ -11,8 +11,8 @@ export class TresDeTAlphaActorSheet extends ActorSheet {
     return mergeObject(super.defaultOptions, {
       classes: ["tresdetalpha", "sheet", "actor"],
       template: "systems/tresdetalpha/templates/actor/actor-sheet.html",
-      width: 600,
-      height: 600,
+      width: 650,
+      height: 650,
       tabs: [{ navSelector: ".sheet-tabs", contentSelector: ".sheet-body", initial: "features" }]
     });
   }
@@ -83,12 +83,12 @@ export class TresDeTAlphaActorSheet extends ActorSheet {
    */
   _prepareItems(context) {
     // Initialize containers.
-    const gear = [];
-    const features = [];
     const vantagems = [];
     const desvantagems = [];
     const vantagemUnica = [];
     const pericias = [];
+    const magias = [];
+    const objetosMagicos = [];
     const spells = {
       0: [],
       1: [],
@@ -105,51 +105,40 @@ export class TresDeTAlphaActorSheet extends ActorSheet {
     // Iterate through items, allocating to containers
     for (let i of context.items) {
       i.img = i.img || DEFAULT_TOKEN;
-      // Append to gear.
-      if (i.type === 'item') {
-        gear.push(i);
-      }
-      // Append to features.
-      else if (i.type === 'feature') {
-        features.push(i);
-      }
-
       // Append to vantagens.
-      else if (i.type === 'vantagem') {
+      if (i.type === 'vantagem') {
         vantagems.push(i);
       }
-
-      // Append to vantagens.
+      // Append to desvantagem.
       else if (i.type === 'desvantagem') {
         desvantagems.push(i);
       }
-
-      // Append to vantagens.
+      // Append to vantagemUnica.
       else if (i.type === 'vantagemUnica') {
         vantagemUnica.push(i);
       }
-
-      // Append to vantagens.
+      // Append to pericias.
       else if (i.type === 'pericia') {
         pericias.push(i);
       }
-
-      // Append to spells.
-      else if (i.type === 'spell') {
-        if (i.system.spellLevel != undefined) {
-          spells[i.system.spellLevel].push(i);
-        }
+      // Append to magias.
+      else if (i.type === 'magia') {
+        magias.push(i);
+      }
+      // Append to objetosMagicos.
+      else if (i.type === 'objetoMagico') {
+        objetosMagicos.push(i);
       }
     }
 
     // Assign and return
-    context.gear = gear;
-    context.features = features;
     context.vantagems = vantagems;
     context.desvantagems = desvantagems;
     context.vantagemUnica = vantagemUnica;
     context.spells = spells;
     context.pericias = pericias;
+    context.magias = magias;
+    context.objetosMagicos = objetosMagicos;
   }
 
   /* -------------------------------------------- */

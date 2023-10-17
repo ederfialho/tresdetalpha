@@ -1,7 +1,8 @@
 {
   "TYPES.Actor.personagem": "Personagem do Jogador",
   "TYPES.Actor.npc": "Personagem do Mestre",
-  "TYPES.Item.objeto": "Objeto",
+  "TYPES.Item.objetoMagico": "Objeto Mágico",
+  "TYPES.Item.objetosMagicos": "Objetos Mágicos",
   "TYPES.Item.magia": "Magia",
   "TYPES.Item.pericia": "Perícia",
   "TYPES.Item.pericias": "Perícias",
@@ -10,6 +11,7 @@
   "TYPES.Item.vantagemUnica": "Vantagem Única",
   "TYPES.Item.desvantagem": "Desvantagem",
   "TYPES.Item.desvantagens": "Desvantagens",
+  
 
   "TRESDETALPHA.Caracteristicas.forca.label": "Força",
   "TRESDETALPHA.Caracteristicas.forca.abreviacao": "F",
@@ -23,7 +25,7 @@
   "TRESDETALPHA.Caracteristicas.poderDeFogo.abreviacao": "PdF",
   "TRESDETALPHA.Pontos.experiencia.label": "Ponto(s) de Exp.",
   "TRESDETALPHA.Pontos.experiencia.abreviacao": "XP",
-  "TRESDETALPHA.Pontos.magia.nome": "magia",
+  "TRESDETALPHA.Pontos.magia.nome": "Magia",
   "TRESDETALPHA.Pontos.magia.label": "Ponto(s) de Magia",
   "TRESDETALPHA.Pontos.magia.abreviacao": "PM",
   "TRESDETALPHA.Pontos.vida.nome": "Vida",
@@ -36,8 +38,16 @@
   "TRESDETALPHA.Tipo.dano.label": "Tipo de Dano",
 
   "TRESDETALPHA.Add": "Adicionar",
+  "TRESDETALPHA.Editar": "Editar",
+  "TRESDETALPHA.Deletar": "Deletar",
   "TRESDETALPHA.Nome": "Nome",
   "TRESDETALPHA.Custo": "Custo",
+  "TRESDETALPHA.Custoempe": "Custo em PE(s)",
+  "TRESDETALPHA.tipo": "Tipo",
+  "TRESDETALPHA.Escola": "Escola",
+  "TRESDETALPHA.Alcance": "Alcance",
+  "TRESDETALPHA.Duracao": "Duração",
+  "TRESDETALPHA.Exigencias": "Exigências",
   "TRESDETALPHA.Aba.caracteristica": "Característica",
   "TRESDETALPHA.Aba.descricao": "Descrição",
   "TRESDETALPHA.Aba.item": "Itens",
