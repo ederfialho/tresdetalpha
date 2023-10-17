@@ -26,9 +26,8 @@
     }
   ],
   "socket": false,
-  "manifest": "This is auto replaced",
-  "download": "This is auto replaced",
-  "background": "systems/tresdetalpha/assets/3detalpha.png",
+  "manifest": "https://github.com/ederfialho/tresdetalpha/releases/download/release_001/system.json",
+  "download": "https://github.com/ederfialho/tresdetalpha/releases/download/release_001/system.zip",
   "gridDistance": 1.5,
   "gridUnits": "m",
   "primaryTokenAttribute": "vida",
