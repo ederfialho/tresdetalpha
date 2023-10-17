@@ -38,6 +38,7 @@
   "TRESDETALPHA.Tipo.dano.label": "Tipo de Dano",
 
   "TRESDETALPHA.Add": "Adicionar",
+  "TRESDETALPHA.Criar": "Criar",
   "TRESDETALPHA.Editar": "Editar",
   "TRESDETALPHA.Deletar": "Deletar",
   "TRESDETALPHA.Nome": "Nome",
@@ -53,6 +54,8 @@
   "TRESDETALPHA.Aba.item": "Itens",
   "TRESDETALPHA.Aba.magia": "Magias",
   "TRESDETALPHA.Aba.efeito": "Efeitos",
+  "TRESDETALPHA.Efeito.fonte": "Fonte",
+  "TRESDETALPHA.Efeito.duracao": "Duração",
 
   "tresdetalpha.TresDeTAlphaActorSheet": "Ficha Personagem Padrão",
   "tresdetalpha.TresDeTAlphaItemSheet": "Ficha Item Padrão",

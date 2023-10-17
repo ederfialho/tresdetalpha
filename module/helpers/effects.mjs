@@ -11,7 +11,7 @@
   switch ( a.dataset.action ) {
     case "create":
       return owner.createEmbeddedDocuments("ActiveEffect", [{
-        label: "New Effect",
+        label: "Novo Efeito",
         icon: "icons/svg/aura.svg",
         origin: owner.uuid,
         "duration.rounds": li.dataset.effectType === "temporary" ? 1 : undefined,
@@ -37,17 +37,17 @@ export function prepareActiveEffectCategories(effects) {
     const categories = {
       temporary: {
         type: "temporary",
-        label: "Temporary Effects",
+        label: "Efeito(s) Temporário(s)",
         effects: []
       },
       passive: {
         type: "passive",
-        label: "Passive Effects",
+        label: "Efeito(s) Passivo(s)",
         effects: []
       },
       inactive: {
         type: "inactive",
-        label: "Inactive Effects",
+        label: "Efeito(s) Inativo(s)",
         effects: []
       }
     };

@@ -13,6 +13,7 @@
     "systems/tresdetalpha/templates/actor/parts/actor-vantagemunica.html",
     "systems/tresdetalpha/templates/actor/parts/actor-pericias.html",
     "systems/tresdetalpha/templates/actor/parts/actor-items.html",
+    "systems/tresdetalpha/templates/actor/parts/actor-magias.html",
     "systems/tresdetalpha/templates/actor/parts/actor-spells.html",
     "systems/tresdetalpha/templates/actor/parts/actor-effects.html",
   ]);

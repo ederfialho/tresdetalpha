@@ -2,10 +2,10 @@
   {{#each effects as |section sid|}}
     <li class="items-header flexrow" data-effect-type="{{section.type}}">
       <h3 class="item-name effect-name flexrow">{{localize section.label}}</h3>
-      <div class="effect-source">Source</div>
-      <div class="effect-source">Duration</div>
+      <div class="effect-source">{{localize "TRESDETALPHA.Efeito.fonte"}}</div>
+      <div class="effect-source">{{localize "TRESDETALPHA.Efeito.duracao"}}</div>
       <div class="item-controls effect-controls flexrow">
-        <a class="effect-control" data-action="create" title="{{localize 'TRESDETALPHA.EffectCreate'}}">
+        <a class="effect-control" data-action="create" title="{{localize 'TRESDETALPHA.Criar'}}">
           <i class="fas fa-plus"></i> {{localize "TRESDETALPHA.Add"}}
         </a>
       </div>
@@ -24,10 +24,10 @@
           <a class="effect-control" data-action="toggle" title="{{localize 'TRESDETALPHA.EffectToggle'}}">
             <i class="fas {{#if effect.disabled}}fa-check{{else}}fa-times{{/if}}"></i>
           </a>
-          <a class="effect-control" data-action="edit" title="{{localize 'TRESDETALPHA.EffectEdit'}}">
+          <a class="effect-control" data-action="edit" title="{{localize 'TRESDETALPHA.Editar'}}">
             <i class="fas fa-edit"></i>
           </a>
-          <a class="effect-control" data-action="delete" title="{{localize 'TRESDETALPHA.EffectDelete'}}">
+          <a class="effect-control" data-action="delete" title="{{localize 'TRESDETALPHA.Deletar'}}">
             <i class="fas fa-trash"></i>
           </a>
         </div>
