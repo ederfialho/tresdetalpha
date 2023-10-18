@@ -4,7 +4,7 @@
   <header class="sheet-header">
     <img class="profile-img" src="{{actor.img}}" data-edit="img" title="{{actor.name}}" height="100" width="100" />
     <div class="header-fields">
-      <h1 class="charname"><input name="name" type="text" value="{{actor.name}}" placeholder="Nome" /></h1>
+      <h1 class="charname"><input class="input-sem-borda" name="name" type="text" value="{{actor.name}}" placeholder="Nome"/></h1>
       {{!-- The grid classes are defined in scss/global/_grid.scss. To use,
       use both the "grid" and "grid-Ncol" class where "N" can be any number
       from 1 to 12 and will create that number of columns. --}}
@@ -16,18 +16,18 @@
         <div class="resource flex-group-center">
           <label for="system.vida.value" class="resource-label">{{localize "TRESDETALPHA.Pontos.vida.label"}}</label>
           <div class="resource-content flexrow flex-center flex-between">
-            <input type="text" name="system.vida.value" value="{{system.vida.value}}" data-dtype="Number" />
+            <input class="input-sem-borda" type="text" name="system.vida.value" value="{{system.vida.value}}" max="{{system.vida.max}}" data-dtype="Number" />
             <span> / </span>
-            <input type="text" name="system.vida.max" value="{{system.vida.max}}" data-dtype="Number" />
+            <input class="input-sem-borda" type="text" name="system.vida.max" value="{{system.vida.max}}" data-dtype="Number" disabled="disabled"/>
           </div>
         </div>
 
         <div class="resource flex-group-center">
           <label for="system.magia.value" class="resource-label">{{localize "TRESDETALPHA.Pontos.magia.label"}}</label>
           <div class="resource-content flexrow flex-center flex-between">
-            <input type="text" name="system.magia.value" value="{{system.magia.value}}" data-dtype="Number" />
+            <input class="input-sem-borda" type="text" name="system.magia.value" value="{{system.magia.value}}" max="{{system.magia.max}}" data-dtype="Number" />
             <span> / </span>
-            <input type="text" name="system.magia.max" value="{{system.magia.max}}" data-dtype="Number" />
+            <input class="input-sem-borda" type="text" name="system.magia.max" value="{{system.magia.max}}" data-dtype="Number" disabled="disabled"/>
           </div>
         </div>
 
@@ -35,11 +35,10 @@
           <label for="system.attributes.level.value" class="resource-label">{{localize
             "TRESDETALPHA.Pontos.experiencia.label"}}</label>
           <div class="resource-content flexrow flex-center flex-between">
-            <input type="text" name="system.experiencia.value" value="{{system.experiencia.value}}"
+            <input class="input-sem-borda" type="text" name="system.experiencia.value" value="{{system.experiencia.value}}"
               data-dtype="Number" />
           </div>
         </div>
-
       </div>
     </div>
   </header>
@@ -102,7 +101,7 @@
           </div>
           <div>
             <strong>
-              {{localize "TRESDETALPHA.Forca.ataque.label"}} ({{localize "TRESDETALPHA.Forca.ataque.abreviacao"}})&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              {{localize "TRESDETALPHA.Forca.ataque.label"}} ({{localize "TRESDETALPHA.Forca.ataque.abreviacao"}})&nbsp;
             </strong>
             <label for="system.attributes.forcaDeAtaque.forca.value" class="resource-label rollable align-left">
               {{localize "TRESDETALPHA.Caracteristicas.forca.abreviacao"}}:&nbsp;

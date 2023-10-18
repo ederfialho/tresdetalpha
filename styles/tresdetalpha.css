@@ -10,6 +10,12 @@
   cursor: pointer;
 }
 
+.input-sem-borda[type="text"],
+.input-sem-borda[type="number"] {
+  background: none;
+  border: 1px solid transparent;
+}
+
 .grid,
 .grid-2col {
   display: grid;
@@ -233,6 +239,7 @@
 .tresdetalpha .item-form {
   font-family: "Roboto", sans-serif;
 }
+
 .tresdetalpha .sheet-header {
   -webkit-box-flex: 0;
   -ms-flex: 0 auto;

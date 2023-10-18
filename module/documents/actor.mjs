@@ -47,12 +47,28 @@ export class TresDeTAlphaActor extends Actor {
 
     // Make modifications to data here. For example:
     const systemData = actorData.system;
-
+    let listaAtributos = [];
     // Loop through ability scores, and add their modifiers to our sheet output.
     for (let [key, ability] of Object.entries(systemData.abilities)) {
-      // Calculate the modifier using d20 rules.
-      ability.mod = 0;
+      //preenchendo uma lista com os valores dos atributos
+      listaAtributos.push(ability.value);
     }
+    //Cálculo automático para medir o valor de Força de Ataque
+    actorData.system.attributes.forcaDeAtaque.forca.value = listaAtributos[0] + listaAtributos[1];
+    actorData.system.attributes.forcaDeAtaque.poderDeFogo.value = listaAtributos[4] + listaAtributos[1];
+    
+    //Cálculo automático para medir o valor de Força de Defesa
+    actorData.system.attributes.forcaDefesa.value = listaAtributos[3] + listaAtributos[1];
+
+    //Cálculo de máximo de pontos de vida e de magia
+    if (listaAtributos[2] == 0) {
+      actorData.system.vida.max = 1;
+      actorData.system.magia.max = 1;
+    } else {
+      actorData.system.vida.max = listaAtributos[2]*5;
+      actorData.system.magia.max = listaAtributos[2]*5;
+    }
+
   }
 
   /**
@@ -118,5 +134,4 @@ export class TresDeTAlphaActor extends Actor {
       data.lvl = data.attributes.level.value ?? 0;
     }
   }
-
 }
