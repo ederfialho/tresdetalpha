@@ -103,19 +103,21 @@
             <strong>
               {{localize "TRESDETALPHA.Forca.ataque.label"}} ({{localize "TRESDETALPHA.Forca.ataque.abreviacao"}})&nbsp;
             </strong>
-            <label for="system.attributes.forcaDeAtaque.forca.value" class="resource-label rollable align-left">
+            <label for="system.attributes.forcaDeAtaque.forca.value" class="resource-label align-left">
               {{localize "TRESDETALPHA.Caracteristicas.forca.abreviacao"}}:&nbsp;
             </label>
-            <input type="text" style="width:40px; text-align: center;"
-              name="system.attributes.forcaDeAtaque.forca.value" value="{{system.attributes.forcaDeAtaque.forca.value}}"
-              data-dtype="Number" />
+            <label for=system.attributes.forcaDeAtaque.forca.value
+              class="resource-label rollable flexlarge align-left"
+              data-roll="d6+@attributes.forcaDeAtaque.forca.value"
+              data-label="{{system.attributes.forcaDeAtaque.forca.value}}">{{system.attributes.forcaDeAtaque.forca.value}}</label>
             <span>&nbsp;</span>
-            <label for="system.attributes.forcaDeAtaque.poderDeFogo.value" class="resource-label rollable align-left">
+            <label for="system.attributes.forcaDeAtaque.poderDeFogo.value" class="resource-label align-right">
               {{localize "TRESDETALPHA.Caracteristicas.poderDeFogo.abreviacao"}}:&nbsp;
             </label>
-            <input type="text" style="width:40px; text-align: center;"
-              name="system.attributes.forcaDeAtaque.poderDeFogo.value"
-              value="{{system.attributes.forcaDeAtaque.poderDeFogo.value}}" data-dtype="Number" />
+            <label for=system.attributes.forcaDeAtaque.poderDeFogo.value
+              class="resource-label rollable flexlarge align-right"
+              data-roll="d6+@attributes.forcaDeAtaque.poderDeFogo.value"
+              data-label="{{system.attributes.forcaDeAtaque.poderDeFogo.value}}">{{system.attributes.forcaDeAtaque.poderDeFogo.value}}</label>
           </div>
         </div>
         
