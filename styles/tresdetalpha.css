@@ -16,6 +16,13 @@
   border: 1px solid transparent;
 }
 
+.input-sem-borda-menor[type="text"],
+.input-sem-borda-menor[type="number"] {
+  background: none;
+  border: 1px solid transparent;
+  width: 40px;
+}
+
 .grid,
 .grid-2col {
   display: grid;
