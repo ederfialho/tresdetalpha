@@ -12,7 +12,8 @@
   "TYPES.Item.desvantagem": "Desvantagem",
   "TYPES.Item.desvantagens": "Desvantagens",
   
-
+  "TRESDETALPHA.Combate.label": "Combate",
+  "TRESDETALPHA.Caracteristicas.label": "Características",
   "TRESDETALPHA.Caracteristicas.forca.label": "Força",
   "TRESDETALPHA.Caracteristicas.forca.abreviacao": "F",
   "TRESDETALPHA.Caracteristicas.habilidade.label": "Habilidade",
@@ -23,6 +24,7 @@
   "TRESDETALPHA.Caracteristicas.armadura.abreviacao": "A",
   "TRESDETALPHA.Caracteristicas.poderDeFogo.label": "Poder de Fogo",
   "TRESDETALPHA.Caracteristicas.poderDeFogo.abreviacao": "PdF",
+  "TRESDETALPHA.Pontos.label": "Pontos",
   "TRESDETALPHA.Pontos.experiencia.label": "Ponto(s) de Experiência",
   "TRESDETALPHA.Pontos.experiencia.abreviacao": "XP",
   "TRESDETALPHA.Pontos.magia.nome": "Magia",

@@ -4,7 +4,8 @@
   <header class="sheet-header">
     <img class="profile-img" src="{{actor.img}}" data-edit="img" title="{{actor.name}}" height="100" width="100" />
     <div class="header-fields">
-      <h1 class="charname"><input class="input-sem-borda" name="name" type="text" value="{{actor.name}}" placeholder="Nome"/></h1>
+      <h1 class="charname"><input class="input-sem-borda" name="name" type="text" value="{{actor.name}}"
+          placeholder="Nome" /></h1>
       {{!-- The grid classes are defined in scss/global/_grid.scss. To use,
       use both the "grid" and "grid-Ncol" class where "N" can be any number
       from 1 to 12 and will create that number of columns. --}}
@@ -13,7 +14,7 @@
         {{!-- "flex-group-center" is also defined in the _grid.scss file
         and it will add a small amount of padding, a border, and will
         center all of its child elements content and text. --}}
-        
+
       </div>
     </div>
   </header>
@@ -39,13 +40,16 @@
           {{!-- The grid classes are defined in scss/global/_grid.scss. To use,
           use both the "grid" and "grid-Ncol" class where "N" can be any number
           from 1 to 12 and will create that number of columns. --}}
-          <div class="abilities flexcol" style="border: 1px solid; border-radius: 3px;">
+          <div class="abilities flexcol bordas-campos-ficha" >
+            <div class="resource-label flex-group-center"> {{localize "TRESDETALPHA.Caracteristicas.label"}} </div>
             <div class="row">&nbsp;</div>
             {{#each system.abilities as |ability key|}}
             <div class="ability flexrow flex-group-center">
               <label for="system.abilities.{{key}}.value" class="resource-label rollable flexlarge align-left"
-                data-roll="d6+@abilities.{{key}}.value" data-label="{{ability.label}}">&nbsp;&nbsp;{{ability.label}} :</label>
-              <input type="text" class="input-sem-borda" name="system.abilities.{{key}}.value" value="{{ability.value}}" data-dtype="Number" />
+                data-roll="d6+@abilities.{{key}}.value" data-label="{{ability.label}}">&nbsp;&nbsp;{{ability.label}}
+                :</label>
+              <input type="text" class="input-sem-borda" name="system.abilities.{{key}}.value" value="{{ability.value}}"
+                data-dtype="Number" />
               <span>&nbsp;&nbsp;</span>
             </div>
             {{/each}}
@@ -54,122 +58,134 @@
 
           <!-- AQUI !!!!!-->
           <div class="row">&nbsp;</div>
-          <div class="container flexcol" style="border: 1px solid; border-radius: 3px;">
+          <div class="container flexcol bordas-campos-ficha">
+            <div class="resource-label flex-group-center"> {{localize "TRESDETALPHA.Pontos.label"}} </div>
             <div class="row">&nbsp;</div>
-          <div class="row">
-            <label for="TRESDETALPHA.Pontos.vida.label" class="resource-label align-left">
-              &nbsp;&nbsp;{{localize "TRESDETALPHA.Pontos.vida.label"}} :
-            </label>
-            <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-            <input class="input-sem-borda-menor" type="text" name="system.vida.value" value="{{system.vida.value}}" max="{{system.vida.max}}" placeholder="0" data-dtype="Number" />
-            <span> / </span>
-            <input class="input-sem-borda-menor" type="text" name="system.vida.max" value="{{system.vida.max}}" data-dtype="Number" placeholder="0" disabled="disabled"/>
-          </div>
-          <div class="row">
-            <label for="system.magia.value" class="resource-label">
-              &nbsp;&nbsp;{{localize "TRESDETALPHA.Pontos.magia.label"}} :
-            </label>
-            <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-            <input class="input-sem-borda-menor" type="text" name="system.magia.value" value="{{system.magia.value}}" max="{{system.magia.max}}" placeholder="0" data-dtype="Number" />
-            <span> / </span>
-            <input class="input-sem-borda-menor" type="text" name="system.magia.max" value="{{system.magia.max}}" placeholder="0" data-dtype="Number" disabled="disabled"/>
-          </div>
-          <div class="row">
-            <label for="system.attributes.level.value" class="resource-label">
-              &nbsp;&nbsp;{{localize "TRESDETALPHA.Pontos.experiencia.label"}} :</label>
+            <div class="row">
+              <label for="TRESDETALPHA.Pontos.vida.label" class="resource-label align-left">
+                &nbsp;&nbsp;{{localize "TRESDETALPHA.Pontos.vida.label"}} :
+              </label>
+              <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+              <input class="input-sem-borda-menor" type="text" name="system.vida.value" value="{{system.vida.value}}"
+                max="{{system.vida.max}}" placeholder="0" data-dtype="Number" />
+              <span> / </span>
+              <input class="input-sem-borda-menor" type="text" name="system.vida.max" value="{{system.vida.max}}"
+                data-dtype="Number" placeholder="0" disabled="disabled" />
+            </div>
+            <div class="row">
+              <label for="system.magia.value" class="resource-label">
+                &nbsp;&nbsp;{{localize "TRESDETALPHA.Pontos.magia.label"}} :
+              </label>
+              <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+              <input class="input-sem-borda-menor" type="text" name="system.magia.value" value="{{system.magia.value}}"
+                max="{{system.magia.max}}" placeholder="0" data-dtype="Number" />
+              <span> / </span>
+              <input class="input-sem-borda-menor" type="text" name="system.magia.max" value="{{system.magia.max}}"
+                placeholder="0" data-dtype="Number" disabled="disabled" />
+            </div>
+            <div class="row">
+              <label for="system.attributes.level.value" class="resource-label">
+                &nbsp;&nbsp;{{localize "TRESDETALPHA.Pontos.experiencia.label"}} :</label>
               <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
-              <input class="input-sem-borda-menor" type="text" name="system.experiencia.value" value="{{system.experiencia.value}}" placeholder="0" data-dtype="Number" />
+              <input class="input-sem-borda-menor" type="text" name="system.experiencia.value"
+                value="{{system.experiencia.value}}" placeholder="0" data-dtype="Number" />
+            </div>
+            <div class="row">&nbsp;</div>
           </div>
+
           <div class="row">&nbsp;</div>
-        </div>
+          <div class="resource flex-group-center bordas-campos-ficha">
+            <strong class="resource-label align-center">
+              {{localize "TRESDETALPHA.Tipo.dano.label"}}
+            </strong>
+            <div class="row">&nbsp;</div>
+            <div class="ability flexrow flex-group-center">
+              <label for="system.attributes.tipoDeDano.forca.value" class="resource-label rollable align-left">
+                &nbsp;&nbsp;{{localize "TRESDETALPHA.Caracteristicas.forca.label"}} :
+              </label>
+              <input type="text" style="width:150px" name="system.attributes.tipoDeDano.forca.value"
+                value="{{system.attributes.tipoDeDano.forca.value}}" data-dtype="String" />
+            </div>
+            <div class="ability flexrow flex-group-center">
+              <label for="system.attributes.tipoDeDano.poderDeFogo.value" class="resource-label rollable align-left">
+                &nbsp;&nbsp;{{localize "TRESDETALPHA.Caracteristicas.poderDeFogo.label"}} :
+              </label>
+              <input type="text" style="width:150px" name="system.attributes.tipoDeDano.poderDeFogo.value"
+                value="{{system.attributes.tipoDeDano.poderDeFogo.value}}" data-dtype="String" />
+            </div>
+            <div class="row">&nbsp;</div>
+          </div>
+
+          <div class="row">&nbsp;</div>
+          <div class="resource flex-group-center bordas-campos-ficha">
+            <div class="resource-label flex-group-center"> {{localize "TRESDETALPHA.Combate.label"}} </div>
+            <div class="row">&nbsp;</div>
+            <div class="ability flexrow flex-group-center">
+              <label for="system.attributes.forcaDefesa.value" class="resource-label rollable align-left">
+                &nbsp;&nbsp;{{localize "TRESDETALPHA.Forca.defesa.label"}} ({{localize "TRESDETALPHA.Forca.defesa.abreviacao"}}) :
+              </label>
+              <input type="text" style="width:145px" name="system.attributes.forcaDefesa.value"
+                value="{{system.attributes.forcaDefesa.value}}" data-dtype="Number" />
+            </div>
+            <div>
+              <strong>
+                {{localize "TRESDETALPHA.Forca.ataque.label"}} ({{localize "TRESDETALPHA.Forca.ataque.abreviacao"}})&nbsp;
+              </strong>
+              <label for="system.attributes.forcaDeAtaque.forca.value" class="resource-label align-left">
+                {{localize "TRESDETALPHA.Caracteristicas.forca.abreviacao"}}:&nbsp;
+              </label>
+              <label for=system.attributes.forcaDeAtaque.forca.value class="resource-label rollable flexlarge align-left"
+                data-roll="d6+@attributes.forcaDeAtaque.forca.value"
+                data-label="{{system.attributes.forcaDeAtaque.forca.value}}">{{system.attributes.forcaDeAtaque.forca.value}}</label>
+              <span>&nbsp;</span>
+              <label for="system.attributes.forcaDeAtaque.poderDeFogo.value" class="resource-label align-right">
+                {{localize "TRESDETALPHA.Caracteristicas.poderDeFogo.abreviacao"}}:&nbsp;
+              </label>
+              <label for=system.attributes.forcaDeAtaque.poderDeFogo.value
+                class="resource-label rollable flexlarge align-right"
+                data-roll="d6+@attributes.forcaDeAtaque.poderDeFogo.value"
+                data-label="{{system.attributes.forcaDeAtaque.poderDeFogo.value}}">{{system.attributes.forcaDeAtaque.poderDeFogo.value}}</label>
+            </div>
+            <div class="row">&nbsp;</div>
+          </div>
+
+          <div class="resources grid grid-2col">
+
 
         </aside>
         <div>
-          <strong class="resource-label align-center">
-            {{localize "TRESDETALPHA.Tipo.dano.label"}}
-          </strong>
-          <div class="ability flexrow flex-group-center">
-            <label for="system.attributes.tipoDeDano.forca.value" class="resource-label rollable align-left">
-              {{localize "TRESDETALPHA.Caracteristicas.forca.label"}}
-            </label>
-            <input type="text" style="width:150px" name="system.attributes.tipoDeDano.forca.value"
-              value="{{system.attributes.tipoDeDano.forca.value}}" data-dtype="String" />
-          </div>
-          <div class="ability flexrow flex-group-center">
-            <label for="system.attributes.tipoDeDano.poderDeFogo.value" class="resource-label rollable align-left">
-              {{localize "TRESDETALPHA.Caracteristicas.poderDeFogo.label"}}
-            </label>
-            <input type="text" style="width:150px" name="system.attributes.tipoDeDano.poderDeFogo.value"
-              value="{{system.attributes.tipoDeDano.poderDeFogo.value}}" data-dtype="String" />
-          </div>
-          <div class="ability flexrow flex-group-center">
-            <label for="system.attributes.forcaDefesa.value" class="resource-label rollable align-left">
-              {{localize "TRESDETALPHA.Forca.defesa.label"}} ({{localize "TRESDETALPHA.Forca.defesa.abreviacao"}})&nbsp;
-            </label>
-            <input type="text" style="width:145px" name="system.attributes.forcaDefesa.value"
-              value="{{system.attributes.forcaDefesa.value}}" data-dtype="Number" />
-          </div>
-          <div>
-            <strong>
-              {{localize "TRESDETALPHA.Forca.ataque.label"}} ({{localize "TRESDETALPHA.Forca.ataque.abreviacao"}})&nbsp;
-            </strong>
-            <label for="system.attributes.forcaDeAtaque.forca.value" class="resource-label align-left">
-              {{localize "TRESDETALPHA.Caracteristicas.forca.abreviacao"}}:&nbsp;
-            </label>
-            <label for=system.attributes.forcaDeAtaque.forca.value
-              class="resource-label rollable flexlarge align-left"
-              data-roll="d6+@attributes.forcaDeAtaque.forca.value"
-              data-label="{{system.attributes.forcaDeAtaque.forca.value}}">{{system.attributes.forcaDeAtaque.forca.value}}</label>
-            <span>&nbsp;</span>
-            <label for="system.attributes.forcaDeAtaque.poderDeFogo.value" class="resource-label align-right">
-              {{localize "TRESDETALPHA.Caracteristicas.poderDeFogo.abreviacao"}}:&nbsp;
-            </label>
-            <label for=system.attributes.forcaDeAtaque.poderDeFogo.value
-              class="resource-label rollable flexlarge align-right"
-              data-roll="d6+@attributes.forcaDeAtaque.poderDeFogo.value"
-              data-label="{{system.attributes.forcaDeAtaque.poderDeFogo.value}}">{{system.attributes.forcaDeAtaque.poderDeFogo.value}}</label>
-          </div>
+          {{> "systems/tresdetalpha/templates/actor/parts/actor-vantagemunica.html"}}
+          {{> "systems/tresdetalpha/templates/actor/parts/actor-vantagens.html"}}
+          {{> "systems/tresdetalpha/templates/actor/parts/actor-desvantagens.html"}}
+          {{> "systems/tresdetalpha/templates/actor/parts/actor-pericias.html"}}
         </div>
-        
-        <section class="main grid-span-2">
-          {{!-- This is a Handlebars partial. They're stored in the `/parts` folder next to this sheet, and defined in
-          module/helpers/templates.mjs --}}
-          <div class="resources grid grid-2col">
-            <div class="resource flex-group-center">
-              {{> "systems/tresdetalpha/templates/actor/parts/actor-vantagemunica.html"}}
-              {{> "systems/tresdetalpha/templates/actor/parts/actor-vantagens.html"}}
-            </div>
-            <div class="resource flex-group-center">
-              {{> "systems/tresdetalpha/templates/actor/parts/actor-desvantagens.html"}}
-              {{> "systems/tresdetalpha/templates/actor/parts/actor-pericias.html"}}
-            </div>
-          </div>
-        </section>
-
-      </section>
     </div>
+  </section>
 
-    {{!-- Biography Tab --}}
-    <div class="tab biography" data-group="primary" data-tab="description">
-      {{!-- If you want TinyMCE editors to output inline rolls when rendered, you need to pass the actor's roll data to
-      the rollData property. --}}
-      {{editor system.biography target="system.biography" rollData=rollData button=true owner=owner editable=editable}}
-    </div>
+  </section>
+  </div>
 
-    {{!-- Owned Spells Tab --}}
-    <div class="tab spells" data-group="primary" data-tab="spells">
-      {{> "systems/tresdetalpha/templates/actor/parts/actor-magias.html"}}
-    </div>
+  {{!-- Biography Tab --}}
+  <div class="tab biography" data-group="primary" data-tab="description">
+    {{!-- If you want TinyMCE editors to output inline rolls when rendered, you need to pass the actor's roll data to
+    the rollData property. --}}
+    {{editor system.biography target="system.biography" rollData=rollData button=true owner=owner editable=editable}}
+  </div>
 
-    {{!-- Owned Items Tab --}}
-    <div class="tab items" data-group="primary" data-tab="items">
-      {{> "systems/tresdetalpha/templates/actor/parts/actor-items.html"}}
-    </div>
+  {{!-- Owned Spells Tab --}}
+  <div class="tab spells" data-group="primary" data-tab="spells">
+    {{> "systems/tresdetalpha/templates/actor/parts/actor-magias.html"}}
+  </div>
 
-    {{!-- Active Effects Tab --}}
-    <div class="tab effects flexcol" data-group="primary" data-tab="effects">
-      {{> "systems/tresdetalpha/templates/actor/parts/actor-effects.html"}}
-    </div>
+  {{!-- Owned Items Tab --}}
+  <div class="tab items" data-group="primary" data-tab="items">
+    {{> "systems/tresdetalpha/templates/actor/parts/actor-items.html"}}
+  </div>
+
+  {{!-- Active Effects Tab --}}
+  <div class="tab effects flexcol" data-group="primary" data-tab="effects">
+    {{> "systems/tresdetalpha/templates/actor/parts/actor-effects.html"}}
+  </div>
 
   </section>
 </form>

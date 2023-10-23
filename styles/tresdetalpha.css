@@ -23,6 +23,11 @@
   width: 40px;
 }
 
+.bordas-campos-ficha {
+  border: 1px solid; 
+  border-radius: 3px;
+}
+
 .grid,
 .grid-2col {
   display: grid;
