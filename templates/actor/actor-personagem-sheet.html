@@ -122,7 +122,7 @@
             <div class="row">&nbsp;</div>
             <div class="ability flexrow flex-group-center">
               <label for="system.attributes.forcaDefesa.value" class="resource-label rollable align-left">
-                &nbsp;&nbsp;{{localize "TRESDETALPHA.Forca.defesa.label"}} ({{localize "TRESDETALPHA.Forca.defesa.abreviacao"}}) :
+                {{localize "TRESDETALPHA.Forca.defesa.label"}} ({{localize "TRESDETALPHA.Forca.defesa.abreviacao"}})&nbsp;
               </label>
               <input type="text" style="width:145px" name="system.attributes.forcaDefesa.value"
                 value="{{system.attributes.forcaDefesa.value}}" data-dtype="Number" />
@@ -148,19 +148,20 @@
             </div>
             <div class="row">&nbsp;</div>
           </div>
-
-          <div class="resources grid grid-2col">
-
-
         </aside>
-        <div>
+
+        <div class="resource flex-group-center">
           {{> "systems/tresdetalpha/templates/actor/parts/actor-vantagemunica.html"}}
           {{> "systems/tresdetalpha/templates/actor/parts/actor-vantagens.html"}}
           {{> "systems/tresdetalpha/templates/actor/parts/actor-desvantagens.html"}}
           {{> "systems/tresdetalpha/templates/actor/parts/actor-pericias.html"}}
         </div>
-    </div>
-  </section>
+        
+        <section class="main grid-span-2">
+          {{!-- This is a Handlebars partial. They're stored in the `/parts` folder next to this sheet, and defined in
+          module/helpers/templates.mjs --}}
+            <div class="resource flex-group-center"></div>
+        </section>
 
   </section>
   </div>
