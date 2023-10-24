@@ -12,7 +12,7 @@ export class TresDeTAlphaActorSheet extends ActorSheet {
       classes: ["tresdetalpha", "sheet", "actor"],
       template: "systems/tresdetalpha/templates/actor/actor-sheet.html",
       width: 600,
-      height: 800,
+      height: 735,
       tabs: [{ navSelector: ".sheet-tabs", contentSelector: ".sheet-body", initial: "features" }]
     });
   }

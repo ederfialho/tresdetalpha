@@ -3,6 +3,7 @@
     "types": ["personagem", "npc"],
     "templates": {
       "base": {
+        "pontos": 0,
         "biography": "",
         "vida": {
           "value": 1,
