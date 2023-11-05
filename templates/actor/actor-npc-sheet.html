@@ -56,7 +56,7 @@
             {{#each system.abilities as |ability key|}}
             <div class="ability flexrow flex-group-center">
               <label for="system.abilities.{{key}}.value" class="resource-label rollable flexlarge align-left"
-                data-roll="d6+@abilities.{{key}}.value" data-label="{{ability.label}}">&nbsp;&nbsp;{{ability.label}}
+                data-roll="1d6" data-label="{{ability.label}}">&nbsp;&nbsp;{{ability.label}}
                 :</label>
               <input type="text" class="input-sem-borda" name="system.abilities.{{key}}.value" value="{{ability.value}}"
                 data-dtype="Number" />
@@ -154,7 +154,7 @@
               </label>
               <label for=system.attributes.forcaDeAtaque.forca.value
                 class="resource-label rollable flexlarge align-left"
-                data-roll="d6+@attributes.forcaDeAtaque.forca.value"
+                data-roll="1d6+@attributes.forcaDeAtaque.forca.value"
                 data-label="{{system.attributes.forcaDeAtaque.forca.value}}">{{system.attributes.forcaDeAtaque.forca.value}}</label>
               <span>&nbsp;</span>
               <label for="system.attributes.forcaDeAtaque.poderDeFogo.value" class="resource-label align-right">
@@ -162,7 +162,7 @@
               </label>
               <label for=system.attributes.forcaDeAtaque.poderDeFogo.value
                 class="resource-label rollable flexlarge align-right"
-                data-roll="d6+@attributes.forcaDeAtaque.poderDeFogo.value"
+                data-roll="1d6+@attributes.forcaDeAtaque.poderDeFogo.value"
                 data-label="{{system.attributes.forcaDeAtaque.poderDeFogo.value}}">{{system.attributes.forcaDeAtaque.poderDeFogo.value}}</label>
             </div>
             <div class="row">&nbsp;</div>
@@ -172,7 +172,7 @@
                 "TRESDETALPHA.Forca.defesa.abreviacao"}}) :&nbsp;
               </label>
               <label for=system.attributes.forcaDefesa.value class="resource-label rollable flexlarge align-left"
-                data-roll="d6+@attributes.forcaDefesa.value"
+                data-roll="1d6+@attributes.forcaDefesa.value"
                 data-label="{{system.attributes.forcaDefesa.value}}">{{system.attributes.forcaDefesa.value}}
               </label>
             </div>
