@@ -12,7 +12,7 @@
   "compatibility": {
     "minimum": "11",
     "verified": "12.331",
-    "maximum": "12.331"
+    "maximum": "12"
   },
   "esmodules": ["module/tresdetalpha.mjs"],
   "styles": ["styles/tresdetalpha.css"],
