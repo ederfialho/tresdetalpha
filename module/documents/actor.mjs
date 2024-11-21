@@ -46,27 +46,26 @@ export class TresDeTAlphaActor extends Actor {
     if (actorData.type !== 'personagem') return;
 
     // Make modifications to data here. For example:
-    const systemData = actorData.system;
-    let listaAtributos = [];
-    // Loop through ability scores, and add their modifiers to our sheet output.
-    for (let [key, ability] of Object.entries(systemData.abilities)) {
-      //preenchendo uma lista com os valores dos atributos
-      listaAtributos.push(ability.value);
-    }
+    const abilities = actorData.system.abilities;
+    const attributes = actorData.system.attributes;
+    const vantagens = actorData.items; //should be advantages instead of items
     //Cálculo automático para medir o valor de Força de Ataque
-    actorData.system.attributes.forcaDeAtaque.forca.value = listaAtributos[0] + listaAtributos[1];
-    actorData.system.attributes.forcaDeAtaque.poderDeFogo.value = listaAtributos[4] + listaAtributos[1];
+    attributes.forcaDeAtaque.forca.value = abilities.forca.value + abilities.habilidade.value;
+    attributes.forcaDeAtaque.poderDeFogo.value = abilities.forca.value + abilities.habilidade.value;
     
     //Cálculo automático para medir o valor de Força de Defesa
-    actorData.system.attributes.forcaDefesa.value = listaAtributos[3] + listaAtributos[1];
+    attributes.forcaDefesa.value = abilities.armadura.value + abilities.habilidade.value;
+    
+    let vidaExtra = 0; //vantagens.find((vantagem)=> vantagem.name = "Vida Extra") ?? null;
+    let magiaExtra = 0; //vantagens.find((vantagem)=> vantagem.name = "Energia Extra") ?? null;
 
     //Cálculo de máximo de pontos de vida e de magia
-    if (listaAtributos[2] == 0) {
+    if (abilities.resistencia.value == 0) {
       actorData.system.vida.max = 1;
       actorData.system.magia.max = 1;
     } else {
-      actorData.system.vida.max = listaAtributos[2]*5;
-      actorData.system.magia.max = listaAtributos[2]*5;
+      actorData.system.vida.max = (abilities.resistencia.value + (vidaExtra * 2))*5;
+      actorData.system.magia.max = (abilities.resistencia.value + (magiaExtra * 2))*5;
     }
 
   }
