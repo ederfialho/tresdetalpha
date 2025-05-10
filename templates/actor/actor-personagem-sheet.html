@@ -50,16 +50,22 @@
           {{!-- The grid classes are defined in scss/global/_grid.scss. To use,
           use both the "grid" and "grid-Ncol" class where "N" can be any number
           from 1 to 12 and will create that number of columns. --}}
-          <div class="abilities flexcol bordas-campos-ficha">
+          <div class="abilities bordas-campos-ficha">
             <div class="resource-label flex-group-center"> {{localize "TRESDETALPHA.Caracteristicas.label"}} </div>
             <div class="row">&nbsp;</div>
             {{#each system.abilities as |ability key|}}
             <div class="ability flexrow flex-group-center">
-              <label for="system.abilities.{{key}}.value" class="resource-label rollable flexlarge align-left"
-                data-roll="1d6" data-label="{{ability.label}}">&nbsp;&nbsp;{{ability.label}}
-                :</label>
+              <label for="system.abilities.{{key}}.total" class="resource-label rollable flexlarge align-left"
+                data-roll="1d6" data-label="{{ability.label}}">&nbsp;{{ability.label}}
+                </label>
               <input type="text" class="input-sem-borda" name="system.abilities.{{key}}.value" value="{{ability.value}}"
                 data-dtype="Number" />
+                +
+              <input type="text" class="input-sem-borda" name="system.abilities.{{key}}.bonus" value="{{ability.bonus}}"
+                data-dtype="Number" />
+                =
+              <input type="text" class="input-sem-borda" name="system.abilities.{{key}}.total" value="{{ability.total}}"
+                data-dtype="Number" disabled="disabled" />
               <span>&nbsp;&nbsp;</span>
             </div>
             {{/each}}
@@ -79,7 +85,7 @@
                 max="{{system.vida.max}}" placeholder="0" data-dtype="Number" />
               <span> / </span>
               <input class="input-sem-borda-menor" type="text" name="system.vida.max" value="{{system.vida.max}}"
-                data-dtype="Number" placeholder="0" disabled="disabled" />
+                data-dtype="Number" placeholder="0" />
             </div>
             <div class="row">
               <label for="system.magia.value" class="resource-label">
@@ -90,7 +96,7 @@
                 max="{{system.magia.max}}" placeholder="0" data-dtype="Number" />
               <span> / </span>
               <input class="input-sem-borda-menor" type="text" name="system.magia.max" value="{{system.magia.max}}"
-                placeholder="0" data-dtype="Number" disabled="disabled" />
+                placeholder="0" data-dtype="Number" />
             </div>
             <div class="row">
               <label for="system.attributes.level.value" class="resource-label">

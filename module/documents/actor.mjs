@@ -49,12 +49,17 @@ export class TresDeTAlphaActor extends Actor {
     const abilities = actorData.system.abilities;
     const attributes = actorData.system.attributes;
     const vantagens = actorData.items; //should be advantages instead of items
+
+    Object.values(abilities).map((ability)=>{
+      ability.total = ability.value + ability.bonus;
+    });
+
     //Cálculo automático para medir o valor de Força de Ataque
-    attributes.forcaDeAtaque.forca.value = abilities.forca.value + abilities.habilidade.value;
-    attributes.forcaDeAtaque.poderDeFogo.value = abilities.forca.value + abilities.habilidade.value;
+    attributes.forcaDeAtaque.forca.value = abilities.forca.total + abilities.habilidade.total;
+    attributes.forcaDeAtaque.poderDeFogo.value = abilities.forca.total + abilities.habilidade.total;
     
     //Cálculo automático para medir o valor de Força de Defesa
-    attributes.forcaDefesa.value = abilities.armadura.value + abilities.habilidade.value;
+    attributes.forcaDefesa.value = abilities.armadura.total + abilities.habilidade.total;
     
     let vidaExtra = 0; //vantagens.find((vantagem)=> vantagem.name = "Vida Extra") ?? null;
     let magiaExtra = 0; //vantagens.find((vantagem)=> vantagem.name = "Energia Extra") ?? null;
