@@ -39,6 +39,56 @@
     <a class="item" data-tab="effects">{{localize "TRESDETALPHA.Aba.efeito"}}</a>
   </nav>
 
+  <section>
+    <!-- AQUI !!!!!-->
+    <div class="row">&nbsp;</div>
+    <div class="container flexcol bordas-campos-ficha">
+      <div class="resource-label flex-group-center"> {{localize "TRESDETALPHA.Pontos.label"}} </div>
+      <div class="row">&nbsp;</div>
+      <div class="row">
+        <label for="TRESDETALPHA.Pontos.vida.label" class="resource-label align-left">
+          &nbsp;&nbsp;{{localize "TRESDETALPHA.Pontos.vida.label"}} :
+        </label>
+        <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <input class="input-sem-borda-menor" type="text" name="system.vida.value" value="{{system.vida.value}}"
+          max="{{system.vida.max}}" placeholder="0" data-dtype="Number" />
+        <span> / </span>
+        <input class="input-sem-borda-menor" type="text" name="system.vida.max" value="{{system.vida.max}}"
+          data-dtype="Number" placeholder="0"/>
+
+        <label for="TRESDETALPHA.Pontos.vida.label" class="resource-label align-left">
+          &nbsp;&nbsp; Bonus:
+        </label>
+        <input class="input-sem-borda-menor" type="text" name="system.vida.bonus" value="{{system.vida.bonus}}"
+          data-dtype="Number" placeholder="0"/>
+      </div>
+      <div class="row">
+        <label for="system.magia.value" class="resource-label">
+          &nbsp;&nbsp;{{localize "TRESDETALPHA.Pontos.magia.label"}} :
+        </label>
+        <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <input class="input-sem-borda-menor" type="text" name="system.magia.value" value="{{system.magia.value}}"
+          max="{{system.magia.max}}" placeholder="0" data-dtype="Number" />
+        <span> / </span>
+        <input class="input-sem-borda-menor" type="text" name="system.magia.max" value="{{system.magia.max}}"
+          placeholder="0" data-dtype="Number"/>
+
+        <label for="TRESDETALPHA.Pontos.magia.label" class="resource-label align-left">
+          &nbsp;&nbsp; Bonus:
+        </label>
+        <input class="input-sem-borda-menor" type="text" name="system.magia.bonus" value="{{system.magia.bonus}}"
+          data-dtype="Number" placeholder="0"/>
+      </div>
+      <div class="row">
+        <label for="system.attributes.level.value" class="resource-label">
+          &nbsp;&nbsp;{{localize "TRESDETALPHA.Pontos.experiencia.label"}} :</label>
+        <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        <input class="input-sem-borda-menor" type="text" name="system.experiencia.value"
+          value="{{system.experiencia.value}}" placeholder="0" data-dtype="Number" />
+      </div>
+    </div>
+  </section>
+
   {{!-- Sheet Body --}}
   <section class="sheet-body">
 
@@ -69,42 +119,6 @@
               <span>&nbsp;&nbsp;</span>
             </div>
             {{/each}}
-          </div>
-
-          <!-- AQUI !!!!!-->
-          <div class="row">&nbsp;</div>
-          <div class="container flexcol bordas-campos-ficha">
-            <div class="resource-label flex-group-center"> {{localize "TRESDETALPHA.Pontos.label"}} </div>
-            <div class="row">&nbsp;</div>
-            <div class="row">
-              <label for="TRESDETALPHA.Pontos.vida.label" class="resource-label align-left">
-                &nbsp;&nbsp;{{localize "TRESDETALPHA.Pontos.vida.label"}} :
-              </label>
-              <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-              <input class="input-sem-borda-menor" type="text" name="system.vida.value" value="{{system.vida.value}}"
-                max="{{system.vida.max}}" placeholder="0" data-dtype="Number" />
-              <span> / </span>
-              <input class="input-sem-borda-menor" type="text" name="system.vida.max" value="{{system.vida.max}}"
-                data-dtype="Number" placeholder="0" />
-            </div>
-            <div class="row">
-              <label for="system.magia.value" class="resource-label">
-                &nbsp;&nbsp;{{localize "TRESDETALPHA.Pontos.magia.label"}} :
-              </label>
-              <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
-              <input class="input-sem-borda-menor" type="text" name="system.magia.value" value="{{system.magia.value}}"
-                max="{{system.magia.max}}" placeholder="0" data-dtype="Number" />
-              <span> / </span>
-              <input class="input-sem-borda-menor" type="text" name="system.magia.max" value="{{system.magia.max}}"
-                placeholder="0" data-dtype="Number" />
-            </div>
-            <div class="row">
-              <label for="system.attributes.level.value" class="resource-label">
-                &nbsp;&nbsp;{{localize "TRESDETALPHA.Pontos.experiencia.label"}} :</label>
-              <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
-              <input class="input-sem-borda-menor" type="text" name="system.experiencia.value"
-                value="{{system.experiencia.value}}" placeholder="0" data-dtype="Number" />
-            </div>
           </div>
 
           <div class="row">&nbsp;</div>

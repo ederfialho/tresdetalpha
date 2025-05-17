@@ -7,11 +7,13 @@
         "biography": "",
         "vida": {
           "value": 1,
+          "bonus": 0,
           "min": 0,
           "max": 1
         },
         "magia": {
           "value": 1,
+          "bonus": 0,
           "min": 0,
           "max": 1
         },

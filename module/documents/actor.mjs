@@ -56,7 +56,7 @@ export class TresDeTAlphaActor extends Actor {
 
     //Cálculo automático para medir o valor de Força de Ataque
     attributes.forcaDeAtaque.forca.value = abilities.forca.total + abilities.habilidade.total;
-    attributes.forcaDeAtaque.poderDeFogo.value = abilities.forca.total + abilities.habilidade.total;
+    attributes.forcaDeAtaque.poderDeFogo.value = abilities.poderDeFogo.total + abilities.habilidade.total;
     
     //Cálculo automático para medir o valor de Força de Defesa
     attributes.forcaDefesa.value = abilities.armadura.total + abilities.habilidade.total;
@@ -69,8 +69,8 @@ export class TresDeTAlphaActor extends Actor {
       actorData.system.vida.max = 1;
       actorData.system.magia.max = 1;
     } else {
-      actorData.system.vida.max = (abilities.resistencia.value + (vidaExtra * 2))*5;
-      actorData.system.magia.max = (abilities.resistencia.value + (magiaExtra * 2))*5;
+      actorData.system.vida.max = (abilities.resistencia.value +(vidaExtra * 2))*5 + actorData.system.vida.bonus;
+      actorData.system.magia.max = (abilities.resistencia.value + (magiaExtra * 2))*5 + actorData.system.magia.bonus;
     }
 
   }
