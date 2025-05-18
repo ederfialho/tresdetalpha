@@ -3,13 +3,13 @@
   "name": "tresdetalpha",
   "title": "3D&T Alpha",
   "description": "Sistema NÃO OFICIAL de 3D&T Alpha, mas devidamente autorizado, para FoundryVTT!",
-  "authors": [{ "name": "Éder - DZR13 - Fialho" },
+  "authors": [{"name": "Éder - DZR13 - Fialho"},
               {"name": "Allison Martins - Roundstage"}],
   "url": "https://github.com/ederfialho/tresdetalpha",
   "license": "LICENSE.txt",
   "readme": "https://github.com/ederfialho/tresdetalpha#readme",
   "bugs": "https://github.com/ederfialho/tresdetalpha/issues",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "compatibility": {
     "minimum": "11",
     "verified": "13.342",
@@ -19,30 +19,22 @@
   "styles": ["styles/tresdetalpha.css"],
   "scripts": [],
   "packs": [
-    		{
-			"name": "vantagens",
-			"label": "Vantagens",
-			"system": "tresdetv",
-			"path": "packs/vantagens.db",
-			"type": "Item",
-			"ownership": {
-				"PLAYER": "LIMITED",
-				"ASSISTANT": "OWNER"
-			},
-			"flags": {}
-		},
-		{
-			"name": "desvantagens",
-			"label": "Desvantagens",
-			"system": "tresdetv",
-			"path": "packs/desvantagens.db",
-			"type": "Item",
-			"ownership": {
-				"PLAYER": "LIMITED",
-				"ASSISTANT": "OWNER"
-			},
-			"flags": {}
-		}
+    {
+      "label": "Vantagens",
+      "type": "Item",
+      "name": "vantagens",
+      "path": "packs/vantagens",
+      "system": "tresdetalpha",
+      "flags": {}
+    },
+    {
+      "label": "Desvantagens",
+      "type": "Item",
+      "name": "desvantagens",
+      "path": "packs/desvantagens",
+      "system": "tresdetalpha",
+      "flags": {}
+    }
   ],
   "languages": [
     {
@@ -52,8 +44,8 @@
     }
   ],
   "socket": false,
-  "manifest": "https://github.com/ederfialho/tresdetalpha/releases/download/release_005/system.json",
-  "download": "https://github.com/ederfialho/tresdetalpha/releases/download/release_005/system.zip",
+  "manifest": "https://github.com/ederfialho/tresdetalpha/releases/download/release_006/system.json",
+  "download": "https://github.com/ederfialho/tresdetalpha/releases/download/release_006/system.zip",
   "gridDistance": 1.5,
   "gridUnits": "m",
   "primaryTokenAttribute": "vida",
