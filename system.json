@@ -9,10 +9,10 @@
   "license": "LICENSE.txt",
   "readme": "https://github.com/ederfialho/tresdetalpha#readme",
   "bugs": "https://github.com/ederfialho/tresdetalpha/issues",
-  "version": "0.1.7",
+  "version": "0.1.7.1",
   "compatibility": {
     "minimum": "11",
-    "verified": "13.342",
+    "verified": "13.351",
     "maximum": "13"
   },
   "esmodules": ["module/tresdetalpha.mjs"],
