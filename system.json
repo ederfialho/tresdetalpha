@@ -44,8 +44,8 @@
     }
   ],
   "socket": false,
-  "manifest": "https://github.com/ederfialho/tresdetalpha/releases/download/release_006/system.json",
-  "download": "https://github.com/ederfialho/tresdetalpha/releases/download/release_006/system.zip",
+  "manifest": "https://github.com/ederfialho/tresdetalpha/releases/download/release_007_1/system.json",
+  "download": "https://github.com/ederfialho/tresdetalpha/releases/download/release_007_1/system.zip",
   "grid.Distance": 1.5,
   "grid.Units": "m",
   "primaryTokenAttribute": "vida",
