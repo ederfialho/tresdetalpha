@@ -28,6 +28,10 @@
   border-radius: 3px;
 }
 
+.abilities{
+  display:inline-block;
+}
+
 .grid,
 .grid-2col {
   display: grid;

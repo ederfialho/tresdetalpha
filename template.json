@@ -7,11 +7,13 @@
         "biography": "",
         "vida": {
           "value": 1,
+          "bonus": 0,
           "min": 0,
           "max": 1
         },
         "magia": {
           "value": 1,
+          "bonus": 0,
           "min": 0,
           "max": 1
         },
@@ -47,19 +49,29 @@
       },
       "abilities": {
         "forca": {
-          "value": 0
+          "value": 0,
+          "bonus": 0,
+          "total": 0
         },
         "habilidade": {
-          "value": 0
+          "value": 0,
+          "bonus": 0,
+          "total": 0
         },
         "resistencia": {
-          "value": 0
+          "value": 0,
+          "bonus": 0,
+          "total": 0
         },
         "armadura": {
-          "value": 0
+          "value": 0,
+          "bonus": 0,
+          "total": 0
         },
         "poderDeFogo": {
-          "value": 0
+          "value": 0,
+          "bonus": 0,
+          "total": 0
         }
       }
     },
@@ -88,19 +100,29 @@
       },
       "abilities": {
         "forca": {
-          "value": 0
+          "value": 0,
+          "bonus": 0,
+          "total": 0
         },
         "habilidade": {
-          "value": 0
+          "value": 0,
+          "bonus": 0,
+          "total": 0
         },
         "resistencia": {
-          "value": 0
+          "value": 0,
+          "bonus": 0,
+          "total": 0
         },
         "armadura": {
-          "value": 0
+          "value": 0,
+          "bonus": 0,
+          "total": 0
         },
         "poderDeFogo": {
-          "value": 0
+          "value": 0,
+          "bonus": 0,
+          "total": 0
         }
       }
     }

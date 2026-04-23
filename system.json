@@ -3,21 +3,39 @@
   "name": "tresdetalpha",
   "title": "3D&T Alpha",
   "description": "Sistema NÃO OFICIAL de 3D&T Alpha, mas devidamente autorizado, para FoundryVTT!",
-  "authors": [{ "name": "Éder DZR13 Fialho" }],
+  "authors": [{"name": "Éder - DZR13 - Fialho"},
+              {"name": "Allison Martins - Roundstage"}],
   "url": "https://github.com/ederfialho/tresdetalpha",
   "license": "LICENSE.txt",
   "readme": "https://github.com/ederfialho/tresdetalpha#readme",
   "bugs": "https://github.com/ederfialho/tresdetalpha/issues",
-  "version": "0.1.1",
+  "version": "0.1.7.1",
   "compatibility": {
     "minimum": "11",
-    "verified": "11.313",
-    "maximum": "11"
+    "verified": "13.351",
+    "maximum": "13"
   },
   "esmodules": ["module/tresdetalpha.mjs"],
   "styles": ["styles/tresdetalpha.css"],
   "scripts": [],
-  "packs": [],
+  "packs": [
+    {
+      "label": "Vantagens",
+      "type": "Item",
+      "name": "vantagens",
+      "path": "packs/vantagens",
+      "system": "tresdetalpha",
+      "flags": {}
+    },
+    {
+      "label": "Desvantagens",
+      "type": "Item",
+      "name": "desvantagens",
+      "path": "packs/desvantagens",
+      "system": "tresdetalpha",
+      "flags": {}
+    }
+  ],
   "languages": [
     {
       "lang": "pt-BR",
@@ -26,10 +44,10 @@
     }
   ],
   "socket": false,
-  "manifest": "https://github.com/ederfialho/tresdetalpha/releases/download/release_002/system.json",
-  "download": "https://github.com/ederfialho/tresdetalpha/releases/download/release_002/system.zip",
-  "gridDistance": 1.5,
-  "gridUnits": "m",
+  "manifest": "https://github.com/ederfialho/tresdetalpha/releases/download/release_007_1/system.json",
+  "download": "https://github.com/ederfialho/tresdetalpha/releases/download/release_007_1/system.zip",
+  "grid.Distance": 1.5,
+  "grid.Units": "m",
   "primaryTokenAttribute": "vida",
   "secondaryTokenAttribute": "magia"
 }
