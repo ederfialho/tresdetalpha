@@ -2149,3 +2149,25 @@
   min-height: 140px;
   max-height: 280px;
 }
+
+/* --------- Estado "trancado por escola" nas magias do wizard --------- */
+.tdt-wiz-item.is-locked {
+  opacity: 0.28;
+  cursor: help;
+  position: relative;
+}
+.tdt-wiz-item.is-locked:hover {
+  border-color: transparent;
+}
+.tdt-wiz-item.is-locked::after {
+  content: "🔒";
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 11px;
+  opacity: 0.7;
+}
+.tdt-wiz-item.is-locked .tdt-wiz-item-cost {
+  color: #6e5e3d;
+}

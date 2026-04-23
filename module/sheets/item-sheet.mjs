@@ -57,6 +57,36 @@ export class TresDeTAlphaItemSheet extends HandlebarsApplicationMixin(ItemSheetV
   /** @override */
   _onRender(context, options) {
     super._onRender(context, options);
-    // Ganchos customizados futuros (ex: tabs dentro da ficha de item) vivem aqui.
+    const root = this.element;
+    if (!root) return;
+
+    // Amarra tabs internas do sheet (quando o template tem várias).
+    const tabLinks = root.querySelectorAll(".sheet-tabs .item[data-tab]");
+    if (tabLinks.length) {
+      for (const link of tabLinks) {
+        link.addEventListener("click", (ev) => {
+          ev.preventDefault();
+          this._activateTab(ev.currentTarget.dataset.tab);
+        });
+      }
+      this._activateTab(this._activeTab ?? tabLinks[0]?.dataset.tab);
+    } else {
+      // Templates sem tabs (ex: magia/pericia antigos com 1 aba): força .active na primeira .tab
+      const firstTab = root.querySelector(".sheet-body .tab[data-tab]");
+      if (firstTab) firstTab.classList.add("active");
+    }
+  }
+
+  _activateTab(tab) {
+    if (!tab) return;
+    this._activeTab = tab;
+    const root = this.element;
+    if (!root) return;
+    for (const el of root.querySelectorAll(".sheet-tabs .item[data-tab]")) {
+      el.classList.toggle("active", el.dataset.tab === tab);
+    }
+    for (const el of root.querySelectorAll(".sheet-body .tab[data-tab]")) {
+      el.classList.toggle("active", el.dataset.tab === tab);
+    }
   }
 }

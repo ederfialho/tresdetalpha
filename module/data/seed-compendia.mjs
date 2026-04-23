@@ -10,7 +10,7 @@
  * macro `TresDeTAlpha.reseedCompendia()` no console ou via macro.
  */
 
-import { VANTAGENS, DESVANTAGENS, VANTAGENS_UNICAS, PERICIAS } from "./compendia-seed.mjs";
+import { VANTAGENS, DESVANTAGENS, VANTAGENS_UNICAS, PERICIAS, MAGIAS } from "./compendia-seed.mjs";
 
 const SYSTEM_ID = "3det-foundry-rework";
 const SETTING_SEEDED = "compendiaSeeded";
@@ -43,6 +43,13 @@ const COMPENDIA = [
     icon: "icons/sundries/books/book-green-gold.webp",
     itemType: "pericia",
     source: () => PERICIAS
+  },
+  {
+    name: "tresdetalpha-magias",
+    label: "3D&T — Magias",
+    icon: "icons/sundries/books/book-blue-gold.webp",
+    itemType: "magia",
+    source: () => MAGIAS
   }
 ];
 
@@ -110,6 +117,53 @@ export async function seedCompendia({ force = false, wipe = false } = {}) {
 }
 
 /**
+ * Monta o `system` de um item embasado no tipo — cada tipo tem schema próprio.
+ * Pra vantagem/desvantagem/vantagemUnica: nome, custo, categoria, prerequisitos, custoPMs, duracao, efeito, description.
+ * Pra magia: escola, custo (string de PMs), alcance, duracao, exigencias, description.
+ * Pra pericia: nome, custo, description.
+ * Pra objetoMagico: custo, tipo, description.
+ */
+function buildSystemData(row, type) {
+  switch (type) {
+    case "magia":
+      return {
+        description: row.efeito ?? row.description ?? "",
+        escola: row.escola ?? "",
+        custo: String(row.custo ?? ""),
+        alcance: row.alcance ?? "",
+        duracao: row.duracao ?? "",
+        exigencias: row.exigencias ?? ""
+      };
+    case "pericia":
+      return {
+        description: row.efeito ?? row.description ?? "",
+        nome: row.name,
+        custo: Number(row.custo ?? 2)
+      };
+    case "objetoMagico":
+      return {
+        description: row.efeito ?? row.description ?? "",
+        custo: Number(row.custo ?? 0),
+        tipo: row.tipo ?? ""
+      };
+    case "vantagem":
+    case "desvantagem":
+    case "vantagemUnica":
+    default:
+      return {
+        nome: row.name,
+        custo: Number(row.custo ?? 0),
+        categoria: row.categoria ?? "",
+        prerequisitos: row.prerequisitos ?? "",
+        custoPMs: row.custoPMs ?? "",
+        duracao: row.duracao ?? "",
+        efeito: row.efeito ?? "",
+        description: row.description ?? ""
+      };
+  }
+}
+
+/**
  * Apaga todos os documentos de um compêndio. Usado pelo `rebuildCompendia()`.
  */
 async function wipePack(pack) {
@@ -163,17 +217,7 @@ async function populatePack(pack, def) {
       name: row.name,
       type: def.itemType,
       img: row.img ?? def.icon,
-      system: {
-        nome: row.name,
-        custo: Number(row.custo ?? 0),
-        categoria: row.categoria ?? "",
-        prerequisitos: row.prerequisitos ?? "",
-        custoPMs: row.custoPMs ?? "",
-        duracao: row.duracao ?? "",
-        efeito: row.efeito ?? "",
-        description: row.description ?? ""
-      },
-      // Active Effects embutidos: bônus automáticos quando o item está no actor.
+      system: buildSystemData(row, def.itemType),
       effects: (row.effects ?? []).map((e) => ({
         name: e.name,
         img: e.img ?? "icons/svg/aura.svg",

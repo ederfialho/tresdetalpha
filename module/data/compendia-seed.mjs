@@ -480,15 +480,9 @@ export const DESVANTAGENS = [
 ];
 
 /* ============================================================
-   VANTAGENS ÚNICAS / PERÍCIAS — placeholders
+   VANTAGENS ÚNICAS, PERÍCIAS e MAGIAS — importados de arquivos
+   separados pra manter este arquivo gerenciável.
    ============================================================ */
-export const VANTAGENS_UNICAS = [
-  // Conteúdo das páginas 47–61 do core a ser expandido em follow-up.
-  // Exemplos típicos: Elfo (H+1), Anão (R+1), Humano (pontos extras),
-  // Hobbit (Aparência Inofensiva + Furtividade), Orc (F+1), etc.
-];
-
-export const PERICIAS = [
-  // Conteúdo das páginas 62-66 do core a ser expandido em follow-up.
-  // Grupos: Máquinas, Manipulação, Medicina, Sobrevivência.
-];
+export { VANTAGENS_UNICAS } from "./compendia-racas.mjs";
+export { PERICIAS } from "./compendia-pericias.mjs";
+export { MAGIAS } from "./compendia-magias.mjs";
