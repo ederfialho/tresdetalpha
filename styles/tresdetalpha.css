@@ -2171,3 +2171,396 @@
 .tdt-wiz-item.is-locked .tdt-wiz-item-cost {
   color: #6e5e3d;
 }
+
+/* ============================================================
+   Vantagens empilháveis no wizard
+   ============================================================ */
+.tdt-wiz-item--stackable {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  gap: 8px;
+  align-items: center;
+  padding: 4px 8px;
+  cursor: default;
+}
+.tdt-wiz-item--stackable.is-stacked {
+  border-color: #c1272d;
+  background: rgba(193, 39, 45, 0.12);
+}
+.tdt-wiz-item--stackable .tdt-wiz-item-name {
+  grid-column: 2;
+}
+.tdt-wiz-item--stackable:hover { border-color: #9c7d34; }
+.tdt-stack-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+.tdt-stack-count {
+  min-width: 22px;
+  text-align: center;
+  font-family: "Oswald", "Impact", sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  color: #ede4cc;
+  padding: 0 4px;
+}
+.tdt-step-btn--sm {
+  width: 22px;
+  height: 22px;
+  font-size: 14px;
+}
+
+/* ============================================================
+   Chat cards — estilo sóbrio, próximo do Foundry nativo.
+   Use uma barra colorida fina à esquerda pra identidade
+   (vermelho=ataque, dourado=cast, cinza=item) e o resto
+   adapta tema claro/escuro via variáveis do Foundry.
+   ============================================================ */
+
+.tdt-chat-card {
+  font-family: var(--font-primary, "Signika", sans-serif);
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--color-text-primary, inherit);
+  border-left: 3px solid #8a7851;
+  padding: 6px 8px 4px 10px;
+  margin: 2px 0;
+}
+.tdt-chat-card--attack { border-left-color: #a23b3c; }
+.tdt-chat-card--cast   { border-left-color: #b8944a; }
+
+.tdt-chat-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.tdt-chat-img {
+  width: 32px; height: 32px;
+  border: 1px solid var(--color-border-light-2, rgba(0, 0, 0, 0.2));
+  background: var(--color-bg-option, rgba(0, 0, 0, 0.05));
+  flex-shrink: 0;
+  object-fit: cover;
+}
+.tdt-chat-title {
+  flex: 1;
+  min-width: 0;
+}
+.tdt-chat-title h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: inherit;
+  line-height: 1.2;
+  border: 0;
+}
+.tdt-chat-type {
+  font-size: 11px;
+  color: var(--color-text-subtle, rgba(0, 0, 0, 0.55));
+}
+
+.tdt-chat-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  margin: 4px 0 6px;
+}
+.tdt-chat-chip {
+  display: inline-block;
+  font-size: 11px;
+  padding: 1px 7px;
+  background: rgba(127, 127, 127, 0.08);
+  border: 1px solid rgba(127, 127, 127, 0.35);
+  color: inherit;
+  border-radius: 3px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.tdt-chat-chip--cost   { color: #a23b3c; border-color: rgba(162, 59, 60, 0.4); background: rgba(162, 59, 60, 0.06); }
+.tdt-chat-chip--pm     { color: #3a6ea5; border-color: rgba(58, 110, 165, 0.4); background: rgba(58, 110, 165, 0.06); }
+.tdt-chat-chip--school { color: #7a5a1e; border-color: rgba(122, 90, 30, 0.4);  background: rgba(184, 148, 74, 0.08); }
+.tdt-chat-chip--req    { color: #555;    border-color: rgba(85, 85, 85, 0.35); }
+
+.tdt-chat-desc {
+  margin: 4px 0 6px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.tdt-chat-desc p { margin: 0 0 5px; }
+.tdt-chat-desc p:last-child { margin-bottom: 0; }
+.tdt-chat-desc strong { font-weight: 600; }
+.tdt-chat-desc em { color: var(--color-text-subtle, rgba(0, 0, 0, 0.55)); }
+
+.tdt-chat-actions {
+  display: flex;
+  gap: 4px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+.tdt-chat-btn {
+  flex: 1;
+  min-width: 90px;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 500;
+  background: var(--color-bg-option, rgba(127, 127, 127, 0.1));
+  color: inherit;
+  border: 1px solid var(--color-border-light-2, rgba(127, 127, 127, 0.35));
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border-radius: 3px;
+  font-family: inherit;
+  text-transform: none;
+  letter-spacing: 0;
+  line-height: 1.4;
+}
+.tdt-chat-btn:hover {
+  background: rgba(127, 127, 127, 0.18);
+  border-color: rgba(127, 127, 127, 0.55);
+}
+.tdt-chat-btn i { font-size: 11px; }
+
+/* Rolagem de característica (teste 1d6 vs alvo) */
+.tdt-chat-roll {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.tdt-chat-roll-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+.tdt-chat-roll-head strong {
+  font-size: 13px;
+  font-weight: 600;
+}
+.tdt-chat-roll-head small {
+  color: var(--color-text-subtle, rgba(0, 0, 0, 0.55));
+  font-size: 11px;
+}
+.tdt-chat-roll-body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.tdt-chat-dice {
+  font-family: var(--font-primary, inherit);
+  font-weight: 600;
+  font-size: 18px;
+  padding: 2px 10px;
+  background: rgba(127, 127, 127, 0.08);
+  border: 1px solid rgba(127, 127, 127, 0.35);
+  border-radius: 3px;
+  min-width: 36px;
+  text-align: center;
+}
+.tdt-chat-outcome {
+  font-size: 12px;
+  font-weight: 600;
+}
+.tdt-chat-outcome--ok   { color: #2d7a2d; }
+.tdt-chat-outcome--fail { color: #a23b3c; }
+
+/* Attack card: FA badge + alvos */
+.tdt-chat-card--attack .tdt-chat-head { justify-content: space-between; }
+.tdt-attack-fa {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 2px 8px;
+  background: rgba(162, 59, 60, 0.08);
+  border: 1px solid rgba(162, 59, 60, 0.35);
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+.tdt-attack-fa-label {
+  font-size: 11px;
+  color: #a23b3c;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+.tdt-attack-fa-value {
+  font-weight: 700;
+  font-size: 16px;
+  color: inherit;
+}
+.tdt-attack-fa-value.is-critical {
+  color: #b8944a;
+}
+
+.tdt-attack-targets {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin: 4px 0 6px;
+}
+.tdt-attack-target {
+  padding: 4px 8px;
+  background: rgba(127, 127, 127, 0.06);
+  border: 1px solid rgba(127, 127, 127, 0.2);
+  border-radius: 3px;
+}
+.tdt-attack-target-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+.tdt-attack-target-head strong { font-size: 12px; font-weight: 600; }
+.tdt-attack-target-fd {
+  font-size: 11px;
+  color: var(--color-text-subtle, rgba(0, 0, 0, 0.55));
+}
+.tdt-attack-target-result {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: space-between;
+}
+.tdt-attack-damage-val {
+  font-weight: 600;
+  font-size: 13px;
+  color: #a23b3c;
+}
+.tdt-attack-defended {
+  color: #2d7a2d;
+  font-size: 11px;
+  font-weight: 500;
+}
+.tdt-chat-btn--apply {
+  flex: 0 0 auto;
+  min-width: 72px;
+  padding: 2px 8px;
+  font-size: 10px;
+}
+
+.tdt-attack-no-target {
+  padding: 6px 8px;
+  font-size: 11px;
+  color: var(--color-text-subtle, rgba(0, 0, 0, 0.55));
+  font-style: italic;
+  text-align: center;
+}
+.tdt-attack-no-target kbd {
+  display: inline-block;
+  padding: 0 5px;
+  border: 1px solid var(--color-border-light-2, rgba(0, 0, 0, 0.25));
+  background: var(--color-bg-option, rgba(0, 0, 0, 0.05));
+  font-family: monospace;
+  font-size: 10px;
+  font-style: normal;
+  border-radius: 2px;
+}
+
+/* Dialog de cast: inputs */
+.tdt-cast-dialog .tdt-cast-meta {
+  background: var(--color-bg-option, rgba(0, 0, 0, 0.03));
+  padding: 6px 8px;
+  border: 1px solid var(--color-border-light-2, rgba(0, 0, 0, 0.15));
+  border-radius: 3px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.tdt-cast-dialog .tdt-cast-label {
+  display: block;
+  margin-top: 8px;
+}
+.tdt-cast-dialog .tdt-cast-label > span {
+  display: block;
+  font-size: 11px;
+  color: var(--color-text-subtle, inherit);
+  margin-bottom: 3px;
+  font-weight: 500;
+}
+.tdt-cast-dialog .tdt-cast-label > span small {
+  color: var(--color-text-subtle, rgba(0, 0, 0, 0.5));
+  font-weight: 400;
+}
+.tdt-cast-dialog input[type="text"],
+.tdt-cast-dialog input[type="number"] {
+  width: 100%;
+  height: 26px;
+  padding: 0 6px;
+  font-size: 12px;
+}
+.tdt-cast-dialog input[type="checkbox"] {
+  margin-right: 5px;
+}
+.tdt-cast-dialog .tdt-cast-label input[type="checkbox"] + span {
+  display: inline;
+  font-weight: 400;
+}
+
+/* Multi-attack rows no chat card */
+.tdt-multi-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 4px 0;
+}
+.tdt-multi-row {
+  display: grid;
+  grid-template-columns: 70px 60px 1fr auto;
+  gap: 6px;
+  align-items: center;
+  padding: 2px 6px;
+  background: rgba(127, 127, 127, 0.04);
+  border-radius: 2px;
+  font-size: 12px;
+}
+.tdt-multi-label {
+  font-size: 11px;
+  color: var(--color-text-subtle, rgba(0, 0, 0, 0.55));
+  font-weight: 500;
+}
+.tdt-multi-fa {
+  font-weight: 600;
+  font-size: 12px;
+}
+.tdt-multi-fa.is-critical {
+  color: #b8944a;
+}
+.tdt-multi-crit {
+  font-size: 10px;
+  color: #b8944a;
+  font-weight: 500;
+}
+.tdt-multi-dmg {
+  font-weight: 600;
+  color: #a23b3c;
+}
+.tdt-multi-def {
+  color: #2d7a2d;
+  font-size: 11px;
+  font-weight: 500;
+}
+.tdt-multi-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 6px;
+  margin-top: 4px;
+  border-top: 1px solid var(--color-border-light-2, rgba(127, 127, 127, 0.3));
+  font-size: 12px;
+}
+.tdt-multi-total strong {
+  font-size: 14px;
+  color: #a23b3c;
+}
+
+.tdt-cast-hint {
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--color-text-subtle, rgba(0, 0, 0, 0.55));
+  font-style: italic;
+}

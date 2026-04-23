@@ -1,6 +1,7 @@
 import { onManageActiveEffect, prepareActiveEffectCategories } from "../helpers/effects.mjs";
 import { TRESDETALPHA } from "../helpers/config.mjs";
 import { novaVantagem } from "../wizards/nova-vantagem.mjs";
+import { rollAbilityTest, rollFormula, rollAttack } from "../helpers/chat.mjs";
 
 const { ActorSheetV2 } = foundry.applications.sheets;
 const { HandlebarsApplicationMixin } = foundry.applications.api;
@@ -261,25 +262,29 @@ export class TresDeTAlphaActorSheet extends HandlebarsApplicationMixin(ActorShee
     const target = event.currentTarget;
     const dataset = target.dataset;
 
-    // Roll de item: resolve a partir do <li> ancestral.
+    // Roll de item: posta card rico no chat (botões: Abrir ficha, Conjurar pra magias).
     if (dataset.rollType === "item") {
       const li = target.closest(".item");
       const item = this.document.items.get(li?.dataset.itemId);
       return item?.roll();
     }
 
-    // Roll com fórmula (característica, FA, FD, etc.).
+    // Ataque: dispara rollAttack que resolve FD dos alvos e mostra botão "Aplicar dano".
+    // Shift+click abre dialog de múltiplos ataques.
+    if (dataset.rollMode === "attack" && dataset.roll) {
+      const askMulti = !!(event.shiftKey);
+      return rollAttack(this.document, dataset.roll, dataset.label || "Ataque", { askMulti });
+    }
+
+    // Teste de característica: rola 1d6 contra o valor (sucesso se ≤ alvo e !=6).
+    const abilityTarget = Number(dataset.target);
+    if (dataset.roll === "1d6" && Number.isFinite(abilityTarget) && abilityTarget > 0) {
+      return rollAbilityTest(this.document, dataset.label || "Característica", abilityTarget);
+    }
+
+    // Roll de fórmula livre (FD, etc.).
     if (dataset.roll) {
-      const rollData = this.document.getRollData();
-      const label = dataset.label ? `[Característica] ${dataset.label}` : "";
-      const roll = new Roll(dataset.roll, rollData);
-      await roll.evaluate();
-      await roll.toMessage({
-        speaker: ChatMessage.getSpeaker({ actor: this.document }),
-        flavor: label,
-        rollMode: game.settings.get("core", "rollMode")
-      });
-      return roll;
+      return rollFormula(this.document, dataset.roll, dataset.label || "Rolagem");
     }
   }
 }

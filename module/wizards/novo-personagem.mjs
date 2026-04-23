@@ -43,6 +43,24 @@ const MAX_ABILITY_ON_CREATE = 5;
 const MAX_DESVANTAGENS_POINTS = 6;
 const PERICIA_COST = 2;
 
+/** Vantagens que podem ser compradas mais de uma vez (p.29-39 do core). */
+const STACKABLE_VANTAGENS = new Set([
+  "Aliado",
+  "Ataque Especial",
+  "Elementalista",
+  "Energia Extra",
+  "Forma Alternativa",
+  "Imortal",
+  "Inimigo",
+  "Magia Irresistível",
+  "Membros Extras",
+  "Parceiro",
+  "Pontos de Magia Extras",
+  "Pontos de Vida Extras",
+  "Toque de Energia"
+]);
+const MAX_STACK = 10;
+
 /* Nomes das vantagens de magia (normalizados sem acento pra comparação). */
 const MAGIC_VANTAGENS = {
   "magia branca":    ["Branca"],
@@ -130,6 +148,23 @@ function buildContent({ vItems, dItems, rItems, pItems, mItems }) {
     const costLabel = kind === "pericia" ? `${PERICIA_COST} pt`
       : kind === "magia" ? (escola || "mágica")
       : `${kind === "desvantagem" ? "−" : ""}${custo} pt`;
+
+    // Vantagens empilháveis (Pontos de Vida Extras, Ataque Especial, etc.): stepper em vez de checkbox.
+    if (kind === "vantagem" && STACKABLE_VANTAGENS.has(it.name)) {
+      return `
+        <div class="tdt-wiz-item tdt-wiz-item--stackable" data-id="${it.id}" data-custo="${custo}" data-kind="${kind}" data-stack-count="0">
+          <div class="tdt-stack-controls">
+            <button type="button" class="tdt-step-btn tdt-step-btn--sm" data-stack="dec" aria-label="Diminuir">−</button>
+            <output class="tdt-stack-count" data-role="stack-count">0</output>
+            <button type="button" class="tdt-step-btn tdt-step-btn--sm" data-stack="inc" aria-label="Aumentar">+</button>
+          </div>
+          <span class="tdt-wiz-item-name">${it.name}</span>
+          ${categoria ? `<span class="tdt-wiz-item-tag">${categoria}</span>` : ""}
+          <span class="tdt-wiz-item-cost">× ${custo} pt</span>
+        </div>
+      `;
+    }
+
     return `
       <label class="tdt-wiz-item" data-id="${it.id}" data-custo="${custo}" data-kind="${kind}" data-escola="${escapeAttr(escola)}">
         <input type="${inputType}" name="${kind}" value="${it.id}" data-role="pick" />
@@ -253,7 +288,7 @@ function wireUp(dialog, items) {
     const pickedRace = $("input[name='raca']:checked");
     const raceCost = pickedRace ? Number(pickedRace.closest(".tdt-wiz-item")?.dataset.custo) || 0 : 0;
 
-    /* Vantagens + Desvantagens + Perícias */
+    /* Vantagens (checkbox) + Desvantagens + Perícias */
     let absVantagens = 0, absDesvantagens = 0, absPericias = 0;
     const pickedVantagensNames = new Set(); // nomes normalizados
     for (const cb of $$("[data-role='pick']:checked")) {
@@ -268,6 +303,15 @@ function wireUp(dialog, items) {
       } else if (kind === "pericia") {
         absPericias += PERICIA_COST;
       }
+    }
+
+    /* Vantagens empilháveis (stepper): custo = count × unit */
+    for (const el of $$(".tdt-wiz-item--stackable")) {
+      const count = Number(el.dataset.stackCount) || 0;
+      if (count <= 0) continue;
+      const cost = (Number(el.dataset.custo) || 0) * count;
+      absVantagens += cost;
+      pickedVantagensNames.add(normalize(el.querySelector(".tdt-wiz-item-name")?.textContent || ""));
     }
 
     const desvantagensCapped = Math.min(absDesvantagens, MAX_DESVANTAGENS_POINTS);
@@ -300,14 +344,27 @@ function wireUp(dialog, items) {
       incBtn.disabled = v >= MAX_ABILITY_ON_CREATE || remaining < 1;
     }
 
-    /* Vantagens: bloqueia as que não cabem */
-    for (const item of $$(".tdt-wiz-item[data-kind='vantagem']")) {
+    /* Vantagens (checkbox): bloqueia as que não cabem */
+    for (const item of $$(".tdt-wiz-item[data-kind='vantagem']:not(.tdt-wiz-item--stackable)")) {
       const cb = item.querySelector("input");
       if (cb.checked) { item.classList.remove("is-unaffordable"); cb.disabled = false; continue; }
       const cost = Number(item.dataset.custo) || 0;
       const can = cost <= remaining;
       item.classList.toggle("is-unaffordable", !can);
       cb.disabled = !can;
+    }
+
+    /* Vantagens empilháveis: atualiza contador e habilita/desabilita + e − */
+    for (const el of $$(".tdt-wiz-item--stackable")) {
+      const count = Number(el.dataset.stackCount) || 0;
+      const cost = Number(el.dataset.custo) || 0;
+      const inc = el.querySelector("[data-stack='inc']");
+      const dec = el.querySelector("[data-stack='dec']");
+      const countEl = el.querySelector("[data-role='stack-count']");
+      if (countEl) countEl.textContent = String(count);
+      if (dec) dec.disabled = count <= 0;
+      if (inc) inc.disabled = count >= MAX_STACK || cost > remaining;
+      el.classList.toggle("is-stacked", count > 0);
     }
 
     /* Desvantagens: bloqueia novas que estouram o cap −6 */
@@ -369,18 +426,34 @@ function wireUp(dialog, items) {
     }
   };
 
-  /* ----- Steppers ----- */
+  /* ----- Steppers (características + stackables) ----- */
   root.addEventListener("click", (ev) => {
     const btn = ev.target.closest(".tdt-step-btn");
     if (!btn || btn.disabled) return;
     ev.preventDefault();
+
+    // Stepper de característica
     const stepper = btn.closest(".tdt-stepper");
-    const input = stepper.querySelector("input[data-role='ability']");
-    let v = Number(input.value) || 0;
-    if (btn.dataset.action === "inc") v = Math.min(MAX_ABILITY_ON_CREATE, v + 1);
-    else if (btn.dataset.action === "dec") v = Math.max(0, v - 1);
-    input.value = String(v);
-    recompute();
+    if (stepper) {
+      const input = stepper.querySelector("input[data-role='ability']");
+      let v = Number(input.value) || 0;
+      if (btn.dataset.action === "inc") v = Math.min(MAX_ABILITY_ON_CREATE, v + 1);
+      else if (btn.dataset.action === "dec") v = Math.max(0, v - 1);
+      input.value = String(v);
+      recompute();
+      return;
+    }
+
+    // Stepper de vantagem empilhável
+    const stackItem = btn.closest(".tdt-wiz-item--stackable");
+    if (stackItem) {
+      const stack = btn.dataset.stack;
+      let count = Number(stackItem.dataset.stackCount) || 0;
+      if (stack === "inc") count = Math.min(MAX_STACK, count + 1);
+      else if (stack === "dec") count = Math.max(0, count - 1);
+      stackItem.dataset.stackCount = String(count);
+      recompute();
+    }
   });
 
   /* ----- Filtros ----- */
@@ -520,13 +593,26 @@ function extractData(dialog, items) {
 
   const selectedIds = (name) => Array.from(root.querySelectorAll(`input[name="${name}"]:checked`)).map((cb) => cb.value);
 
+  // Vantagens normais (checkbox) + empilháveis (stepper com count).
+  const vantagens = [];
+  for (const id of selectedIds("vantagem")) {
+    const it = vItems.find((x) => String(x.id) === String(id));
+    if (it) vantagens.push({ item: it, count: 1 });
+  }
+  for (const el of root.querySelectorAll(".tdt-wiz-item--stackable")) {
+    const count = Number(el.dataset.stackCount) || 0;
+    if (count <= 0) continue;
+    const it = vItems.find((x) => String(x.id) === String(el.dataset.id));
+    if (it) vantagens.push({ item: it, count });
+  }
+
   return {
     nome: get("nome").trim(),
     conceito: get("conceito").trim(),
     escala,
     abilities,
     raca: pickedRace,
-    vantagens: selectedIds("vantagem").map((id) => vItems.find((it) => String(it.id) === String(id))).filter(Boolean),
+    vantagens,
     desvantagens: selectedIds("desvantagem").map((id) => dItems.find((it) => String(it.id) === String(id))).filter(Boolean),
     pericias: selectedIds("pericia").map((id) => pItems.find((it) => String(it.id) === String(id))).filter(Boolean),
     magias: selectedIds("magia").map((id) => mItems.find((it) => String(it.id) === String(id))).filter(Boolean)
@@ -571,7 +657,10 @@ async function createActorFromData(data) {
   };
 
   if (data.raca) pushItem(data.raca);
-  for (const item of data.vantagens) pushItem(item);
+  for (const entry of data.vantagens) {
+    const count = entry.count ?? 1;
+    for (let i = 0; i < count; i++) pushItem(entry.item);
+  }
   for (const item of data.desvantagens) pushItem(item);
   for (const item of data.pericias) pushItem(item);
   for (const item of data.magias) pushItem(item);

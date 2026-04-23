@@ -20,29 +20,12 @@ export class TresDeTAlphaItem extends Item {
   }
 
   /**
-   * Rolada padrão disparada ao clicar na imagem do item na ficha.
-   * - Sem fórmula: envia uma mensagem com a descrição.
-   * - Com fórmula: cria um `Roll`, avalia e despacha para o chat.
-   * @returns {Promise<ChatMessage|Roll|undefined>}
+   * Ao clicar no item na ficha: posta um card rico no chat com descrição,
+   * chips de meta (categoria, custo, escola, etc.) e botões de ação
+   * (Abrir ficha, Conjurar pra magias).
    */
   async roll() {
-    const speaker = ChatMessage.getSpeaker({ actor: this.actor });
-    const rollMode = game.settings.get("core", "rollMode");
-    const label = `[${this.type}] ${this.name}`;
-
-    if (!this.system.formula) {
-      return ChatMessage.create({
-        speaker,
-        rollMode,
-        flavor: label,
-        content: this.system.description ?? ""
-      });
-    }
-
-    const rollData = this.getRollData();
-    const roll = new Roll(rollData.item.formula, rollData);
-    await roll.evaluate();
-    await roll.toMessage({ speaker, rollMode, flavor: label });
-    return roll;
+    const { postItemChatCard } = await import("../helpers/chat.mjs");
+    return postItemChatCard(this);
   }
 }

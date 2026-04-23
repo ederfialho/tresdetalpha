@@ -20,6 +20,7 @@ import { ACTOR_DATA_MODELS, ITEM_DATA_MODELS } from "./data/_models.mjs";
 import { registerCompendiaSeeding, seedCompendia } from "./data/seed-compendia.mjs";
 import { novaVantagem } from "./wizards/nova-vantagem.mjs";
 import { novoPersonagem } from "./wizards/novo-personagem.mjs";
+import { registerChatActions, postItemChatCard, castMagia } from "./helpers/chat.mjs";
 
 const SYSTEM_ID = "3det-foundry-rework";
 
@@ -71,8 +72,13 @@ Hooks.once("init", async function () {
     TresDeTAlphaItem,
     rollItemMacro,
     novaVantagem,
-    novoPersonagem
+    novoPersonagem,
+    postItemChatCard,
+    castMagia
   };
+
+  // Registra listeners globais nos cards de chat (botões Abrir ficha / Conjurar / etc).
+  registerChatActions();
 
   // Constantes do sistema.
   CONFIG.TRESDETALPHA = TRESDETALPHA;

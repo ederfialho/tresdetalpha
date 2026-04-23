@@ -51,7 +51,7 @@
     <div class="tdt-abilities tdt-abilities--npc">
       {{#each system.abilities as |ability key|}}
       <div class="tdt-ability">
-        <label class="tdt-ability-label rollable" data-roll="1d6" data-label="{{ability.label}}">{{ability.label}}</label>
+        <label class="tdt-ability-label rollable" data-roll="1d6" data-target="{{ability.value}}" data-label="{{ability.label}}">{{ability.label}}</label>
         <input class="tdt-ability-total" name="system.abilities.{{key}}.value" type="text" value="{{ability.value}}" data-dtype="Number" />
       </div>
       {{/each}}
@@ -80,12 +80,12 @@
 
     {{!-- Atributos derivados de combate --}}
     <div class="tdt-combat-stats">
-      <div class="tdt-stat tdt-stat--attack rollable" data-roll="1d6+@attributes.forcaDeAtaque.forca.value" data-label="FA corpo a corpo">
+      <div class="tdt-stat tdt-stat--attack rollable" data-roll="1d6+@attributes.forcaDeAtaque.forca.value" data-roll-mode="attack" data-label="FA corpo a corpo" title="Clique: 1 ataque · Shift+clique: múltiplos ataques">
         <label>FA corpo a corpo</label>
         <span class="tdt-stat-value">{{system.attributes.forcaDeAtaque.forca.value}}</span>
         <span class="tdt-stat-formula">F + H</span>
       </div>
-      <div class="tdt-stat tdt-stat--attack rollable" data-roll="1d6+@attributes.forcaDeAtaque.poderDeFogo.value" data-label="FA à distância">
+      <div class="tdt-stat tdt-stat--attack rollable" data-roll="1d6+@attributes.forcaDeAtaque.poderDeFogo.value" data-roll-mode="attack" data-label="FA à distância" title="Clique: 1 ataque · Shift+clique: múltiplos tiros">
         <label>FA à distância</label>
         <span class="tdt-stat-value">{{system.attributes.forcaDeAtaque.poderDeFogo.value}}</span>
         <span class="tdt-stat-formula">PdF + H</span>
