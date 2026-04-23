@@ -1493,3 +1493,219 @@
   border-color: var(--tdt-gold);
 }
 .tdt-sheet .tdt-wizard-btn i { font-size: 12px; }
+
+/* ============================================================
+   Wizard de criação de personagem
+   ============================================================ */
+
+.tdt-sidebar-guided {
+  margin: 6px 0;
+  padding: 6px 10px;
+  background: #1e1a16;
+  color: #d4a94d;
+  border: 1px solid #9c7d34;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.tdt-sidebar-guided:hover {
+  background: #9c7d34;
+  color: #14110d;
+}
+
+.tdt-wizard--personagem {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  max-height: 78vh;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+.tdt-wizard--personagem .tdt-wiz-section {
+  background: rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(156, 125, 52, 0.4);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.tdt-wizard--personagem h3 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: #d4a94d;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border: 0;
+}
+.tdt-wizard--personagem h3 small {
+  font-size: 11px;
+  color: #a68f5e;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: normal;
+  margin-left: 6px;
+}
+
+.tdt-wiz-abilities {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+.tdt-wiz-ability {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 4px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(156, 125, 52, 0.3);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #d4a94d;
+  font-weight: 600;
+}
+.tdt-wiz-ability span { font-size: 10px; }
+.tdt-wiz-ability input {
+  width: 100%;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 700;
+  font-family: "Oswald", sans-serif;
+  background: transparent;
+  color: #ede4cc;
+  border: 0;
+  padding: 0;
+}
+
+.tdt-wiz-filter input {
+  width: 100%;
+  height: 28px;
+  font-size: 12px;
+  padding: 0 8px;
+}
+
+.tdt-wiz-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  max-height: 220px;
+  overflow-y: auto;
+  padding: 4px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(156, 125, 52, 0.2);
+}
+.tdt-wiz-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  gap: 6px;
+  align-items: center;
+  padding: 6px 8px;
+  font-size: 12px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid transparent;
+  cursor: pointer;
+  color: #ede4cc;
+}
+.tdt-wiz-item:hover { border-color: #9c7d34; }
+.tdt-wiz-item input[type="checkbox"] { margin: 0; }
+.tdt-wiz-item:has(input:checked) {
+  border-color: #c1272d;
+  background: rgba(193, 39, 45, 0.15);
+}
+.tdt-wiz-item-name { font-weight: 500; }
+.tdt-wiz-item-tag {
+  font-size: 10px;
+  color: #a68f5e;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: rgba(156, 125, 52, 0.15);
+  padding: 1px 6px;
+  border-radius: 2px;
+}
+.tdt-wiz-item-cost {
+  font-family: "Oswald", sans-serif;
+  font-weight: 700;
+  color: #d4a94d;
+  font-size: 13px;
+}
+.tdt-wiz-empty {
+  color: #a68f5e;
+  font-style: italic;
+  padding: 8px;
+  font-size: 12px;
+}
+
+.tdt-wiz-budget {
+  position: sticky;
+  bottom: 0;
+  background: #1e1a16;
+  border: 2px solid #9c7d34;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  z-index: 10;
+}
+.tdt-wiz-budget-main {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.tdt-wiz-budget-label {
+  font-size: 10px;
+  color: #d4a94d;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+}
+.tdt-wiz-budget-remaining {
+  font-family: "Oswald", sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #ede4cc;
+  line-height: 1;
+}
+.tdt-wiz-budget.is-over .tdt-wiz-budget-remaining { color: #e24b4a; }
+.tdt-wiz-budget.is-ok .tdt-wiz-budget-remaining { color: #97c459; }
+.tdt-wiz-budget-sep, .tdt-wiz-budget-unit {
+  color: #a68f5e;
+  font-size: 13px;
+}
+.tdt-wiz-budget-parts {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 11px;
+  color: #a68f5e;
+}
+.tdt-wiz-budget-parts strong {
+  color: #ede4cc;
+  font-weight: 600;
+  margin-left: 4px;
+}
+
+.tdt-wizard--personagem textarea,
+.tdt-wizard--personagem input,
+.tdt-wizard--personagem select {
+  background: rgba(0, 0, 0, 0.25);
+  color: #ede4cc;
+  border: 1px solid #3d3327;
+  border-radius: 0;
+  font-family: inherit;
+}
+.tdt-wizard--personagem textarea:focus,
+.tdt-wizard--personagem input:focus,
+.tdt-wizard--personagem select:focus {
+  outline: none;
+  border-color: #d4a94d;
+}

@@ -19,6 +19,7 @@ import { TRESDETALPHA } from "./helpers/config.mjs";
 import { ACTOR_DATA_MODELS, ITEM_DATA_MODELS } from "./data/_models.mjs";
 import { registerCompendiaSeeding, seedCompendia } from "./data/seed-compendia.mjs";
 import { novaVantagem } from "./wizards/nova-vantagem.mjs";
+import { novoPersonagem } from "./wizards/novo-personagem.mjs";
 
 const SYSTEM_ID = "3det-foundry-rework";
 
@@ -69,7 +70,8 @@ Hooks.once("init", async function () {
     TresDeTAlphaActor,
     TresDeTAlphaItem,
     rollItemMacro,
-    novaVantagem
+    novaVantagem,
+    novoPersonagem
   };
 
   // Constantes do sistema.
@@ -155,10 +157,62 @@ function registerHandlebarsHelpers() {
 Hooks.once("ready", async function () {
   Hooks.on("hotbarDrop", (bar, data, slot) => createItemMacro(data, slot));
 
+  // Insere um botão "Criação guiada" no topo da sidebar de Actors.
+  Hooks.on("renderActorDirectory", injectGuidedCreationButton);
+
+  // Auto-desativa Active Effects marcados como `combatOnly` quando o combate termina.
+  // Isso inclui vantagens como Aceleração, Arena, Ataque Especial, etc. que só
+  // aplicam bônus enquanto ativas em combate.
+  Hooks.on("deleteCombat", disableCombatOnlyEffects);
+
   // Popula os compêndios do mundo com vantagens/desvantagens do Manual Core
   // na primeira abertura. Depois disso, o GM pode editar à vontade.
   await seedCompendia();
 });
+
+/**
+ * Adiciona um botão "Criação guiada" no topo da sidebar de Actors.
+ */
+function injectGuidedCreationButton(app, element) {
+  const root = element instanceof HTMLElement ? element : element?.[0];
+  if (!root) return;
+  if (root.querySelector(".tdt-sidebar-guided")) return; // idempotente
+  const header = root.querySelector(".directory-header") ?? root.querySelector("header");
+  if (!header) return;
+
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "tdt-sidebar-guided";
+  btn.innerHTML = `<i class="fas fa-wand-magic-sparkles"></i> Criação guiada 3D&T`;
+  btn.addEventListener("click", (ev) => {
+    ev.preventDefault();
+    novoPersonagem();
+  });
+  header.appendChild(btn);
+}
+
+/**
+ * Ao apagar um Combat (encerrando o encontro), percorre os actors envolvidos
+ * e desativa todo ActiveEffect marcado com flag `combatOnly`.
+ */
+async function disableCombatOnlyEffects(combat) {
+  if (!game.user?.isGM) return;
+  const actors = new Set();
+  for (const combatant of combat.combatants.values()) {
+    if (combatant.actor) actors.add(combatant.actor);
+  }
+  for (const actor of actors) {
+    const toDisable = [];
+    for (const effect of actor.effects) {
+      if (effect.flags?.[SYSTEM_ID]?.combatOnly && !effect.disabled) {
+        toDisable.push({ _id: effect.id, disabled: true });
+      }
+    }
+    if (toDisable.length) {
+      await actor.updateEmbeddedDocuments("ActiveEffect", toDisable);
+    }
+  }
+}
 
 /* -------------------------------------------- */
 /*  Macros de Item na Hotbar                    */

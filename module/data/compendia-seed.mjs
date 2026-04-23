@@ -15,6 +15,25 @@
 const ICON_ADV = "icons/sundries/books/book-red-exclamation.webp";
 const ICON_DIS = "icons/sundries/books/book-worn-brown-gray.webp";
 
+const MODE = { MULTIPLY: 1, ADD: 2, DOWNGRADE: 3, UPGRADE: 4, OVERRIDE: 5 };
+const FLAG_COMBAT = { "3det-foundry-rework": { combatOnly: true, activable: true } };
+
+/**
+ * Helpers pra criar ActiveEffects embutidos nos itens.
+ * - `permanent`: aplicado sempre que o item está no actor.
+ * - `combatAtivavel`: aplica bônus enquanto ativo; desativa sozinho no fim do combate.
+ */
+const effPermanent = (name, changes, img) => ({
+  name, img: img ?? "icons/magic/holy/angel-wings-gray.webp",
+  changes, transfer: true, disabled: false
+});
+const effCombat = (name, changes, img) => ({
+  name, img: img ?? "icons/magic/movement/trail-streak-zigzag-yellow.webp",
+  changes, transfer: true, disabled: true,
+  flags: FLAG_COMBAT
+});
+const chg = (key, value, mode = MODE.ADD, priority = 20) => ({ key, mode, value: String(value), priority });
+
 /* ============================================================
    VANTAGENS (Manual pp. 28–39)
    ============================================================ */
@@ -24,7 +43,8 @@ export const VANTAGENS = [
     categoria: "Movimento",
     custoPMs: "1 PM em combate (dura até fim do combate)",
     duracao: "Combate",
-    efeito: "<p>Soma +1 à Habilidade em situações de perseguição, fuga e esquiva (não cumulativo com Teleporte). Recebe um movimento extra por turno: pode mover-se até 2× a velocidade máxima e agir, ou mover-se 3×. Continua fazendo até uma ação por turno.</p>"
+    efeito: "<p>Soma +1 à Habilidade em situações de perseguição, fuga e esquiva (não cumulativo com Teleporte). Recebe um movimento extra por turno: pode mover-se até 2× a velocidade máxima e agir, ou mover-se 3×. Continua fazendo até uma ação por turno.</p>",
+    effects: [effCombat("Aceleração — H+1", [chg("system.abilities.habilidade.bonus", 1)])]
   },
   {
     name: "Adaptador", custo: 1,
@@ -66,7 +86,8 @@ export const VANTAGENS = [
     name: "Arena", custo: 1,
     categoria: "Combate",
     duracao: "Apenas em combate, no terreno escolhido",
-    efeito: "<p>Tem sua própria arena de lutas ou sabe lutar melhor em certo tipo de terreno. Ganha H+2 em combate em sua Arena. Sugestões: Água, Céu, Cidades, Ermos, Subterrâneo, um único lugar do mundo.</p>"
+    efeito: "<p>Tem sua própria arena de lutas ou sabe lutar melhor em certo tipo de terreno. Ganha H+2 em combate em sua Arena. Sugestões: Água, Céu, Cidades, Ermos, Subterrâneo, um único lugar do mundo.</p>",
+    effects: [effCombat("Arena — H+2 no terreno", [chg("system.abilities.habilidade.bonus", 2)])]
   },
   {
     name: "Armadura Extra", custo: 0,
@@ -78,7 +99,11 @@ export const VANTAGENS = [
     name: "Ataque Especial", custo: 1,
     categoria: "Combate",
     custoPMs: "1 PM por uso (+modificadores)",
-    efeito: "<p>Uma manobra que aumenta em +2 a Força ou Poder de Fogo (escolha F ou PdF ao comprar). Ataque Especial 0 é gratuito com custo 1 PM. Níveis superiores: Ataque Especial I (1 pt, +2 à caract., 1 PM), II (+2 pts, +4 à caract., 2 PMs), III (+3 pts, +6, 3 PMs) e assim por diante. <br><strong>Modificadores:</strong> Amplo (+2 pts, +2 PMs, todos no alcance), Lento (−1 pt, alvo pode esquivar), Paralisante (+1 pt, +1 PM, vence Paralisia), Penetrante (+1 pt, +1 PM, impõe A−2 na FD do alvo), Perigoso (+1 pt, +1 PM, crítico com 5 ou 6 no dado), Perto da Morte (−2 pts, −1 PM, só quando Perto da Morte), Poderoso (+1 pt, +1 PM, triplica FA no crítico), Preciso (+1 pt, impõe H−2 na esquiva), Teleguiado (+1 pt, só PdF, persegue com H−2 na esquiva).</p>"
+    efeito: "<p>Uma manobra que aumenta em +2 a Força ou Poder de Fogo (escolha F ou PdF ao comprar). Ataque Especial 0 é gratuito com custo 1 PM. Níveis superiores: Ataque Especial I (1 pt, +2 à caract., 1 PM), II (+2 pts, +4 à caract., 2 PMs), III (+3 pts, +6, 3 PMs) e assim por diante. <br><strong>Modificadores:</strong> Amplo (+2 pts, +2 PMs, todos no alcance), Lento (−1 pt, alvo pode esquivar), Paralisante (+1 pt, +1 PM, vence Paralisia), Penetrante (+1 pt, +1 PM, impõe A−2 na FD do alvo), Perigoso (+1 pt, +1 PM, crítico com 5 ou 6 no dado), Perto da Morte (−2 pts, −1 PM, só quando Perto da Morte), Poderoso (+1 pt, +1 PM, triplica FA no crítico), Preciso (+1 pt, impõe H−2 na esquiva), Teleguiado (+1 pt, só PdF, persegue com H−2 na esquiva).</p>",
+    effects: [
+      effCombat("Ataque Especial — F+2 (corpo-a-corpo)", [chg("system.abilities.forca.bonus", 2)]),
+      effCombat("Ataque Especial — PdF+2 (à distância)", [chg("system.abilities.poderDeFogo.bonus", 2)])
+    ]
   },
   {
     name: "Ataque Múltiplo", custo: 1,
@@ -138,7 +163,8 @@ export const VANTAGENS = [
   {
     name: "Genialidade", custo: 1,
     categoria: "Perícia",
-    efeito: "<p>Recebe H+2 ao utilizar qualquer perícia que possua e em qualquer teste de Habilidade envolvendo uma perícia que não possua. Com recursos necessários, permite feitos acima do nível técnico de seu mundo.</p>"
+    efeito: "<p>Recebe H+2 ao utilizar qualquer perícia que possua e em qualquer teste de Habilidade envolvendo uma perícia que não possua. Com recursos necessários, permite feitos acima do nível técnico de seu mundo.</p>",
+    effects: [effCombat("Genialidade — H+2 em perícia", [chg("system.abilities.habilidade.bonus", 2)])]
   },
   {
     name: "Imortal", custo: 1,
@@ -148,7 +174,8 @@ export const VANTAGENS = [
   {
     name: "Inimigo", custo: 1,
     categoria: "Combate",
-    efeito: "<p>É especialmente treinado em combater certo tipo de criatura (humanos, semi-humanos, humanoides, youkai, construtos). Recebe H+2 em combate e testes de perícias envolvendo criaturas desse tipo. Pode ser comprado várias vezes.</p>"
+    efeito: "<p>É especialmente treinado em combater certo tipo de criatura (humanos, semi-humanos, humanoides, youkai, construtos). Recebe H+2 em combate e testes de perícias envolvendo criaturas desse tipo. Pode ser comprado várias vezes.</p>",
+    effects: [effCombat("Inimigo — H+2 vs tipo escolhido", [chg("system.abilities.habilidade.bonus", 2)])]
   },
   {
     name: "Invisibilidade", custo: 2,
@@ -213,7 +240,8 @@ export const VANTAGENS = [
     name: "Paladino", custo: 1,
     categoria: "Magia",
     prerequisitos: "Magia Branca para certas magias divinas",
-    efeito: "<p>Guerreiro sagrado. Recebe +1 em testes de Resistência (não aumenta PVs/PMs). Pode lançar Cura Mágica e Detectar o Mal pelo custo normal em PMs, mesmo sem vantagem mágica. Segue Códigos de Honra dos Heróis e Honestidade (sem ganhar pontos). Jamais pode adquirir Magia Negra.</p>"
+    efeito: "<p>Guerreiro sagrado. Recebe +1 em testes de Resistência (não aumenta PVs/PMs). Pode lançar Cura Mágica e Detectar o Mal pelo custo normal em PMs, mesmo sem vantagem mágica. Segue Códigos de Honra dos Heróis e Honestidade (sem ganhar pontos). Jamais pode adquirir Magia Negra.</p>",
+    effects: [effPermanent("Paladino — R+1 em testes", [chg("system.abilities.resistencia.bonus", 1)])]
   },
   {
     name: "Paralisia", custo: 1,
@@ -240,7 +268,8 @@ export const VANTAGENS = [
     custoPMs: "1 PM por +1 em característica (até +5), por turno de concentração",
     duracao: "Até o fim do combate",
     prerequisitos: "Somente em situações de perigo",
-    efeito: "<p>Mais poderoso do que parece. Em emergências, pode aumentar qualquer característica em +1 por PM (máximo +5 em múltiplas, ou +10 em uma escolhida na criação). Ativar leva 1 turno por nível. Indefeso durante concentração. Dura até o fim do combate.</p>"
+    efeito: "<p>Mais poderoso do que parece. Em emergências, pode aumentar qualquer característica em +1 por PM (máximo +5 em múltiplas, ou +10 em uma escolhida na criação). Ativar leva 1 turno por nível. Indefeso durante concentração. Dura até o fim do combate.</p>",
+    effects: [effCombat("Poder Oculto — +1 caract. (editar alvo)", [chg("system.abilities.habilidade.bonus", 1)])]
   },
   {
     name: "Pontos de Magia Extras", custo: 1,
@@ -274,7 +303,8 @@ export const VANTAGENS = [
   {
     name: "Resistência à Magia", custo: 1,
     categoria: "Defesa",
-    efeito: "<p>Muito resistente aos efeitos de qualquer vantagem ou magia (exceto dano direto). Recebe R+2 em testes para ignorar efeito (Cegueira, Paralisia, Silêncio, Pânico). Um resultado 6 ainda é falha. Não funciona contra veneno, doença ou ataques especiais de certas criaturas (sopro de dragão, olhar petrificante de medusa).</p>"
+    efeito: "<p>Muito resistente aos efeitos de qualquer vantagem ou magia (exceto dano direto). Recebe R+2 em testes para ignorar efeito (Cegueira, Paralisia, Silêncio, Pânico). Um resultado 6 ainda é falha. Não funciona contra veneno, doença ou ataques especiais de certas criaturas (sopro de dragão, olhar petrificante de medusa).</p>",
+    effects: [effCombat("Resistência à Magia — R+2 contra magia", [chg("system.abilities.resistencia.bonus", 2)])]
   },
   {
     name: "Riqueza", custo: 2,
@@ -325,7 +355,8 @@ export const VANTAGENS = [
     name: "Torcida", custo: 1,
     categoria: "Social",
     duracao: "Enquanto houver torcida presente",
-    efeito: "<p>Tem fãs que o inspiram. Grupo de admiradores acompanha e torce pelo seu sucesso. Quando uma torcida está vibrando a seu favor, ganha H+1 e impõe H−1 ao oponente (se falhar em Resistência). Benefícios só com torcida presente.</p>"
+    efeito: "<p>Tem fãs que o inspiram. Grupo de admiradores acompanha e torce pelo seu sucesso. Quando uma torcida está vibrando a seu favor, ganha H+1 e impõe H−1 ao oponente (se falhar em Resistência). Benefícios só com torcida presente.</p>",
+    effects: [effCombat("Torcida — H+1 com torcida presente", [chg("system.abilities.habilidade.bonus", 1)])]
   },
   {
     name: "Toque de Energia", custo: 1,

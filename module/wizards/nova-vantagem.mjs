@@ -151,7 +151,12 @@ export async function novaVantagem({ type = "vantagem", actor = null, pack = nul
 
       <label>
         Efeito mecânico
-        <textarea name="efeito" rows="5" placeholder="O que a vantagem faz em regras..." style="resize: vertical;"></textarea>
+        <textarea name="efeito" rows="4" placeholder="O que a vantagem faz em regras..." style="resize: vertical;"></textarea>
+      </label>
+
+      <label>
+        Descrição (sabor / narrativa)
+        <textarea name="description" rows="3" placeholder="Contexto narrativo, visual, história..." style="resize: vertical;"></textarea>
       </label>
     </div>
   `;
@@ -176,7 +181,8 @@ export async function novaVantagem({ type = "vantagem", actor = null, pack = nul
           custoPMs: get("custoPMs").trim(),
           duracao: get("duracao").trim(),
           prerequisitos: get("prerequisitos").trim(),
-          efeito: get("efeito").trim()
+          efeito: get("efeito").trim(),
+          description: get("description").trim()
         };
       }
     },
@@ -225,7 +231,7 @@ export async function novaVantagem({ type = "vantagem", actor = null, pack = nul
       duracao: data.duracao,
       prerequisitos: data.prerequisitos,
       efeito: data.efeito,
-      description: ""
+      description: data.description
     }
   };
 

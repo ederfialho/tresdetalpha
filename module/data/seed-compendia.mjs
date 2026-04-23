@@ -61,6 +61,7 @@ export function registerCompendiaSeeding() {
 
   game.tresdetalpha ??= {};
   game.tresdetalpha.reseedCompendia = () => seedCompendia({ force: true });
+  game.tresdetalpha.rebuildCompendia = () => seedCompendia({ force: true, wipe: true });
   game.tresdetalpha.getCompendiaStatus = () => {
     const rows = [];
     for (const def of COMPENDIA) {
@@ -83,18 +84,20 @@ export function registerCompendiaSeeding() {
  * @param {object} [opts]
  * @param {boolean} [opts.force] Se true, reseta e refaz mesmo se já foi semeado.
  */
-export async function seedCompendia({ force = false } = {}) {
+export async function seedCompendia({ force = false, wipe = false } = {}) {
   if (!game.user?.isGM) return;
   const already = game.settings.get(SYSTEM_ID, SETTING_SEEDED);
   if (already && !force) return;
 
-  ui.notifications.info("3D&T Alpha: semeando compêndios do mundo...");
+  const msg = wipe ? "rebuilding (apagando e recriando)" : "semeando compêndios do mundo";
+  ui.notifications.info(`3D&T Alpha: ${msg}...`);
   let totalCreated = 0;
 
   for (const def of COMPENDIA) {
     try {
       const pack = await ensurePack(def);
       if (!pack) continue;
+      if (wipe) await wipePack(pack);
       const created = await populatePack(pack, def);
       totalCreated += created;
     } catch (err) {
@@ -104,6 +107,16 @@ export async function seedCompendia({ force = false } = {}) {
 
   await game.settings.set(SYSTEM_ID, SETTING_SEEDED, true);
   ui.notifications.info(`3D&T Alpha: compêndios prontos (${totalCreated} itens criados).`);
+}
+
+/**
+ * Apaga todos os documentos de um compêndio. Usado pelo `rebuildCompendia()`.
+ */
+async function wipePack(pack) {
+  await pack.getIndex();
+  const ids = [...pack.index.keys()];
+  if (!ids.length) return;
+  await Item.deleteDocuments(ids, { pack: pack.collection });
 }
 
 /**
@@ -158,8 +171,17 @@ async function populatePack(pack, def) {
         custoPMs: row.custoPMs ?? "",
         duracao: row.duracao ?? "",
         efeito: row.efeito ?? "",
-        description: row.description ?? row.efeito ?? ""
-      }
+        description: row.description ?? ""
+      },
+      // Active Effects embutidos: bônus automáticos quando o item está no actor.
+      effects: (row.effects ?? []).map((e) => ({
+        name: e.name,
+        img: e.img ?? "icons/svg/aura.svg",
+        changes: e.changes ?? [],
+        transfer: e.transfer ?? true,
+        disabled: e.disabled ?? false,
+        flags: e.flags ?? {}
+      }))
     });
   }
 
