@@ -1,68 +1,48 @@
 /**
- * Extend the basic Item with some very simple modifications.
+ * Documento Item customizado do 3D&T Alpha.
+ *
+ * Os schemas de cada tipo de item estão em `module/data/_models.mjs`.
+ * Aqui ficam comportamentos de alto nível — rolar o item, montar roll data, etc.
+ *
  * @extends {Item}
  */
 export class TresDeTAlphaItem extends Item {
-  /**
-   * Augment the basic Item data model with additional dynamic data.
-   */
-  prepareData() {
-    // As with the actor class, items are documents that can have their data
-    // preparation methods overridden (such as prepareBaseData()).
-    super.prepareData();
-  }
 
   /**
-   * Prepare a data object which is passed to any Roll formulas which are created related to this Item
-   * @private
+   * Monta o contexto passado para fórmulas de Roll originadas deste item.
+   * @override
    */
-   getRollData() {
-    // If present, return the actor's roll data.
-    if ( !this.actor ) return null;
+  getRollData() {
+    if (!this.actor) return null;
     const rollData = this.actor.getRollData();
-    // Grab the item's system data as well.
     rollData.item = foundry.utils.deepClone(this.system);
-
     return rollData;
   }
 
   /**
-   * Handle clickable rolls.
-   * @param {Event} event   The originating click event
-   * @private
+   * Rolada padrão disparada ao clicar na imagem do item na ficha.
+   * - Sem fórmula: envia uma mensagem com a descrição.
+   * - Com fórmula: cria um `Roll`, avalia e despacha para o chat.
+   * @returns {Promise<ChatMessage|Roll|undefined>}
    */
   async roll() {
-    const item = this;
-
-    // Initialize chat data.
     const speaker = ChatMessage.getSpeaker({ actor: this.actor });
-    const rollMode = game.settings.get('core', 'rollMode');
-    const label = `[${item.type}] ${item.name}`;
+    const rollMode = game.settings.get("core", "rollMode");
+    const label = `[${this.type}] ${this.name}`;
 
-    // If there's no roll data, send a chat message.
     if (!this.system.formula) {
-      ChatMessage.create({
-        speaker: speaker,
-        rollMode: rollMode,
+      return ChatMessage.create({
+        speaker,
+        rollMode,
         flavor: label,
-        content: item.system.description ?? ''
+        content: this.system.description ?? ""
       });
     }
-    // Otherwise, create a roll and send a chat message from it.
-    else {
-      // Retrieve roll data.
-      const rollData = this.getRollData();
 
-      // Invoke the roll and submit it to chat.
-      const roll = new Roll(rollData.item.formula, rollData);
-      // If you need to store the value first, uncomment the next line.
-      // let result = await roll.roll({async: true});
-      roll.toMessage({
-        speaker: speaker,
-        rollMode: rollMode,
-        flavor: label,
-      });
-      return roll;
-    }
+    const rollData = this.getRollData();
+    const roll = new Roll(rollData.item.formula, rollData);
+    await roll.evaluate();
+    await roll.toMessage({ speaker, rollMode, flavor: label });
+    return roll;
   }
 }

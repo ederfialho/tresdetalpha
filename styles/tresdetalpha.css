@@ -475,3 +475,692 @@
   font-size: 16px;
   line-height: 24px;
 }
+/* =======================================================================
+   Foundry V14 / ApplicationV2 compat — adicionado em 0.2.0
+   O core V14 não aplica mais as regras de display de tabs automaticamente
+   pra sheets V2 com marcação V1 (data-group/data-tab). Aplicamos aqui.
+   ======================================================================= */
+
+.tresdetalpha .sheet-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  border-bottom: 1px solid #7a7971;
+  padding: 0 0 4px 0;
+  margin: 0 0 6px 0;
+}
+
+.tresdetalpha .sheet-tabs .item {
+  padding: 3px 8px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  margin-right: 2px;
+  text-decoration: none;
+}
+
+.tresdetalpha .sheet-tabs .item.active {
+  text-shadow: 0 0 8px var(--color-shadow-primary, #ff6400);
+  font-weight: bold;
+  border-color: #7a7971;
+}
+
+.tresdetalpha .sheet-body .tab {
+  display: none;
+}
+
+.tresdetalpha .sheet-body .tab.active {
+  display: block;
+}
+
+.tresdetalpha .sheet-body .tab.flexcol.active {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Garante que a section raiz (que substituiu o <form> do template) ocupa 100% */
+.tresdetalpha.sheet > section,
+.tresdetalpha.sheet form > section {
+  width: 100%;
+  height: 100%;
+}
+
+/* Reforça os grids pra evitar interferência do CSS da ApplicationV2 */
+.tresdetalpha .grid {
+  display: grid !important;
+}
+
+.tresdetalpha .grid-2col {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.tresdetalpha .grid-3col {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+/* Garante que as colunas do grid-2col não extrapolam sua largura —
+   evita o overlap visto na ficha V2 quando inputs têm widths default. */
+.tresdetalpha .grid-2col > * {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.tresdetalpha .abilities .ability input[type="text"] {
+  max-width: 3.2em;
+  min-width: 0;
+}
+
+.tresdetalpha .sidebar {
+  min-width: 0;
+}
+
+/* ============================================================
+   3D&T Alpha — ficha shōnen v0.2.0
+   Paleta: brasa (#c1272d), dourado (#d4a94d), preto encardido.
+   Todas as regras escopadas em `.tdt-sheet` pra não colidir
+   com o CSS legado abaixo.
+   ============================================================ */
+
+.tresdetalpha .window-content { padding: 0; }
+
+.tdt-sheet {
+  --tdt-bg: #141210;
+  --tdt-bg-2: #1e1a16;
+  --tdt-bg-3: #2a231b;
+  --tdt-bg-4: #3a2f23;
+  --tdt-ink: #ede4cc;
+  --tdt-ink-dim: #a68f5e;
+  --tdt-ink-faint: #6e5e3d;
+  --tdt-red: #c1272d;
+  --tdt-red-deep: #7a1a1e;
+  --tdt-gold: #d4a94d;
+  --tdt-gold-deep: #9c7d34;
+  --tdt-border: #3d3327;
+  --tdt-border-bright: #5a4830;
+
+  --tdt-display: "Oswald", "Impact", "Signika", sans-serif;
+
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--tdt-bg);
+  color: var(--tdt-ink);
+  font-family: "Signika", "Segoe UI", sans-serif;
+  overflow: hidden;
+}
+
+.tdt-sheet input,
+.tdt-sheet select {
+  color: var(--tdt-ink);
+  background: var(--tdt-bg-3);
+  border: 1px solid var(--tdt-border);
+  border-radius: 0;
+  font-family: inherit;
+}
+.tdt-sheet input:focus,
+.tdt-sheet select:focus {
+  outline: none;
+  border-color: var(--tdt-gold);
+  box-shadow: 0 0 0 1px var(--tdt-gold-deep);
+}
+.tdt-sheet input[disabled] {
+  background: var(--tdt-bg-2);
+  color: var(--tdt-ink);
+  opacity: 1;
+}
+
+/* --------- HEADER --------- */
+.tdt-sheet .tdt-header {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--tdt-bg-2);
+  border-bottom: 2px solid var(--tdt-red);
+  position: relative;
+}
+.tdt-sheet .tdt-header::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: -5px;
+  height: 2px;
+  background: var(--tdt-gold-deep);
+  opacity: 0.7;
+}
+
+.tdt-sheet .tdt-portrait-frame {
+  width: 96px; height: 96px;
+  border: 2px solid var(--tdt-gold);
+  outline: 1px solid var(--tdt-red);
+  outline-offset: 2px;
+  overflow: hidden;
+  background: var(--tdt-bg);
+  flex-shrink: 0;
+}
+.tdt-sheet .tdt-portrait {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  cursor: pointer;
+}
+
+.tdt-sheet .tdt-identity {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+}
+.tdt-sheet .tdt-name {
+  font-family: var(--tdt-display);
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px dashed var(--tdt-border-bright);
+  padding: 2px 0;
+  color: var(--tdt-ink);
+  height: auto;
+  line-height: 1.15;
+}
+.tdt-sheet .tdt-name:focus { border-bottom-color: var(--tdt-gold); box-shadow: none; }
+.tdt-sheet .tdt-name::placeholder { color: var(--tdt-ink-faint); font-style: italic; font-weight: 400; }
+
+.tdt-sheet .tdt-meta {
+  display: flex;
+  gap: 20px;
+  font-size: 11px;
+  color: var(--tdt-ink-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  align-items: center;
+}
+.tdt-sheet .tdt-meta-item {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.tdt-sheet .tdt-meta-item label {
+  color: inherit;
+  font-size: inherit;
+}
+.tdt-sheet .tdt-meta-item input {
+  width: 44px;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--tdt-border-bright);
+  color: var(--tdt-gold);
+  font-weight: 700;
+  font-size: 13px;
+  text-align: center;
+  padding: 0;
+  letter-spacing: normal;
+}
+
+/* --------- BARRA DE COMBATE --------- */
+.tdt-sheet .tdt-combat-bar {
+  padding: 12px 14px;
+  background: var(--tdt-bg-2);
+  border-bottom: 1px solid var(--tdt-border);
+}
+
+.tdt-sheet .tdt-resources {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+.tdt-sheet .tdt-resources--npc {
+  grid-template-columns: 1fr 1fr;
+}
+
+.tdt-sheet .tdt-resource label {
+  font-size: 10px;
+  color: var(--tdt-gold);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 600;
+}
+.tdt-sheet .tdt-resource-fields {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.tdt-sheet .tdt-resource-fields input {
+  width: 48px;
+  height: 30px;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 0;
+}
+.tdt-sheet .tdt-resource-current {
+  color: var(--tdt-ink) !important;
+}
+.tdt-sheet .tdt-sep {
+  color: var(--tdt-ink-dim);
+  font-weight: 700;
+  padding: 0 2px;
+}
+.tdt-sheet .tdt-bonus {
+  margin-left: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.tdt-sheet .tdt-bonus-label {
+  font-size: 10px;
+  color: var(--tdt-ink-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.tdt-sheet .tdt-bonus input {
+  width: 34px;
+  height: 22px;
+  font-size: 12px;
+  text-align: center;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--tdt-border-bright);
+}
+
+.tdt-sheet .tdt-bar {
+  margin-top: 6px;
+  height: 5px;
+  background: var(--tdt-bg);
+  border: 1px solid var(--tdt-border);
+  position: relative;
+  overflow: hidden;
+}
+.tdt-sheet .tdt-bar-fill {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+.tdt-sheet .tdt-resource--vida .tdt-bar-fill { background: var(--tdt-red); }
+.tdt-sheet .tdt-resource--magia .tdt-bar-fill { background: var(--tdt-gold); }
+
+.tdt-sheet .tdt-xp { width: 60px !important; color: var(--tdt-gold) !important; }
+.tdt-sheet .tdt-xp-hint {
+  font-size: 11px;
+  color: var(--tdt-ink-faint);
+  margin-left: 6px;
+  font-style: italic;
+}
+
+/* --------- CARDS DE CARACTERÍSTICA --------- */
+.tdt-sheet .tdt-abilities {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.tdt-sheet .tdt-ability {
+  background: var(--tdt-bg-3);
+  border: 1px solid var(--tdt-border);
+  padding: 8px 6px 6px;
+  text-align: center;
+  position: relative;
+}
+.tdt-sheet .tdt-ability::before,
+.tdt-sheet .tdt-ability::after {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  pointer-events: none;
+}
+.tdt-sheet .tdt-ability::before {
+  top: -1px; left: -1px;
+  border-top: 2px solid var(--tdt-gold);
+  border-left: 2px solid var(--tdt-gold);
+}
+.tdt-sheet .tdt-ability::after {
+  bottom: -1px; right: -1px;
+  border-bottom: 2px solid var(--tdt-gold);
+  border-right: 2px solid var(--tdt-gold);
+}
+.tdt-sheet .tdt-ability-label {
+  display: block;
+  font-size: 10px;
+  color: var(--tdt-gold);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  margin-bottom: 3px;
+  cursor: pointer;
+  line-height: 1.1;
+  min-height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.tdt-sheet .tdt-ability-label:hover {
+  color: var(--tdt-red);
+}
+.tdt-sheet .tdt-ability-total {
+  background: transparent !important;
+  border: 0 !important;
+  font-family: var(--tdt-display);
+  font-size: 28px;
+  font-weight: 700;
+  text-align: center;
+  width: 100%;
+  padding: 0;
+  color: var(--tdt-ink) !important;
+  line-height: 1;
+  height: 36px;
+  box-shadow: none !important;
+}
+.tdt-sheet .tdt-ability-breakdown {
+  font-size: 11px;
+  color: var(--tdt-ink-dim);
+  display: flex;
+  justify-content: center;
+  gap: 3px;
+  align-items: baseline;
+  margin-top: 2px;
+}
+.tdt-sheet .tdt-ability-breakdown input {
+  width: 28px;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px dotted var(--tdt-border-bright);
+  text-align: center;
+  color: var(--tdt-ink);
+  font-size: 12px;
+  padding: 0;
+  height: 18px;
+}
+.tdt-sheet .tdt-plus { color: var(--tdt-ink-faint); }
+
+.tdt-sheet .tdt-abilities--npc .tdt-ability {
+  padding: 10px 6px;
+}
+
+/* --------- STATS DERIVADAS --------- */
+.tdt-sheet .tdt-combat-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1.6fr;
+  gap: 8px;
+}
+.tdt-sheet .tdt-stat {
+  background: var(--tdt-bg-3);
+  border: 1px solid var(--tdt-border);
+  padding: 6px 10px;
+  text-align: center;
+  position: relative;
+  transition: background 0.15s, border-color 0.15s;
+}
+.tdt-sheet .tdt-stat.rollable { cursor: pointer; }
+.tdt-sheet .tdt-stat.rollable:hover {
+  background: var(--tdt-bg-4);
+  border-color: var(--tdt-red);
+}
+.tdt-sheet .tdt-stat--attack { border-left: 3px solid var(--tdt-red); }
+.tdt-sheet .tdt-stat--defense { border-left: 3px solid var(--tdt-gold); }
+.tdt-sheet .tdt-stat label {
+  font-size: 9px;
+  color: var(--tdt-gold);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  display: block;
+  font-weight: 600;
+}
+.tdt-sheet .tdt-stat-value {
+  font-family: var(--tdt-display);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--tdt-ink);
+  display: block;
+  line-height: 1.1;
+}
+.tdt-sheet .tdt-stat-formula {
+  font-size: 10px;
+  color: var(--tdt-ink-faint);
+  font-style: italic;
+}
+
+.tdt-sheet .tdt-stat--damage {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 5px 8px;
+  justify-content: center;
+  border-left: 3px solid var(--tdt-gold-deep);
+}
+.tdt-sheet .tdt-stat--damage:hover { background: var(--tdt-bg-3); border-color: var(--tdt-border-bright); }
+.tdt-sheet .tdt-damage-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.tdt-sheet .tdt-damage-row label {
+  flex: 0 0 auto;
+  font-size: 9px;
+  color: var(--tdt-gold);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  min-width: 50px;
+  text-align: left;
+}
+.tdt-sheet .tdt-damage-row select {
+  flex: 1;
+  height: 22px;
+  font-size: 11px;
+  padding: 0 4px;
+}
+
+/* --------- TABS --------- */
+.tdt-sheet .tdt-tabs {
+  display: flex;
+  padding: 0 10px;
+  background: var(--tdt-bg-2);
+  border-bottom: 1px solid var(--tdt-border);
+  gap: 0;
+  margin: 0;
+  flex-wrap: wrap;
+  flex: 0 0 auto;
+}
+.tdt-sheet .tdt-tabs .item {
+  padding: 10px 16px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--tdt-ink-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  text-decoration: none !important;
+  border-radius: 0;
+  margin: 0;
+  transition: color 0.15s, border-color 0.15s;
+}
+.tdt-sheet .tdt-tabs .item:hover { color: var(--tdt-ink); }
+.tdt-sheet .tdt-tabs .item.active {
+  color: var(--tdt-red);
+  border-bottom-color: var(--tdt-red);
+  text-shadow: 0 0 1px currentColor;
+}
+
+/* --------- CORPO DAS TABS --------- */
+.tdt-sheet .sheet-body {
+  flex: 1 1 auto;
+  padding: 14px;
+  background: var(--tdt-bg);
+  overflow-y: auto;
+}
+.tdt-sheet .sheet-body .tab { display: none; }
+.tdt-sheet .sheet-body .tab.active { display: block; }
+
+.tdt-sheet .tdt-features-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.tdt-sheet .tdt-features-col {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.tdt-sheet .tdt-list-block { min-width: 0; }
+.tdt-sheet .tdt-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--tdt-red-deep);
+  position: relative;
+}
+.tdt-sheet .tdt-list-header h3 {
+  margin: 0;
+  font-family: var(--tdt-display);
+  font-size: 14px;
+  color: var(--tdt-gold);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-weight: 700;
+  border: 0;
+  line-height: 1;
+}
+.tdt-sheet .tdt-add {
+  color: var(--tdt-red);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 2px 10px;
+  border: 1px solid var(--tdt-red-deep);
+  background: var(--tdt-bg-2);
+  text-decoration: none;
+  transition: all 0.15s;
+  line-height: 1.3;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.tdt-sheet .tdt-add:hover {
+  background: var(--tdt-red);
+  color: var(--tdt-ink);
+  border-color: var(--tdt-red);
+}
+
+.tdt-sheet .tdt-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.tdt-sheet .tdt-list .item {
+  display: flex;
+  align-items: center;
+  padding: 6px 10px;
+  background: var(--tdt-bg-2);
+  margin: 0 0 3px 0;
+  border-left: 2px solid transparent;
+  gap: 8px;
+  transition: border-color 0.15s, background 0.15s;
+}
+.tdt-sheet .tdt-list .item:hover {
+  border-left-color: var(--tdt-red);
+  background: var(--tdt-bg-3);
+}
+.tdt-sheet .tdt-item-name {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--tdt-ink);
+  text-decoration: none !important;
+  font-size: 13px;
+}
+.tdt-sheet .tdt-item-name img {
+  width: 22px; height: 22px;
+  flex-shrink: 0;
+  border: 1px solid var(--tdt-border);
+  background: var(--tdt-bg);
+}
+.tdt-sheet .tdt-item-name span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tdt-sheet .tdt-item-cost,
+.tdt-sheet .tdt-magia-meta {
+  font-size: 11px;
+  color: var(--tdt-ink-dim);
+  flex-shrink: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.tdt-sheet .tdt-magia-meta {
+  padding: 0 4px;
+}
+.tdt-sheet .tdt-item-controls {
+  display: flex;
+  gap: 6px;
+  opacity: 0.3;
+  transition: opacity 0.15s;
+  flex-shrink: 0;
+}
+.tdt-sheet .tdt-list .item:hover .tdt-item-controls { opacity: 1; }
+.tdt-sheet .tdt-item-controls a {
+  color: var(--tdt-ink-dim);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 2px;
+}
+.tdt-sheet .tdt-item-controls a:hover { color: var(--tdt-gold); }
+
+.tdt-sheet .tdt-empty {
+  font-style: italic;
+  color: var(--tdt-ink-faint);
+  font-size: 12px;
+  padding: 8px 10px;
+  background: var(--tdt-bg-2);
+  border: 1px dashed var(--tdt-border);
+  text-align: center;
+}
+
+.tdt-sheet .tdt-biography {
+  background: var(--tdt-bg-2);
+  border: 1px solid var(--tdt-border);
+  padding: 10px;
+  min-height: 200px;
+}
+
+/* --------- EFFECTS (sobrescreve parte do partial legado) --------- */
+.tdt-sheet .effects-list .items-header,
+.tdt-sheet .effects-list .item.effect {
+  background: var(--tdt-bg-2);
+  border: 1px solid var(--tdt-border);
+  border-radius: 0;
+}
+.tdt-sheet .effects-list .items-header {
+  background: var(--tdt-bg-3);
+  font-family: var(--tdt-display);
+  color: var(--tdt-gold);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 12px;
+}
+.tdt-sheet .effects-list .effect-control {
+  color: var(--tdt-ink-dim);
+}
+.tdt-sheet .effects-list .effect-control:hover {
+  color: var(--tdt-gold);
+}
+
+/* --------- SCROLLBAR do sheet-body --------- */
+.tdt-sheet .sheet-body::-webkit-scrollbar { width: 8px; }
+.tdt-sheet .sheet-body::-webkit-scrollbar-track { background: var(--tdt-bg-2); }
+.tdt-sheet .sheet-body::-webkit-scrollbar-thumb {
+  background: var(--tdt-red-deep);
+  border: 1px solid var(--tdt-bg);
+}
+.tdt-sheet .sheet-body::-webkit-scrollbar-thumb:hover { background: var(--tdt-red); }
