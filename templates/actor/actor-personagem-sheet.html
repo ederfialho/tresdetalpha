@@ -78,6 +78,29 @@
       {{/each}}
     </div>
 
+    {{!-- Movimento (3D&T Alpha p.69 — velocidade de combate = max(H×10, 5) m/turno) --}}
+    <div class="tdt-movement" title="{{#if movimento.bonuses}}Bônus: {{movimento.bonuses}}{{else}}Habilidade × 10 (mín. 5m){{/if}}">
+      <span class="tdt-mov-group tdt-mov-main">
+        <span class="tdt-mov-label">Movimento</span>
+        <span class="tdt-mov-value">{{movimento.combate}}m</span>
+        <span class="tdt-mov-unit">por turno</span>
+      </span>
+      <span class="tdt-mov-sep">·</span>
+      <span class="tdt-mov-group"><span class="tdt-mov-label">Nado</span> <span class="tdt-mov-value">{{movimento.nado}}m</span></span>
+      <span class="tdt-mov-sep">·</span>
+      <span class="tdt-mov-group"><span class="tdt-mov-label">Escalada</span> <span class="tdt-mov-value">{{movimento.escalada}}m</span></span>
+      <span class="tdt-mov-sep">·</span>
+      <span class="tdt-mov-group">
+        <span class="tdt-mov-label">Voo</span>
+        <span class="tdt-mov-value">{{#if movimento.voo}}{{movimento.voo}}m{{else}}—{{/if}}</span>
+      </span>
+      <span class="tdt-mov-sep">·</span>
+      <span class="tdt-mov-group"><span class="tdt-mov-label">Viagem</span> <span class="tdt-mov-value">{{movimento.viagem}}km/h</span></span>
+      {{#if movimento.bonuses}}
+        <span class="tdt-mov-bonus">· {{movimento.bonuses}}</span>
+      {{/if}}
+    </div>
+
     {{!-- Atributos derivados de combate --}}
     <div class="tdt-combat-stats">
       <div class="tdt-stat tdt-stat--attack rollable" data-roll="1d6+@attributes.forcaDeAtaque.forca.value" data-label="FA corpo a corpo">
@@ -138,6 +161,11 @@
 
     {{!-- Tab: Vantagens e Perícias --}}
     <div class="tab features" data-group="primary" data-tab="features">
+      <div class="tdt-wizard-toolbar">
+        <a class="tdt-wizard-btn" data-wizard-type="vantagem"><i class="fas fa-wand-magic-sparkles"></i> Nova vantagem (guiado)</a>
+        <a class="tdt-wizard-btn" data-wizard-type="desvantagem"><i class="fas fa-wand-magic-sparkles"></i> Nova desvantagem (guiado)</a>
+        <a class="tdt-wizard-btn" data-wizard-type="vantagemUnica"><i class="fas fa-wand-magic-sparkles"></i> Nova única (guiado)</a>
+      </div>
       <div class="tdt-features-grid">
 
         <div class="tdt-features-col">

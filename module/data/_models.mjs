@@ -157,12 +157,24 @@ function custoPontos(initial = 0) {
   return new fields.NumberField({ required: true, integer: true, initial });
 }
 
+/** Campos mecânicos compartilhados por vantagens, desvantagens e vantagens únicas. */
+function mechanicFields() {
+  return {
+    categoria: new fields.StringField({ required: true, initial: "", blank: true }),
+    prerequisitos: new fields.StringField({ required: true, initial: "", blank: true }),
+    custoPMs: new fields.StringField({ required: true, initial: "", blank: true }),
+    duracao: new fields.StringField({ required: true, initial: "", blank: true }),
+    efeito: new fields.HTMLField({ required: true, initial: "" })
+  };
+}
+
 export class TresDeTAlphaVantagemData extends TypeDataModel {
   static defineSchema() {
     return {
       ...baseItemFields(),
       nome: new fields.StringField({ required: true, initial: "", blank: true }),
-      custo: custoPontos(0)
+      custo: custoPontos(0),
+      ...mechanicFields()
     };
   }
 }
@@ -172,7 +184,8 @@ export class TresDeTAlphaDesvantagemData extends TypeDataModel {
     return {
       ...baseItemFields(),
       nome: new fields.StringField({ required: true, initial: "", blank: true }),
-      custo: custoPontos(0)
+      custo: custoPontos(0),
+      ...mechanicFields()
     };
   }
 }
@@ -182,7 +195,8 @@ export class TresDeTAlphaVantagemUnicaData extends TypeDataModel {
     return {
       ...baseItemFields(),
       nome: new fields.StringField({ required: true, initial: "", blank: true }),
-      custo: custoPontos(0)
+      custo: custoPontos(0),
+      ...mechanicFields()
     };
   }
 }

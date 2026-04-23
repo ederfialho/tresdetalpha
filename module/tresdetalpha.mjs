@@ -17,6 +17,8 @@ import { TresDeTAlphaItemSheet } from "./sheets/item-sheet.mjs";
 import { preloadHandlebarsTemplates } from "./helpers/templates.mjs";
 import { TRESDETALPHA } from "./helpers/config.mjs";
 import { ACTOR_DATA_MODELS, ITEM_DATA_MODELS } from "./data/_models.mjs";
+import { registerCompendiaSeeding, seedCompendia } from "./data/seed-compendia.mjs";
+import { novaVantagem } from "./wizards/nova-vantagem.mjs";
 
 const SYSTEM_ID = "3det-foundry-rework";
 
@@ -66,7 +68,8 @@ Hooks.once("init", async function () {
   game.tresdetalpha = {
     TresDeTAlphaActor,
     TresDeTAlphaItem,
-    rollItemMacro
+    rollItemMacro,
+    novaVantagem
   };
 
   // Constantes do sistema.
@@ -106,6 +109,9 @@ Hooks.once("init", async function () {
 
   // Handlebars helpers.
   registerHandlebarsHelpers();
+
+  // Registro do flag de seeding e da API `game.tresdetalpha.reseedCompendia()`.
+  registerCompendiaSeeding();
 
   // Pré-carrega partials.
   await preloadHandlebarsTemplates();
@@ -148,6 +154,10 @@ function registerHandlebarsHelpers() {
 
 Hooks.once("ready", async function () {
   Hooks.on("hotbarDrop", (bar, data, slot) => createItemMacro(data, slot));
+
+  // Popula os compêndios do mundo com vantagens/desvantagens do Manual Core
+  // na primeira abertura. Depois disso, o GM pode editar à vontade.
+  await seedCompendia();
 });
 
 /* -------------------------------------------- */

@@ -1,5 +1,6 @@
 import { onManageActiveEffect, prepareActiveEffectCategories } from "../helpers/effects.mjs";
 import { TRESDETALPHA } from "../helpers/config.mjs";
+import { novaVantagem } from "../wizards/nova-vantagem.mjs";
 
 const { ActorSheetV2 } = foundry.applications.sheets;
 const { HandlebarsApplicationMixin } = foundry.applications.api;
@@ -76,6 +77,33 @@ export class TresDeTAlphaActorSheet extends HandlebarsApplicationMixin(ActorShee
     };
     context.vidaPercent  = safePct(context.system.vida?.value,  context.system.vida?.max);
     context.magiaPercent = safePct(context.system.magia?.value, context.system.magia?.max);
+
+    // Movimento em metros por turno de combate (3D&T Alpha p.69).
+    //  • Velocidade máxima = max(Habilidade × 10, 5) m/turno
+    //  • Aceleração adiciona H+1 ⇒ +10m; Teleporte H+2 ⇒ +20m
+    //  • Nado = metade; Escalada = um quarto; Voo = igual (tudo derivado na UI)
+    const habilidade = Number(context.system.abilities?.habilidade?.total ?? 0);
+    const baseMov = Math.max(habilidade * 10, 5);
+
+    // Detecta vantagens de mobilidade cadastradas nos itens, de forma tolerante a capitalização.
+    const hasVantagem = (name) => this.document.items.some(
+      (i) => (i.type === "vantagem" || i.type === "vantagemUnica")
+          && typeof i.name === "string"
+          && i.name.toLowerCase().includes(name)
+    );
+    let bonusMov = 0;
+    const bonuses = [];
+    if (hasVantagem("aceleração") || hasVantagem("aceleracao")) { bonusMov += 10; bonuses.push("Aceleração +10m"); }
+    if (hasVantagem("teleporte")) { bonusMov += 20; bonuses.push("Teleporte +20m"); }
+
+    context.movimento = {
+      combate: baseMov + bonusMov,
+      nado:    Math.max(Math.floor((baseMov + bonusMov) / 2), 3),
+      escalada:Math.max(Math.floor((baseMov + bonusMov) / 4), 2),
+      voo:     hasVantagem("voo") ? baseMov + bonusMov : null,
+      viagem:  Math.max(habilidade * 10, 5), // km/h fora de combate
+      bonuses: bonuses.join(" · ") || null
+    };
 
     // Items agrupados por tipo.
     this._prepareItems(context);
@@ -157,6 +185,15 @@ export class TresDeTAlphaActorSheet extends HandlebarsApplicationMixin(ActorShee
     // Controles de Active Effect (create/edit/delete/toggle via data-action no partial).
     for (const el of root.querySelectorAll(".effect-control")) {
       el.addEventListener("click", (ev) => onManageActiveEffect(ev, this.document));
+    }
+
+    // Botões do wizard "Nova vantagem (guiado)".
+    for (const el of root.querySelectorAll(".tdt-wizard-btn[data-wizard-type]")) {
+      el.addEventListener("click", (ev) => {
+        ev.preventDefault();
+        const type = ev.currentTarget.dataset.wizardType;
+        novaVantagem({ type, actor: this.document });
+      });
     }
 
     // Drag de itens pra macros.
