@@ -87,6 +87,17 @@ Hooks.once("init", async function () {
   CONFIG.Actor.documentClass = TresDeTAlphaActor;
   CONFIG.Item.documentClass  = TresDeTAlphaItem;
 
+  // Intercepta o fluxo padrão de "Criar Personagem" pra oferecer o wizard.
+  // Só age quando a chamada vem sem `type` pré-definido (caso típico do botão "+" da sidebar).
+  const originalCreateDialog = TresDeTAlphaActor.createDialog.bind(TresDeTAlphaActor);
+  TresDeTAlphaActor.createDialog = async function patchedCreateDialog(data = {}, options = {}) {
+    if (data?.type || options?.bypassTdtWizard) return originalCreateDialog(data, options);
+    const mode = await askActorCreationMode();
+    if (mode === null) return null;
+    if (mode === "wizard") return novoPersonagem();
+    return originalCreateDialog(data, { ...options, bypassTdtWizard: true });
+  };
+
   // TypeDataModels — schema e cálculos derivados por tipo.
   CONFIG.Actor.dataModels = ACTOR_DATA_MODELS;
   CONFIG.Item.dataModels  = ITEM_DATA_MODELS;
@@ -169,6 +180,42 @@ Hooks.once("ready", async function () {
   // na primeira abertura. Depois disso, o GM pode editar à vontade.
   await seedCompendia();
 });
+
+/**
+ * Diálogo que pergunta ao usuário como quer criar o personagem:
+ * com o wizard guiado ou em branco (fluxo padrão Foundry).
+ * @returns {Promise<"wizard"|"standard"|null>} `null` se fechou/cancelou.
+ */
+async function askActorCreationMode() {
+  const DialogV2 = foundry.applications.api.DialogV2;
+  try {
+    const choice = await DialogV2.wait({
+      window: { title: "Criar personagem — 3D&T Alpha", icon: "fas fa-user-plus" },
+      position: { width: 460 },
+      classes: ["tdt-creation-choice"],
+      content: `
+        <div style="padding: 10px 4px; display: flex; flex-direction: column; gap: 10px;">
+          <p style="margin: 0;">Como você quer criar esse ator?</p>
+          <ul style="margin: 0; padding-left: 20px; font-size: 12px; color: var(--color-text-subtle, #777);">
+            <li><strong>Guiado</strong> — distribui pontos, escolhe vantagens/desvantagens dos compêndios e cria a ficha pronta.</li>
+            <li><strong>Em branco</strong> — fluxo padrão (só nome e tipo).</li>
+          </ul>
+        </div>
+      `,
+      buttons: [
+        { action: "wizard",   label: "Com wizard guiado", icon: "fas fa-wand-magic-sparkles", default: true },
+        { action: "standard", label: "Em branco",          icon: "fas fa-file" },
+        { action: "cancel",   label: "Cancelar",           icon: "fas fa-xmark" }
+      ],
+      submit: (result) => result,
+      rejectClose: false
+    });
+    if (choice === "cancel" || !choice) return null;
+    return choice;
+  } catch (_err) {
+    return null;
+  }
+}
 
 /**
  * Adiciona um botão "Criação guiada" no topo da sidebar de Actors.

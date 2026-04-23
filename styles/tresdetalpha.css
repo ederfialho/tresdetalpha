@@ -1709,3 +1709,443 @@
   outline: none;
   border-color: #d4a94d;
 }
+
+/* ============================================================
+   Wizard v2 — refinamentos: dropdown escuro, painel de detalhes,
+   estado unaffordable, controle de pontos.
+   ============================================================ */
+
+/* Fundos escuros com opacidade pra inputs/selects/textareas do wizard. */
+.tdt-wizard--personagem input,
+.tdt-wizard--personagem select,
+.tdt-wizard--personagem textarea {
+  background: rgba(20, 18, 16, 0.88) !important;
+  color: #ede4cc !important;
+  border: 1px solid #3d3327 !important;
+  border-radius: 0 !important;
+}
+.tdt-wizard--personagem input::placeholder,
+.tdt-wizard--personagem textarea::placeholder {
+  color: rgba(166, 143, 94, 0.6);
+  font-style: italic;
+}
+.tdt-wizard--personagem select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 24px;
+  background-image:
+    linear-gradient(45deg, transparent 50%, #d4a94d 50%),
+    linear-gradient(135deg, #d4a94d 50%, transparent 50%);
+  background-position: calc(100% - 12px) 50%, calc(100% - 7px) 50%;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+}
+/* As <option> do dropdown aberto — nem todo browser permite estilizar 100%, 
+   mas os principais (Chrome/Firefox) respeitam background/color. */
+.tdt-wizard--personagem option {
+  background: #1e1a16;
+  color: #ede4cc;
+}
+
+/* Split do picker: lista de itens à esquerda, detalhes à direita. */
+.tdt-wiz-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 8px;
+}
+.tdt-wiz-split .tdt-wiz-list {
+  grid-template-columns: 1fr;
+  max-height: 240px;
+}
+.tdt-wiz-detail {
+  max-height: 240px;
+  overflow-y: auto;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(156, 125, 52, 0.3);
+  padding: 10px 12px;
+  font-size: 12px;
+  color: #ede4cc;
+  line-height: 1.55;
+}
+.tdt-wiz-detail h4 {
+  margin: 0 0 6px;
+  font-size: 14px;
+  color: #d4a94d;
+  font-family: "Oswald", sans-serif;
+  font-weight: 700;
+  border: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.tdt-wiz-detail-hint {
+  color: #6e5e3d;
+  font-style: italic;
+  font-size: 11px;
+  margin: 0;
+  text-align: center;
+  padding-top: 20px;
+}
+.tdt-wiz-detail-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+.tdt-chip {
+  font-size: 10px;
+  padding: 2px 8px;
+  background: rgba(156, 125, 52, 0.2);
+  border: 1px solid rgba(156, 125, 52, 0.5);
+  color: #d4a94d;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-radius: 2px;
+  font-weight: 600;
+}
+.tdt-chip--cost {
+  background: rgba(193, 39, 45, 0.2);
+  border-color: #c1272d;
+  color: #f0999b;
+}
+.tdt-wiz-detail-prereq {
+  font-size: 11px;
+  color: #a68f5e;
+  margin-bottom: 6px;
+  padding: 4px 8px;
+  border-left: 2px solid #9c7d34;
+  background: rgba(156, 125, 52, 0.08);
+}
+.tdt-wiz-detail-prereq strong {
+  color: #d4a94d;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 10px;
+}
+.tdt-wiz-detail-body {
+  font-size: 12px;
+}
+.tdt-wiz-detail-body p { margin: 0 0 6px; }
+.tdt-wiz-detail-body strong { color: #d4a94d; }
+
+/* Estado "não cabe no orçamento" — fade e cursor proibido. */
+.tdt-wiz-item.is-unaffordable {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.tdt-wiz-item.is-unaffordable:hover {
+  border-color: transparent;
+}
+.tdt-wiz-item.is-unaffordable input[type="checkbox"] {
+  pointer-events: none;
+}
+
+/* Orçamento quando está estourado — destaque forte. */
+.tdt-wiz-budget.is-over {
+  border-color: #e24b4a;
+  background: rgba(193, 39, 45, 0.15);
+}
+.tdt-wiz-budget.is-over .tdt-wiz-budget-label {
+  color: #f0999b;
+}
+
+
+/* ============================================================
+   Wizard v3 — barra de orçamento no topo sticky, steppers +/−,
+   painel de detalhes full-width abaixo da lista.
+   ============================================================ */
+
+/* Barra de orçamento no topo, sticky. Sobrepõe a variante antiga. */
+.tdt-wiz-budget-bar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 14px;
+  background: #1e1a16;
+  border: 2px solid #9c7d34;
+  margin-bottom: 14px;
+}
+.tdt-wiz-budget-bar .tdt-wiz-budget-main {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.tdt-wiz-budget-bar .tdt-wiz-budget-label {
+  font-size: 10px;
+  color: #d4a94d;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+}
+.tdt-wiz-budget-bar .tdt-wiz-budget-remaining {
+  font-family: "Oswald", "Impact", sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  color: #ede4cc;
+  line-height: 1;
+}
+.tdt-wiz-budget-bar.is-over .tdt-wiz-budget-remaining { color: #e24b4a; }
+.tdt-wiz-budget-bar.is-ok .tdt-wiz-budget-remaining   { color: #97c459; }
+.tdt-wiz-budget-bar .tdt-wiz-budget-sep,
+.tdt-wiz-budget-bar [data-role="total"] {
+  color: #a68f5e;
+  font-size: 15px;
+}
+.tdt-wiz-budget-bar .tdt-wiz-budget-parts {
+  display: flex;
+  gap: 14px;
+  font-size: 11px;
+  color: #a68f5e;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.tdt-wiz-budget-bar .tdt-wiz-budget-parts strong {
+  color: #ede4cc;
+  font-weight: 700;
+  margin-left: 4px;
+}
+.tdt-wiz-budget-bar.is-over {
+  border-color: #e24b4a;
+  box-shadow: 0 0 0 1px rgba(226, 75, 74, 0.4);
+}
+
+/* ----- Steppers +/− pras características ----- */
+.tdt-steppers {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+.tdt-stepper {
+  background: rgba(20, 18, 16, 0.6);
+  border: 1px solid #3d3327;
+  padding: 8px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.tdt-stepper-label {
+  font-size: 10px;
+  color: #d4a94d;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.1;
+  min-height: 24px;
+  display: flex;
+  align-items: center;
+}
+.tdt-stepper-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.tdt-step-btn {
+  width: 28px;
+  height: 28px;
+  background: #1e1a16;
+  color: #d4a94d;
+  border: 1px solid #9c7d34;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  font-family: inherit;
+  transition: background 0.12s, color 0.12s;
+}
+.tdt-step-btn:hover:not(:disabled) {
+  background: #9c7d34;
+  color: #14110d;
+}
+.tdt-step-btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+.tdt-step-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+.tdt-stepper-value {
+  min-width: 30px;
+  text-align: center;
+  font-family: "Oswald", "Impact", sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: #ede4cc;
+}
+
+/* ----- Lista de itens (vantagem/desvantagem) em grid 2col ----- */
+.tdt-wiz-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  max-height: 220px;
+  overflow-y: auto;
+  padding: 4px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(156, 125, 52, 0.25);
+  margin-top: 8px;
+}
+
+/* ----- Painel de detalhes: full-width abaixo da lista ----- */
+.tdt-wiz-detail {
+  margin-top: 8px;
+  min-height: 140px;
+  max-height: 320px;
+  overflow-y: auto;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid #9c7d34;
+  padding: 12px 14px;
+  font-size: 12px;
+  color: #ede4cc;
+  line-height: 1.6;
+}
+.tdt-wiz-detail-hint {
+  color: #6e5e3d;
+  font-style: italic;
+  text-align: center;
+  margin: 0;
+  padding: 24px 8px;
+}
+.tdt-wiz-detail-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid rgba(156, 125, 52, 0.3);
+  padding-bottom: 6px;
+}
+.tdt-wiz-detail h4 {
+  margin: 0;
+  font-size: 16px;
+  color: #d4a94d;
+  font-family: "Oswald", "Impact", sans-serif;
+  font-weight: 700;
+  border: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.tdt-wiz-detail-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-left: auto;
+}
+.tdt-wiz-detail-prereq {
+  font-size: 11px;
+  color: #a68f5e;
+  margin-bottom: 8px;
+  padding: 6px 10px;
+  border-left: 3px solid #9c7d34;
+  background: rgba(156, 125, 52, 0.1);
+}
+.tdt-wiz-detail-prereq strong {
+  color: #d4a94d;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 10px;
+  margin-right: 4px;
+}
+.tdt-wiz-detail-body {
+  font-size: 12px;
+}
+.tdt-wiz-detail-body p { margin: 0 0 8px; }
+.tdt-wiz-detail-body strong { color: #d4a94d; }
+.tdt-wiz-detail-body em { color: #a68f5e; }
+.tdt-wiz-detail-body br { line-height: 1.3; }
+.tdt-wiz-detail-body code {
+  background: rgba(212, 169, 77, 0.15);
+  color: #d4a94d;
+  padding: 1px 4px;
+  border-radius: 2px;
+  font-size: 11px;
+}
+
+/* Override pro filtro de lista — input estilizado */
+.tdt-wiz-filter-input {
+  width: 100%;
+  height: 28px;
+  padding: 0 10px;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+/* Override pra lista remover o split-column legado */
+.tdt-wiz-split { display: block !important; }
+.tdt-wiz-split > .tdt-wiz-detail { margin-top: 8px; }
+
+
+/* --------- Estado "atualmente vendo" no picker do wizard --------- */
+.tdt-wiz-item.is-viewing {
+  border-color: #d4a94d !important;
+  background: rgba(212, 169, 77, 0.12) !important;
+  box-shadow: inset 3px 0 0 #d4a94d;
+}
+.tdt-wiz-item.is-viewing:has(input:checked) {
+  /* Mantém destaque quando também está marcado */
+  box-shadow: inset 3px 0 0 #d4a94d, inset 0 0 0 1px #c1272d;
+}
+
+/* Reforço da visibilidade do painel de detalhes — com min-height alto
+   pra ficar óbvio que existe, mesmo vazio. */
+.tdt-wiz-detail {
+  min-height: 160px;
+}
+
+/* ============================================================
+   Wizard v4 — fix de scroll + dialog resizable
+   ============================================================ */
+
+/* Remove o overflow interno: agora quem rola é a window-content do DialogV2,
+   o que garante que o footer com o botão "Criar personagem" fique sempre acessível. */
+.tdt-wizard-dialog .tdt-wizard--personagem {
+  max-height: none !important;
+  overflow: visible !important;
+  padding-right: 0 !important;
+  display: flex !important;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* A window-content do DialogV2 vira o elemento scrollável. */
+.tdt-wizard-dialog .window-content {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 12px;
+}
+
+/* Footer do DialogV2 grudado no fim da janela — o OK não some com scroll. */
+.tdt-wizard-dialog .dialog-buttons,
+.tdt-wizard-dialog footer,
+.tdt-wizard-dialog .form-footer {
+  position: sticky;
+  bottom: 0;
+  background: #1e1a16;
+  border-top: 2px solid #9c7d34;
+  padding: 10px 12px;
+  margin: 0 -12px -12px;
+  z-index: 30;
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+.tdt-wizard-dialog .dialog-buttons button,
+.tdt-wizard-dialog footer button,
+.tdt-wizard-dialog .form-footer button {
+  min-width: 160px;
+}
+
+/* Quando o dialog é redimensionado, os painéis de detalhe devem crescer junto. */
+.tdt-wizard-dialog .tdt-wiz-detail {
+  min-height: 140px;
+  max-height: 280px;
+}
