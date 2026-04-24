@@ -166,11 +166,13 @@ export const VANTAGENS_UNICAS = [
       ],
       choices: [
         { id: "caractBonus", label: "+1 em uma característica", pick: 1, optionType: "ability",
-          options: ["Força", "Habilidade", "Resistência", "Armadura", "PdF"] }
+          options: ["Força", "Habilidade", "Resistência", "Armadura", "PdF"] },
+        { id: "vantagemBonus", label: "Vantagem Bônus (1 pt grátis)", pick: 1,
+          optionType: "vantagemBonus", budget: 1, options: [] }
       ],
       aptidoes: [],
       forbidden: [],
-      conditionalBonus: "Vantagem Bônus: 1 ponto de vantagem grátis, OU 2 pts de vantagens pelo preço de 1.",
+      conditionalBonus: "Podem também gastar 1 ponto para comprar 2 pts em vantagens (falar com o GM).",
       exceptions: []
     }
   },
@@ -184,7 +186,7 @@ export const VANTAGENS_UNICAS = [
         { name: "Natação", type: "vantagem" },
         { name: "Sentidos Especiais", type: "vantagem" },
         { name: "Ambiente Especial", type: "desvantagem" },
-        { name: "Vulnerabilidade", type: "desvantagem" }
+        { name: "Vulnerabilidade", type: "desvantagem", damageTypes: ["Fogo"] }
       ],
       choices: [],
       aptidoes: [],
@@ -315,7 +317,7 @@ export const VANTAGENS_UNICAS = [
       granted: [
         { name: "Infravisão", type: "vantagem" },
         { name: "Monstruoso", type: "desvantagem" },
-        { name: "Vulnerabilidade", type: "desvantagem" }
+        { name: "Vulnerabilidade", type: "desvantagem", damageTypes: ["Frio"] }
       ],
       choices: [],
       aptidoes: [],
@@ -334,9 +336,9 @@ export const VANTAGENS_UNICAS = [
       granted: [
         { name: "Boa Fama", type: "vantagem" },
         { name: "Sentidos Especiais", type: "vantagem" },
-        { name: "Invulnerabilidade", type: "vantagem" },
+        { name: "Invulnerabilidade", type: "vantagem", damageTypes: ["Elétrico", "Sônico"] },
         { name: "Maldição", type: "desvantagem" },
-        { name: "Vulnerabilidade", type: "desvantagem" }
+        { name: "Vulnerabilidade", type: "desvantagem", damageTypes: ["Fogo"] }
       ],
       choices: [],
       aptidoes: [
@@ -355,10 +357,10 @@ export const VANTAGENS_UNICAS = [
       abilityBonuses: {},
       granted: [
         { name: "Sentidos Especiais", type: "vantagem" },
-        { name: "Invulnerabilidade", type: "vantagem" },
+        { name: "Invulnerabilidade", type: "vantagem", damageTypes: ["Fogo"] },
         { name: "Má Fama", type: "desvantagem" },
         { name: "Maldição", type: "desvantagem" },
-        { name: "Vulnerabilidade", type: "desvantagem" }
+        { name: "Vulnerabilidade", type: "desvantagem", damageTypes: ["Elétrico", "Sônico"] }
       ],
       choices: [],
       aptidoes: [
@@ -381,7 +383,7 @@ export const VANTAGENS_UNICAS = [
         { name: "Voo", type: "vantagem" },
         { name: "Magia Elemental", type: "vantagem" },
         { name: "Modelo Especial", type: "desvantagem" },
-        { name: "Vulnerabilidade", type: "desvantagem" }
+        { name: "Vulnerabilidade", type: "desvantagem", damageTypes: ["Magia"] }
       ],
       choices: [
         { id: "magiaEscola", label: "Escola de magia (Branca ou Negra)", pick: 1, optionType: "vantagem",
@@ -403,12 +405,12 @@ export const VANTAGENS_UNICAS = [
         { name: "Forma Alternativa", type: "vantagem" },
         { name: "Modelo Especial", type: "desvantagem" },
         { name: "Monstruoso", type: "desvantagem" },
-        { name: "Vulnerabilidade", type: "desvantagem" }
+        { name: "Vulnerabilidade", type: "desvantagem", damageTypes: ["Magia"] }
       ],
       choices: [],
       aptidoes: [],
       forbidden: [],
-      conditionalBonus: "Forma fera: F e A dobrados (F+2, A+2 totais). Transformação fora do controle: lua cheia, fúria, perto da morte, ou ao ver alguém protegido em perigo. Vulnerabilidade: Magia e Prata.",
+      conditionalBonus: "Forma fera: F e A dobrados (F+2, A+2 totais). Transformação fora do controle: lua cheia, fúria, perto da morte, ou ao ver alguém protegido em perigo. Vulnerabilidade: Magia e Prata (Prata não está na lista de tipos de dano disponíveis; aplicar manualmente quando relevante).",
       exceptions: []
     }
   },
@@ -419,8 +421,8 @@ export const VANTAGENS_UNICAS = [
       abilityBonuses: {},
       granted: [
         { name: "Sentidos Especiais", type: "vantagem" },
-        { name: "Armadura Extra", type: "vantagem" },
-        { name: "Vulnerabilidade", type: "desvantagem" }
+        { name: "Armadura Extra", type: "vantagem", damageTypes: ["Fogo"] },
+        { name: "Vulnerabilidade", type: "desvantagem", damageTypes: ["Elétrico", "Sônico"] }
       ],
       choices: [],
       aptidoes: [
@@ -439,8 +441,8 @@ export const VANTAGENS_UNICAS = [
       abilityBonuses: {},
       granted: [
         { name: "Sentidos Especiais", type: "vantagem" },
-        { name: "Armadura Extra", type: "vantagem" },
-        { name: "Vulnerabilidade", type: "desvantagem" }
+        { name: "Armadura Extra", type: "vantagem", damageTypes: ["Elétrico", "Sônico"] },
+        { name: "Vulnerabilidade", type: "desvantagem", damageTypes: ["Fogo"] }
       ],
       choices: [],
       aptidoes: [
@@ -508,7 +510,7 @@ export const VANTAGENS_UNICAS = [
     package: {
       abilityBonuses: {},
       granted: [
-        { name: "Armadura Extra", type: "vantagem" },
+        { name: "Armadura Extra", type: "vantagem", damageTypes: ["Magia"] },
         { name: "Resistência à Magia", type: "vantagem" },
         { name: "Monstruoso", type: "desvantagem" }
       ],
@@ -598,8 +600,8 @@ export const VANTAGENS_UNICAS = [
     package: {
       abilityBonuses: {},
       granted: [
-        { name: "Invulnerabilidade", type: "vantagem" },
-        { name: "Armadura Extra", type: "vantagem" },
+        { name: "Invulnerabilidade", type: "vantagem", damageTypes: ["Frio"] },
+        { name: "Armadura Extra", type: "vantagem", damageTypes: ["Corte", "Perfuração"] },
         { name: "Devoção", type: "desvantagem" },
         { name: "Inculto", type: "desvantagem" },
         { name: "Monstruoso", type: "desvantagem" }
@@ -636,7 +638,7 @@ export const VANTAGENS_UNICAS = [
     package: {
       abilityBonuses: {},
       granted: [
-        { name: "Armadura Extra", type: "vantagem" },
+        { name: "Armadura Extra", type: "vantagem", damageTypes: ["Corte", "Esmagamento", "Perfuração", "Elétrico", "Frio", "Químico", "Sônico", "Trevas", "Luz"] },
         { name: "Ambiente Especial", type: "desvantagem" }
       ],
       choices: [],
@@ -656,7 +658,7 @@ export const VANTAGENS_UNICAS = [
         { name: "Maldição", type: "desvantagem" },
         { name: "Monstruoso", type: "desvantagem" },
         { name: "Fobia", type: "desvantagem" },
-        { name: "Vulnerabilidade", type: "desvantagem" }
+        { name: "Vulnerabilidade", type: "desvantagem", damageTypes: ["Químico"] }
       ],
       choices: [],
       aptidoes: [],

@@ -105,7 +105,8 @@ export const VANTAGENS = [
     categoria: "Combate",
     mode: "passive",
     prerequisitos: "Vantagem única ou item mágico (não se compra com pontos normais)",
-    efeito: "<p>Armadura dobra contra um tipo específico de dano (Corte, Perfuração, Esmagamento, Fogo, Frio, Elétrico, Químico, Sônico, Magia). Benefícios são cumulativos se forem tipos diferentes.</p>"
+    efeito: "<p>Armadura dobra contra um tipo específico de dano (Corte, Perfuração, Esmagamento, Fogo, Frio, Elétrico, Químico, Sônico, Magia). Benefícios são cumulativos se forem tipos diferentes.</p>",
+    damageModifiers: [{ kind: "armaduraExtra", types: [] }]
   },
   {
     name: "Ataque Especial", custo: 1,
@@ -220,7 +221,8 @@ export const VANTAGENS = [
     categoria: "Defesa",
     mode: "passive",
     prerequisitos: "Vantagem única ou item mágico (não se compra com pontos)",
-    efeito: "<p>Praticamente imune a certo tipo de dano. Dano comparado à FD é dividido por 10 (dano inferior a 10 é anulado). Armadura também é dividida por 10 e dobrada contra esse tipo. Efeitos acumulam com Armadura Extra.</p>"
+    efeito: "<p>Praticamente imune a certo tipo de dano. Dano comparado à FD é dividido por 10 (dano inferior a 10 é anulado). Armadura também é dividida por 10 e dobrada contra esse tipo. Efeitos acumulam com Armadura Extra.</p>",
+    damageModifiers: [{ kind: "invulnerabilidade", types: [] }]
   },
   {
     name: "Ligação Natural", custo: 1,
@@ -624,7 +626,8 @@ export const DESVANTAGENS = [
     name: "Vulnerabilidade", custo: 1,
     categoria: "Física",
     mode: "passive",
-    efeito: "<p>Sofre dano dobrado de um tipo específico de dano (fogo, frio, elétrico, químico, sônico, prata, magia…). −1 pt por tipo (ou −2 pts para magia em geral). Raças Youkai, Licantropos e outros frequentemente têm uma vulnerabilidade a algo.</p>"
+    efeito: "<p>Sofre dano dobrado de um tipo específico de dano (fogo, frio, elétrico, químico, sônico, prata, magia…). −1 pt por tipo (ou −2 pts para magia em geral). Raças Youkai, Licantropos e outros frequentemente têm uma vulnerabilidade a algo.</p>",
+    damageModifiers: [{ kind: "vulnerabilidade", types: [] }]
   },
   {
     name: "Fobia", custo: 1,

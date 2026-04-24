@@ -186,6 +186,8 @@ Hooks.once("ready", async function () {
 
   Hooks.on("updateCombat", onCombatTurnAdvance);
 
+  Hooks.on("createItem", onItemCreated);
+
   // Popula os compêndios do mundo com vantagens/desvantagens do Manual Core
   // na primeira abertura. Depois disso, o GM pode editar à vontade.
   await seedCompendia();
@@ -400,6 +402,25 @@ async function onCombatTurnAdvance(combat, updates, _options, _userId) {
         await actor.update({ "system.magia.value": currentPm - drain });
       }
     }
+  }
+}
+
+/**
+ * Quando um item é criado num actor e tem `damageModifiers` com `types: []`,
+ * abre um diálogo pra o usuário escolher contra quais tipos de dano se aplica.
+ * Só roda no cliente que criou (pra evitar diálogos duplicados em outros GMs).
+ */
+async function onItemCreated(item, _options, userId) {
+  if (game.user.id !== userId) return;
+  if (!item.actor) return; // só pra items embutidos
+  const mods = item.system?.damageModifiers ?? [];
+  const needsTypes = mods.some(m => (m.types?.length ?? 0) === 0);
+  if (!needsTypes) return;
+  try {
+    const { promptMissingDamageTypes } = await import("./helpers/chat.mjs");
+    await promptMissingDamageTypes(item);
+  } catch (err) {
+    console.warn("3D&T | promptMissingDamageTypes falhou:", err);
   }
 }
 
