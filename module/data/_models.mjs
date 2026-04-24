@@ -92,6 +92,14 @@ export class TresDeTAlphaActorData extends TypeDataModel {
         resistencia: abilityField(),
         armadura:    abilityField(),
         poderDeFogo: abilityField()
+      }),
+
+      // Campos extras de NPC (inicializam vazios pra personagens jogadores).
+      npc: new fields.SchemaField({
+        escala:    new fields.StringField({ required: true, initial: "", blank: true }),
+        xpReward:  new fields.NumberField({ required: true, integer: true, initial: 0, min: 0 }),
+        tipo:      new fields.StringField({ required: true, initial: "", blank: true }),
+        tactics:   new fields.HTMLField({ required: true, initial: "" })
       })
     };
   }

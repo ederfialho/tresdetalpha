@@ -10,6 +10,26 @@
       <div class="tdt-meta">
         <span class="tdt-meta-item">{{localize "TYPES.Actor.npc"}}</span>
         <span class="tdt-meta-item">
+          <label>Tipo</label>
+          <input name="system.npc.tipo" type="text" value="{{system.npc.tipo}}" data-dtype="String" placeholder="Humanoide, Besta..." />
+        </span>
+        <span class="tdt-meta-item">
+          <label>Escala</label>
+          <select name="system.npc.escala" data-dtype="String">
+            <option value=""            {{#if (eq system.npc.escala "")}}selected{{/if}}>—</option>
+            <option value="Iniciante"   {{#if (eq system.npc.escala "Iniciante")}}selected{{/if}}>Iniciante</option>
+            <option value="Novato"      {{#if (eq system.npc.escala "Novato")}}selected{{/if}}>Novato</option>
+            <option value="Lutador"     {{#if (eq system.npc.escala "Lutador")}}selected{{/if}}>Lutador</option>
+            <option value="Aventureiro" {{#if (eq system.npc.escala "Aventureiro")}}selected{{/if}}>Aventureiro</option>
+            <option value="Veterano"    {{#if (eq system.npc.escala "Veterano")}}selected{{/if}}>Veterano</option>
+            <option value="Mestre"      {{#if (eq system.npc.escala "Mestre")}}selected{{/if}}>Mestre</option>
+          </select>
+        </span>
+        <span class="tdt-meta-item">
+          <label>XP</label>
+          <input name="system.npc.xpReward" type="number" value="{{system.npc.xpReward}}" data-dtype="Number" min="0" step="1" title="Pontos de Experiência oferecidos ao derrotar" />
+        </span>
+        <span class="tdt-meta-item">
           <label>Pontos</label>
           <input name="system.pontos" type="text" value="{{system.pontos}}" data-dtype="Number" />
         </span>
@@ -130,6 +150,7 @@
     <a class="item" data-tab="spells">{{localize "TRESDETALPHA.Aba.magia"}}</a>
     <a class="item" data-tab="items">{{localize "TRESDETALPHA.Aba.item"}}</a>
     <a class="item" data-tab="effects">{{localize "TRESDETALPHA.Aba.efeito"}}</a>
+    <a class="item" data-tab="tactics">Táticas</a>
     <a class="item" data-tab="description">{{localize "TRESDETALPHA.Aba.historia"}}</a>
   </nav>
 
@@ -273,6 +294,13 @@
 
     <div class="tab effects" data-group="primary" data-tab="effects">
       {{> "systems/3det-foundry-rework/templates/actor/parts/actor-effects.html"}}
+    </div>
+
+    <div class="tab tactics" data-group="primary" data-tab="tactics">
+      <div class="tdt-biography">
+        <div class="tdt-item-hint" style="margin-bottom: 6px;">Táticas de combate, comportamento, condições de fuga, motivação. O que o GM precisa saber pra rodar essa criatura rapidamente.</div>
+        {{editor system.npc.tactics target="system.npc.tactics" rollData=rollData button=true owner=owner editable=editable}}
+      </div>
     </div>
 
     <div class="tab description" data-group="primary" data-tab="description">

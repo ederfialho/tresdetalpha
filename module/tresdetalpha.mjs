@@ -132,6 +132,15 @@ Hooks.once("init", async function () {
   // Registro do flag de seeding e da API `game.tresdetalpha.reseedCompendia()`.
   registerCompendiaSeeding();
 
+  // Status effect customizado: "Perto da Morte" (p.26) — PV ≤ Resistência.
+  // Para 0 PVs usamos o flag `defeated` nativo do Combatant (Foundry já aplica
+  // o overlay de caveira no token automaticamente quando em combate).
+  CONFIG.statusEffects.push({
+    id: "pertoDaMorte",
+    name: "Perto da Morte",
+    img: "icons/svg/blood.svg"
+  });
+
   // Pré-carrega partials.
   await preloadHandlebarsTemplates();
 });
@@ -176,6 +185,9 @@ Hooks.once("ready", async function () {
 
   // Insere um botão "Criação guiada" no topo da sidebar de Actors.
   Hooks.on("renderActorDirectory", injectGuidedCreationButton);
+
+  // Sincroniza status effects (Perto da Morte, Caído) sempre que PV muda.
+  Hooks.on("updateActor", onActorPvChange);
 
   // Auto-desativa Active Effects marcados como `combatOnly` quando o combate termina.
   // Isso inclui vantagens como Aceleração, Arena, Ataque Especial, etc. que só
@@ -242,6 +254,88 @@ function injectGuidedCreationButton(app, element) {
     novoPersonagem();
   });
   header.appendChild(btn);
+}
+
+/**
+ * Reage a mudanças de PV do actor:
+ *  - Aplica/remove o status "Perto da Morte" (PV > 0 e ≤ Resistência)
+ *  - Marca/desmarca o(s) combatant(s) como `defeated` quando PV chega a 0
+ *    (Foundry aplica overlay de caveira no token e rasga o nome no Combat Tracker)
+ *
+ * Gate: status effect roda no cliente que originou (se tem ownership).
+ *       Defeated roda só no GM ativo primário (pra ter permissão e evitar duplicação).
+ */
+async function onActorPvChange(actor, changes, _options, userId) {
+  if (actor.type !== "personagem" && actor.type !== "npc") return;
+
+  const newPv = foundry.utils.getProperty(changes, "system.vida.value");
+  if (newPv === undefined || newPv === null) return;
+
+  const pv = Number(newPv);
+  const resistencia = Number(actor.system?.abilities?.resistencia?.total ?? 0);
+
+  // ==== Perto da Morte (status effect) ====
+  // Processa no cliente que originou E tem ownership.
+  if (game.user.id === userId && actor.isOwner) {
+    const shouldBePerto = pv > 0 && resistencia > 0 && pv <= resistencia;
+    const isPerto = actor.statuses?.has("pertoDaMorte") ?? false;
+    if (shouldBePerto !== isPerto) {
+      try { await actor.toggleStatusEffect("pertoDaMorte", { active: shouldBePerto }); }
+      catch (err) { console.warn("3D&T | Perto da Morte:", err); }
+    }
+  }
+
+  // ==== Defeated no Combat Tracker ====
+  // Só roda no GM ativo primário: (a) só ele tem permissão pra atualizar combatants
+  // de outros actors; (b) evita duplicação em cenários com múltiplos GMs conectados.
+  const primaryGM = game.users?.activeGM;
+  if (primaryGM && primaryGM !== game.user) return;
+  if (!primaryGM && !game.user.isGM) return; // sem GM ativo: qualquer GM processa; sem GM, nada.
+
+  const shouldBeDefeated = pv <= 0;
+  const combatants = findActiveCombatants(actor);
+
+  if (combatants.length === 0 && shouldBeDefeated) {
+    console.debug(`3D&T | ${actor.name} chegou a 0 PVs mas não está em combate ativo — defeated não aplica.`);
+    return;
+  }
+
+  for (const combatant of combatants) {
+    if (combatant.defeated === shouldBeDefeated) continue;
+    try {
+      await combatant.update({ defeated: shouldBeDefeated });
+      console.debug(`3D&T | combatant "${combatant.name}" → defeated=${shouldBeDefeated}`);
+    } catch (err) {
+      console.error(`3D&T | falha ao marcar defeated em "${combatant.name}":`, err);
+    }
+  }
+}
+
+/**
+ * Retorna todos os combatants em combates ativos que referenciam o actor.
+ * Lida com linked (mesma id) e unlinked tokens (synthetic actor).
+ */
+function findActiveCombatants(actor) {
+  const matches = [];
+  const actorId = actor.id;
+  const actorUuid = actor.uuid;
+  const tokenId = actor.token?.id ?? null;
+
+  for (const combat of game.combats?.contents ?? []) {
+    for (const c of combat.combatants) {
+      // 1) Mesmo objeto de actor (raro mas exato)
+      if (c.actor === actor) { matches.push(c); continue; }
+      // 2) Match por id de actor (funciona pra linked e synthetic)
+      if (c.actor?.id === actorId) { matches.push(c); continue; }
+      // 3) Match por UUID (mais robusto)
+      if (c.actor?.uuid === actorUuid) { matches.push(c); continue; }
+      // 4) Match por id do world actor salvo no combatant
+      if (c.actorId === actorId) { matches.push(c); continue; }
+      // 5) Match por token id (unlinked)
+      if (tokenId && c.tokenId === tokenId) { matches.push(c); continue; }
+    }
+  }
+  return matches;
 }
 
 /**

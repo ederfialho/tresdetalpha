@@ -2597,3 +2597,17 @@
   letter-spacing: 0;
   font-weight: 400;
 }
+
+/* Botão "Aplicar em todos" — mais proeminente que os individuais */
+.tdt-chat-btn--apply-all {
+  background: rgba(162, 59, 60, 0.12);
+  border-color: rgba(162, 59, 60, 0.55);
+  color: #a23b3c;
+  font-weight: 600;
+  flex: 1;
+  width: 100%;
+}
+.tdt-chat-btn--apply-all:hover {
+  background: rgba(162, 59, 60, 0.22);
+  border-color: #a23b3c;
+}

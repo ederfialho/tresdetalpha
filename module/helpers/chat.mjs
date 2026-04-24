@@ -241,19 +241,30 @@ async function executeAttack(actor, formula, label, { count, useVantagem, tokens
     targetResults.push({ victim, uuid: victim.uuid, fdTotal, hits, totalDamage });
   }
 
+  // Conta alvos que sofreram dano (pra decidir se mostra "Aplicar a todos").
+  const damagedResults = targetResults.filter((r) => r.totalDamage > 0);
+  const grandTotal = damagedResults.reduce((s, r) => s + r.totalDamage, 0);
+  const showApplyAll = damagedResults.length > 1;
+
   const targetsHtml = targetResults.map((r) => {
-    const rows = r.hits.map((h, i) => `
-      <div class="tdt-multi-row">
-        <span class="tdt-multi-label">Atq ${i + 1}</span>
-        <span class="tdt-multi-fa${h.critical ? " is-critical" : ""}">FA ${h.fa}</span>
-        ${h.damage > 0
-          ? `<span class="tdt-multi-dmg">${h.damage}</span>
-             <button class="tdt-chat-btn tdt-chat-btn--apply" data-tdt-action="apply-damage" data-actor-uuid="${r.uuid}" data-damage="${h.damage}">
-               Aplicar
-             </button>`
-          : `<span class="tdt-multi-def">defendeu</span><span></span>`}
-      </div>
-    `).join("");
+    // Linha por ataque. Se count=1, o dano já está no botão de total abaixo — não mostra
+    // botão de aplicar por linha pra evitar botão duplicado.
+    const rows = r.hits.map((h, i) => {
+      const result = h.damage > 0
+        ? (multi
+            ? `<span class="tdt-multi-dmg">${h.damage}</span>
+               <button class="tdt-chat-btn tdt-chat-btn--apply" data-tdt-action="apply-damage" data-actor-uuid="${r.uuid}" data-damage="${h.damage}">Aplicar</button>`
+            : `<span class="tdt-multi-dmg">${h.damage} de dano</span><span></span>`)
+        : `<span class="tdt-multi-def">defendeu</span><span></span>`;
+      return `
+        <div class="tdt-multi-row">
+          <span class="tdt-multi-label">Atq ${i + 1}</span>
+          <span class="tdt-multi-fa${h.critical ? " is-critical" : ""}">FA ${h.fa}</span>
+          ${result}
+        </div>
+      `;
+    }).join("");
+
     return `
       <div class="tdt-attack-target">
         <div class="tdt-attack-target-head">
@@ -263,7 +274,7 @@ async function executeAttack(actor, formula, label, { count, useVantagem, tokens
         <div class="tdt-multi-list">${rows}</div>
         ${r.totalDamage > 0 ? `
           <div class="tdt-multi-total">
-            <span>Total: <strong>${r.totalDamage}</strong></span>
+            <span>${multi ? "Total" : "Dano"}: <strong>${r.totalDamage}</strong></span>
             <button class="tdt-chat-btn tdt-chat-btn--apply" data-tdt-action="apply-damage" data-actor-uuid="${r.uuid}" data-damage="${r.totalDamage}">
               <i class="fas fa-heart-crack"></i> Aplicar ${r.totalDamage}
             </button>
@@ -271,6 +282,16 @@ async function executeAttack(actor, formula, label, { count, useVantagem, tokens
       </div>
     `;
   }).join("");
+
+  // Botão de aplicar a todos (quando há múltiplos alvos que sofreram dano).
+  const applyAllPayload = damagedResults.map((r) => `${r.uuid}:${r.totalDamage}`).join(",");
+  const applyAllHtml = showApplyAll ? `
+    <footer class="tdt-chat-actions">
+      <button class="tdt-chat-btn tdt-chat-btn--apply tdt-chat-btn--apply-all" data-tdt-action="apply-damage-all" data-targets="${applyAllPayload}">
+        <i class="fas fa-heart-crack"></i> Aplicar em todos (${damagedResults.length} alvos, total ${grandTotal})
+      </button>
+    </footer>
+  ` : "";
 
   const content = `
     <div class="tdt-chat-card tdt-chat-card--attack">
@@ -281,6 +302,7 @@ async function executeAttack(actor, formula, label, { count, useVantagem, tokens
         </div>
       </header>
       <div class="tdt-attack-targets">${targetsHtml}</div>
+      ${applyAllHtml}
     </div>
   `;
 
@@ -715,6 +737,22 @@ async function onCardActionClick(event) {
       event.stopPropagation();
       const dmg = Number(btn.dataset.damage) || 0;
       if (dmg > 0) await applyDamageToSelected(dmg);
+      break;
+    }
+    case "apply-damage-all": {
+      event.preventDefault();
+      event.stopPropagation();
+      const payload = String(btn.dataset.targets || "");
+      if (!payload) break;
+      const pairs = payload.split(",").filter(Boolean);
+      for (const pair of pairs) {
+        const [uuid, dmg] = pair.split(":");
+        if (uuid && Number(dmg) > 0) await applyDamage(uuid, Number(dmg));
+      }
+      // Desabilita o botão pra não aplicar duas vezes sem querer.
+      btn.disabled = true;
+      btn.style.opacity = "0.5";
+      btn.innerHTML = '<i class="fas fa-check"></i> Aplicado';
       break;
     }
   }

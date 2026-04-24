@@ -11,6 +11,7 @@
  */
 
 import { VANTAGENS, DESVANTAGENS, VANTAGENS_UNICAS, PERICIAS, MAGIAS } from "./compendia-seed.mjs";
+import { BESTIARIO } from "./bestiario.mjs";
 import { iconFor } from "./icon-mapping.mjs";
 
 const SYSTEM_ID = "3det-foundry-rework";
@@ -51,6 +52,14 @@ const COMPENDIA = [
     icon: "icons/sundries/books/book-blue-gold.webp",
     itemType: "magia",
     source: () => MAGIAS
+  },
+  {
+    name: "tresdetalpha-monstros",
+    label: "3D&T — Bestiário",
+    icon: "icons/svg/mystery-man.svg",
+    documentType: "Actor",
+    itemType: "npc",
+    source: () => BESTIARIO
   }
 ];
 
@@ -179,7 +188,8 @@ async function wipePack(pack) {
   await pack.getIndex();
   const ids = [...pack.index.keys()];
   if (!ids.length) return;
-  await Item.deleteDocuments(ids, { pack: pack.collection });
+  const DocClass = pack.metadata.type === "Actor" ? Actor : Item;
+  await DocClass.deleteDocuments(ids, { pack: pack.collection });
 }
 
 /**
@@ -195,7 +205,7 @@ async function ensurePack(def) {
     const metadata = {
       name: def.name,
       label: def.label,
-      type: "Item",
+      type: def.documentType ?? "Item",
       system: SYSTEM_ID,
       package: "world",
       path: `packs/${def.name}`,
@@ -219,11 +229,29 @@ async function populatePack(pack, def) {
   await pack.getIndex();
   const existingNames = new Set([...pack.index.values()].map((e) => e.name));
 
+  // Pack de Actor (Bestiário): cria Actors diretamente a partir dos dados prontos.
+  if (def.documentType === "Actor") {
+    const toCreate = [];
+    for (const row of entries) {
+      if (existingNames.has(row.name)) continue;
+      toCreate.push({
+        name: row.name,
+        type: row.type ?? def.itemType ?? "npc",
+        img: row.img ?? def.icon,
+        system: row.system ?? {},
+        items: row.items ?? []
+      });
+    }
+    if (!toCreate.length) return 0;
+    const docs = await Actor.createDocuments(toCreate, { pack: pack.collection });
+    return docs?.length ?? toCreate.length;
+  }
+
+  // Pack de Item (padrão).
   const toCreate = [];
   for (const row of entries) {
     if (existingNames.has(row.name)) continue;
 
-    // Usa ícone mapeado por categoria/nome (icon-mapping.mjs); cai no default do pack se falhar.
     const mappedIcon = iconFor({
       name: row.name,
       escola: row.escola,
