@@ -699,7 +699,7 @@ export function registerChatActions() {
     if (!root) return;
     for (const btn of root.querySelectorAll("button[data-tdt-action]")) {
       const action = btn.dataset.tdtAction;
-      if (action === "apply-damage" || action === "apply-damage-selected") {
+      if (action === "apply-damage" || action === "apply-damage-selected" || action === "apply-damage-all") {
         btn.addEventListener("click", onCardActionClick);
       } else {
         btn.addEventListener("click", onChatActionClick);
