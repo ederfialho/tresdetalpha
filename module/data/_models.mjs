@@ -168,6 +168,14 @@ function custoPontos(initial = 0) {
 /** Campos mecânicos compartilhados por vantagens, desvantagens e vantagens únicas. */
 function mechanicFields() {
   return {
+    mode: new fields.StringField({
+      required: true, initial: "passive", blank: false,
+      choices: ["passive", "activatable", "reaction", "conditional"]
+    }),
+    activation: new fields.SchemaField({
+      custoPMsAtivacao: new fields.NumberField({ required: true, integer: true, initial: 0, min: 0 }),
+      custoPMsPorTurno:  new fields.NumberField({ required: true, integer: true, initial: 0, min: 0 })
+    }),
     categoria: new fields.StringField({ required: true, initial: "", blank: true }),
     prerequisitos: new fields.StringField({ required: true, initial: "", blank: true }),
     custoPMs: new fields.StringField({ required: true, initial: "", blank: true }),
@@ -204,7 +212,33 @@ export class TresDeTAlphaVantagemUnicaData extends TypeDataModel {
       ...baseItemFields(),
       nome: new fields.StringField({ required: true, initial: "", blank: true }),
       custo: custoPontos(0),
-      ...mechanicFields()
+      ...mechanicFields(),
+      package: new fields.SchemaField({
+        abilityBonuses: new fields.ObjectField({ required: true, initial: {} }),
+        granted: new fields.ArrayField(new fields.SchemaField({
+          name: new fields.StringField({ required: true, blank: false }),
+          type: new fields.StringField({ required: true, choices: ["vantagem", "desvantagem", "pericia"] })
+        })),
+        choices: new fields.ArrayField(new fields.SchemaField({
+          id: new fields.StringField({ required: true, blank: false }),
+          label: new fields.StringField({ required: true, blank: false }),
+          pick: new fields.NumberField({ required: true, integer: true, initial: 1, min: 1 }),
+          optionType: new fields.StringField({ required: true, initial: "vantagem",
+            choices: ["vantagem", "desvantagem", "pericia", "ability"] }),
+          options: new fields.ArrayField(new fields.StringField({ required: true, blank: false }))
+        })),
+        aptidoes: new fields.ArrayField(new fields.SchemaField({
+          target: new fields.StringField({ required: true, blank: false }),
+          discount: new fields.NumberField({ required: true, integer: true, initial: 0 }),
+          note: new fields.StringField({ required: true, initial: "", blank: true })
+        })),
+        forbidden: new fields.ArrayField(new fields.StringField({ required: true, blank: false })),
+        conditionalBonus: new fields.StringField({ required: true, initial: "", blank: true }),
+        exceptions: new fields.ArrayField(new fields.SchemaField({
+          canRemove: new fields.StringField({ required: true, blank: false }),
+          costPoints: new fields.NumberField({ required: true, integer: true, initial: 0, min: 0 })
+        }))
+      })
     };
   }
 }

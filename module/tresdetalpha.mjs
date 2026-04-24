@@ -184,6 +184,8 @@ Hooks.once("ready", async function () {
   // aplicam bônus enquanto ativas em combate.
   Hooks.on("deleteCombat", disableCombatOnlyEffects);
 
+  Hooks.on("updateCombat", onCombatTurnAdvance);
+
   // Popula os compêndios do mundo com vantagens/desvantagens do Manual Core
   // na primeira abertura. Depois disso, o GM pode editar à vontade.
   await seedCompendia();
@@ -347,6 +349,56 @@ async function disableCombatOnlyEffects(combat) {
     }
     if (toDisable.length) {
       await actor.updateEmbeddedDocuments("ActiveEffect", toDisable);
+    }
+  }
+}
+
+/**
+ * Ao avançar de turno/round no combate, dreena PMs de vantagens ativáveis
+ * com `custoPMsPorTurno > 0`. Se o personagem não tem PMs suficientes, a
+ * vantagem é automaticamente desativada.
+ *
+ * Processa só no GM ativo primário (permissão + evitar duplicação).
+ */
+async function onCombatTurnAdvance(combat, updates, _options, _userId) {
+  const primaryGM = game.users?.activeGM;
+  if (primaryGM && primaryGM !== game.user) return;
+  if (!primaryGM && !game.user.isGM) return;
+  // Só processa quando turn ou round avançou.
+  if (!("turn" in updates) && !("round" in updates)) return;
+
+  const actors = new Set();
+  for (const combatant of combat.combatants.values()) {
+    if (combatant.actor) actors.add(combatant.actor);
+  }
+
+  for (const actor of actors) {
+    for (const item of actor.items) {
+      if (item.system?.mode !== "activatable") continue;
+      const drain = Number(item.system?.activation?.custoPMsPorTurno ?? 0);
+      if (drain <= 0) continue;
+      // Item ativo? (algum effect transferido dele está enabled)
+      // V13+: parent aponta pro item; origin não é auto-setado em transferred effects.
+      const activeEffects = actor.effects.filter(e =>
+        (e.parent?.id === item.id || e.origin === item.uuid) && !e.disabled
+      );
+      if (!activeEffects.length) continue;
+
+      const currentPm = Number(actor.system?.magia?.value ?? 0);
+      if (currentPm < drain) {
+        // Sem PMs — desativa automaticamente.
+        await actor.updateEmbeddedDocuments("ActiveEffect",
+          activeEffects.map(e => ({ _id: e.id, disabled: true }))
+        );
+        await ChatMessage.create({
+          speaker: ChatMessage.getSpeaker({ actor }),
+          content: `<div class="tdt-chat-card tdt-chat-card--deactivate">
+            <strong>${actor.name}</strong> ficou sem PMs — <em>${item.name}</em> desativou-se sozinha.
+          </div>`
+        });
+      } else {
+        await actor.update({ "system.magia.value": currentPm - drain });
+      }
     }
   }
 }

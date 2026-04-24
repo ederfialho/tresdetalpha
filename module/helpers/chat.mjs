@@ -475,6 +475,10 @@ export async function postItemChatCard(item) {
   if (item.type === "magia" && hasActor) {
     actions.push(button("cast-magia", "fa-sparkles", "Conjurar"));
   }
+  if (hasActor && ["activatable", "reaction"].includes(item.system?.mode)) {
+    const isActive = effectsFromItem(actor, item).some(e => !e.disabled);
+    actions.push(button(isActive ? "deactivate-item" : "activate-item", "fa-bolt", isActive ? "Desativar" : "Ativar"));
+  }
 
   const content = `
     <div class="tdt-chat-card" data-item-uuid="${item.uuid}" data-actor-uuid="${actor?.uuid ?? ""}">
@@ -667,6 +671,127 @@ export async function castMagia(magia) {
   }
 }
 
+/* -------------------------------------------- */
+/*  Ativação de vantagens                       */
+/* -------------------------------------------- */
+
+/**
+ * Retorna os ActiveEffects do actor originários de um item específico.
+ * No Foundry V13+, effects transferidos de items aparecem em `actor.effects`
+ * com `parent` apontando para o item, mas `origin` não é auto-setado.
+ * Checamos os dois para robustez.
+ */
+function effectsFromItem(actor, item) {
+  if (!actor || !item) return [];
+  return actor.effects.filter(e =>
+    e.parent?.id === item.id || e.origin === item.uuid
+  );
+}
+
+/**
+ * Ativa uma vantagem/desvantagem ativável do actor:
+ *  - Verifica PMs disponíveis contra `custoPMsAtivacao`.
+ *  - Deduz o custo.
+ *  - Habilita todos os ActiveEffects transferidos do item.
+ *  - Posta um card no chat com botão "Desativar".
+ *
+ * Aviso: per regra 3D&T, desativar NÃO reembolsa PMs gastos na ativação.
+ */
+export async function activateItem(item) {
+  if (!item) return;
+  const actor = item.actor;
+  if (!actor) {
+    ui.notifications.warn("Item precisa estar numa ficha de ator para ser ativado.");
+    return;
+  }
+  const mode = item.system?.mode;
+  if (!["activatable", "reaction"].includes(mode)) return;
+
+  const activationCost = Number(item.system?.activation?.custoPMsAtivacao ?? 0);
+  const perTurnCost = Number(item.system?.activation?.custoPMsPorTurno ?? 0);
+  const currentPm = Number(actor.system?.magia?.value ?? 0);
+
+  if (activationCost > currentPm) {
+    ui.notifications.warn(`PMs insuficientes para ativar ${item.name}: ${currentPm} atuais, ${activationCost} necessários.`);
+    return;
+  }
+
+  // Habilita effects transferidos do item.
+  const transferred = effectsFromItem(actor, item);
+  if (!transferred.length) {
+    ui.notifications.warn(`${item.name} não tem efeitos mecânicos — marque como "passive" ou adicione ActiveEffects.`);
+    // segue mesmo assim (pode ser uma reação sem efeito mecânico)
+  }
+  if (transferred.length) {
+    await actor.updateEmbeddedDocuments("ActiveEffect",
+      transferred.map(e => ({ _id: e.id, disabled: false }))
+    );
+  }
+
+  // Deduz PMs da ativação.
+  if (activationCost > 0) {
+    await actor.update({ "system.magia.value": currentPm - activationCost });
+  }
+
+  // Card de ativação.
+  const perTurnHint = perTurnCost > 0 ? ` · drena ${perTurnCost} PM/turno` : "";
+  const costHint = activationCost > 0 ? `${activationCost} PM gasto${perTurnHint}` : (perTurnHint || "gratuito");
+  const content = `
+    <div class="tdt-chat-card tdt-chat-card--activate" data-item-uuid="${escapeHTML(item.uuid)}" data-actor-uuid="${escapeHTML(actor.uuid)}">
+      <header class="tdt-chat-head">
+        <img class="tdt-chat-img" src="${escapeHTML(item.img)}" />
+        <div class="tdt-chat-title">
+          <h3>${escapeHTML(item.name)}</h3>
+          <span class="tdt-chat-type"><i class="fas fa-bolt"></i> ativada</span>
+        </div>
+      </header>
+      <div class="tdt-chat-chips">
+        <span class="tdt-chat-chip tdt-chat-chip--cost">${escapeHTML(costHint)}</span>
+        <span class="tdt-chat-chip tdt-chat-chip--pm">PMs restantes: ${Math.max(0, currentPm - activationCost)} / ${Number(actor.system?.magia?.max ?? 0)}</span>
+      </div>
+      <div class="tdt-chat-desc">${item.system?.efeito || item.system?.description || ""}</div>
+      <footer class="tdt-chat-actions">
+        <button type="button" class="tdt-chat-btn" data-tdt-action="deactivate-item"><i class="fas fa-power-off"></i> Desativar</button>
+      </footer>
+    </div>
+  `;
+  return ChatMessage.create({
+    speaker: ChatMessage.getSpeaker({ actor }),
+    content,
+    flags: { "3det-foundry-rework": { activeItemUuid: item.uuid } }
+  });
+}
+
+/**
+ * Desativa uma vantagem previamente ativada. NÃO reembolsa PMs.
+ */
+export async function deactivateItem(item) {
+  if (!item) return;
+  const actor = item.actor;
+  if (!actor) return;
+  const transferred = effectsFromItem(actor, item).filter(e => !e.disabled);
+  if (transferred.length) {
+    await actor.updateEmbeddedDocuments("ActiveEffect",
+      transferred.map(e => ({ _id: e.id, disabled: true }))
+    );
+  }
+  const content = `
+    <div class="tdt-chat-card tdt-chat-card--deactivate">
+      <header class="tdt-chat-head">
+        <div class="tdt-chat-title">
+          <h3>${escapeHTML(item.name)}</h3>
+          <span class="tdt-chat-type"><i class="fas fa-power-off"></i> desativada</span>
+        </div>
+      </header>
+      <div class="tdt-chat-desc tdt-chat-desc--muted">Efeito encerrado. PMs gastos não são reembolsados.</div>
+    </div>
+  `;
+  return ChatMessage.create({
+    speaker: ChatMessage.getSpeaker({ actor }),
+    content
+  });
+}
+
 function formatTemplateLabel(tpl) {
   const shapes = { circle: "circular", cone: "cone", ray: "linha", rect: "quadrada" };
   const shape = shapes[tpl.type] || tpl.type;
@@ -734,6 +859,16 @@ async function onChatActionClick(event) {
     case "cast-magia":
       await castMagia(item);
       break;
+    case "activate-item": {
+      if (!item) return;
+      await activateItem(item);
+      break;
+    }
+    case "deactivate-item": {
+      if (!item) return;
+      await deactivateItem(item);
+      break;
+    }
   }
 }
 

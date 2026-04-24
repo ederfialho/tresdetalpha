@@ -168,6 +168,11 @@
               <ol class="tdt-list">
                 {{#each vantagemUnica}}
                 <li class="item" data-item-id="{{this._id}}">
+                  {{#if this.isActivable}}
+                    <a class="tdt-item-activate{{#if this.isActive}} is-active{{/if}}" title="{{#if this.isActive}}Desativar{{else}}Ativar{{/if}}"><i class="fas fa-bolt"></i></a>
+                  {{else if this.isConditional}}
+                    <span class="tdt-item-conditional" title="Bônus situacional — aplicado manualmente"><i class="fas fa-circle-info"></i></span>
+                  {{/if}}
                   <a class="rollable tdt-item-name" data-roll-type="item">
                     <img src="{{this.img}}" />
                     <span>{{this.name}}</span>
@@ -195,6 +200,11 @@
               <ol class="tdt-list">
                 {{#each vantagems}}
                 <li class="item" data-item-id="{{this._id}}">
+                  {{#if this.isActivable}}
+                    <a class="tdt-item-activate{{#if this.isActive}} is-active{{/if}}" title="{{#if this.isActive}}Desativar{{else}}Ativar{{/if}}"><i class="fas fa-bolt"></i></a>
+                  {{else if this.isConditional}}
+                    <span class="tdt-item-conditional" title="Bônus situacional — aplicado manualmente"><i class="fas fa-circle-info"></i></span>
+                  {{/if}}
                   <a class="rollable tdt-item-name" data-roll-type="item">
                     <img src="{{this.img}}" />
                     <span>{{this.name}}</span>
@@ -222,6 +232,11 @@
               <ol class="tdt-list">
                 {{#each desvantagems}}
                 <li class="item" data-item-id="{{this._id}}">
+                  {{#if this.isActivable}}
+                    <a class="tdt-item-activate{{#if this.isActive}} is-active{{/if}}" title="{{#if this.isActive}}Desativar{{else}}Ativar{{/if}}"><i class="fas fa-bolt"></i></a>
+                  {{else if this.isConditional}}
+                    <span class="tdt-item-conditional" title="Bônus situacional — aplicado manualmente"><i class="fas fa-circle-info"></i></span>
+                  {{/if}}
                   <a class="rollable tdt-item-name" data-roll-type="item">
                     <img src="{{this.img}}" />
                     <span>{{this.name}}</span>

@@ -19,6 +19,20 @@ export class TresDeTAlphaItem extends Item {
     return rollData;
   }
 
+  get isActivable() {
+    return ["activatable", "reaction"].includes(this.system?.mode);
+  }
+
+  get isActive() {
+    const actor = this.actor;
+    if (!actor || !this.isActivable) return false;
+    // V13+: effects transferidos de items têm `parent` apontando pro item,
+    // mas `origin` não é auto-setado. Checa os dois para robustez.
+    return actor.effects.some(e =>
+      (e.parent?.id === this.id || e.origin === this.uuid) && !e.disabled
+    );
+  }
+
   /**
    * Ao clicar no item na ficha: posta um card rico no chat com descrição,
    * chips de meta (categoria, custo, escola, etc.) e botões de ação

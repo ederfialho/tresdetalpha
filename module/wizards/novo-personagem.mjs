@@ -90,7 +90,7 @@ export async function novoPersonagem() {
   });
 
   if (!result || !result.nome) return null;
-  return await createActorFromData(result);
+  return await createActorFromData(result, { vItems, dItems, rItems, pItems, mItems });
 }
 
 /* -------------------------------------------- */
@@ -265,6 +265,10 @@ function wireUp(dialog, items) {
 
   const okButton = dialog.element.querySelector("button[data-action='ok']");
 
+  // Persistent state for race sub-pickers, keyed by raceId.
+  // Shape: { [raceId]: { [choiceId]: [optionName, ...] } }
+  if (!dialog.tdtRaceChoices) dialog.tdtRaceChoices = {};
+
   const indexById = (arr) => Object.fromEntries(arr.map((x) => [String(x.id), x]));
   const vIndex = indexById(vItems);
   const dIndex = indexById(dItems);
@@ -417,12 +421,27 @@ function wireUp(dialog, items) {
       }
     }
 
+    /* Contagem de escolhas raciais pendentes */
+    let pendingRaceChoices = 0;
+    if (pickedRace) {
+      const raceItem = rIndex[String(pickedRace.value)];
+      const choices = raceItem?.system?.package?.choices ?? [];
+      const saved = dialog.tdtRaceChoices?.[String(pickedRace.value)] ?? {};
+      for (const ch of choices) {
+        const need = Math.max(1, Number(ch.pick) || 1);
+        const got = Array.isArray(saved[ch.id]) ? saved[ch.id].length : 0;
+        if (got !== need) pendingRaceChoices += Math.abs(need - got);
+      }
+    }
+
     /* OK button */
     const nomeVazio = !$("[name='nome']").value.trim();
-    const valid = remaining >= 0 && !nomeVazio;
+    const valid = remaining >= 0 && !nomeVazio && pendingRaceChoices === 0;
     if (okButton) {
       okButton.disabled = !valid;
-      okButton.title = nomeVazio ? "Informe o nome" : (remaining < 0 ? "Orçamento estourado" : "");
+      okButton.title = nomeVazio ? "Informe o nome"
+        : (remaining < 0 ? "Orçamento estourado"
+          : (pendingRaceChoices > 0 ? `Faça ${pendingRaceChoices} escolha${pendingRaceChoices === 1 ? "" : "s"} racial${pendingRaceChoices === 1 ? "" : "is"} pendente${pendingRaceChoices === 1 ? "" : "s"}.` : ""));
     }
   };
 
@@ -479,10 +498,127 @@ function wireUp(dialog, items) {
     magia: "detail-magias"
   };
 
+  const ABILITY_LABELS = {
+    forca: "Força",
+    habilidade: "Habilidade",
+    resistencia: "Resistência",
+    armadura: "Armadura",
+    poderDeFogo: "PdF"
+  };
+
+  const renderRacePackagePreview = (item) => {
+    const pkg = item?.system?.package;
+    if (!pkg) return "";
+
+    const raceId = String(item.id);
+    const saved = dialog.tdtRaceChoices?.[raceId] ?? {};
+
+    const parts = [];
+
+    // Ability bonuses (green chips)
+    const bonuses = pkg.abilityBonuses || {};
+    const bonusChips = Object.entries(bonuses)
+      .filter(([, v]) => Number(v) !== 0)
+      .map(([ability, v]) => {
+        const label = ABILITY_LABELS[ability] || ability;
+        const sign = Number(v) > 0 ? "+" : "";
+        return `<span class="tdt-chip tdt-chip--bonus">${label} ${sign}${v}</span>`;
+      });
+
+    // Granted items
+    const granted = Array.isArray(pkg.granted) ? pkg.granted : [];
+    const grantedChips = granted.map((g) => {
+      const typeLabel = g.type === "vantagem" ? "Vantagem"
+        : g.type === "desvantagem" ? "Desvantagem"
+        : g.type === "pericia" ? "Perícia"
+        : (g.type ?? "");
+      return `<span class="tdt-chip tdt-chip--granted" title="${escapeAttr(typeLabel)}">${g.name}</span>`;
+    });
+
+    // Sub-pickers for choices
+    const choices = Array.isArray(pkg.choices) ? pkg.choices : [];
+    const choicesHtml = choices.map((choice) => {
+      const pickN = Math.max(1, Number(choice.pick) || 1);
+      const inputType = pickN > 1 ? "checkbox" : "radio";
+      const currentSaved = saved[choice.id];
+      const savedList = Array.isArray(currentSaved) ? currentSaved : (currentSaved ? [currentSaved] : []);
+      const groupName = `raceChoice__${raceId}__${choice.id}`;
+
+      const optsHtml = (Array.isArray(choice.options) ? choice.options : []).map((optName) => {
+        const checked = savedList.includes(optName) ? "checked" : "";
+        return `
+          <label class="tdt-wiz-item tdt-wiz-item--choice" data-choice-id="${escapeAttr(choice.id)}" data-choice-value="${escapeAttr(optName)}">
+            <input type="${inputType}" name="${escapeAttr(groupName)}" value="${escapeAttr(optName)}" data-role="race-choice" data-race-id="${escapeAttr(raceId)}" data-choice-id="${escapeAttr(choice.id)}" data-pick="${pickN}" ${checked} />
+            <span class="tdt-wiz-item-name">${optName}</span>
+          </label>
+        `;
+      }).join("");
+
+      const label = choice.label ?? choice.id ?? "Escolha";
+      const hint = pickN > 1 ? `escolha ${pickN}` : "escolha 1";
+      return `
+        <div class="tdt-wiz-race-choice" data-choice-id="${escapeAttr(choice.id)}" data-pick="${pickN}">
+          <div class="tdt-wiz-race-choice-head"><strong>${label}</strong> <small>— ${hint}</small></div>
+          <div class="tdt-wiz-race-choice-opts">${optsHtml}</div>
+        </div>
+      `;
+    }).join("");
+
+    // Informational rows
+    const infoRows = [];
+    if (pkg.conditionalBonus) {
+      infoRows.push(`<div class="tdt-wiz-detail-info"><strong>Bônus condicional:</strong> ${pkg.conditionalBonus}</div>`);
+    }
+    if (Array.isArray(pkg.aptidoes) && pkg.aptidoes.length) {
+      infoRows.push(`<div class="tdt-wiz-detail-info"><strong>Aptidões:</strong> ${pkg.aptidoes.join(", ")}</div>`);
+    }
+    if (Array.isArray(pkg.forbidden) && pkg.forbidden.length) {
+      infoRows.push(`<div class="tdt-wiz-detail-info"><strong>Proibido:</strong> ${pkg.forbidden.join(", ")}</div>`);
+    }
+    if (Array.isArray(pkg.exceptions) && pkg.exceptions.length) {
+      infoRows.push(`<div class="tdt-wiz-detail-info"><strong>Exceções:</strong> ${pkg.exceptions.join(", ")}</div>`);
+    }
+
+    parts.push(`<div class="tdt-wiz-race-package" data-race-id="${escapeAttr(raceId)}">`);
+    parts.push(`<h5 class="tdt-wiz-race-package-title">Pacote racial</h5>`);
+    if (bonusChips.length) {
+      parts.push(`<div class="tdt-wiz-race-package-section"><div class="tdt-wiz-race-package-label">Bônus de características</div><div class="tdt-wiz-detail-chips">${bonusChips.join("")}</div></div>`);
+    }
+    if (grantedChips.length) {
+      parts.push(`<div class="tdt-wiz-race-package-section"><div class="tdt-wiz-race-package-label">Concedido automaticamente</div><div class="tdt-wiz-detail-chips">${grantedChips.join("")}</div></div>`);
+    }
+    if (choicesHtml) {
+      parts.push(`<div class="tdt-wiz-race-package-section"><div class="tdt-wiz-race-package-label">Escolhas</div>${choicesHtml}</div>`);
+    }
+    if (infoRows.length) {
+      parts.push(`<div class="tdt-wiz-race-package-section">${infoRows.join("")}</div>`);
+    }
+    parts.push(`</div>`);
+    return parts.join("");
+  };
+
   const renderDetail = (item, kind) => {
     const s = item?.system ?? {};
     const efeito = (s.efeito?.trim?.() || s.description?.trim?.() || "<p><em>Sem descrição.</em></p>");
     const chips = [];
+
+    if (kind === "raca") {
+      // Specialized preview for races
+      const racePkgHtml = renderRacePackagePreview(item);
+      if (s.categoria) chips.push(`<span class="tdt-chip">${s.categoria}</span>`);
+      chips.push(`<span class="tdt-chip tdt-chip--cost">${s.custo ?? 0} pt</span>`);
+      const preqR = s.prerequisitos ? `<div class="tdt-wiz-detail-prereq"><strong>Pré-requisitos:</strong> ${s.prerequisitos}</div>` : "";
+      return `
+        <div class="tdt-wiz-detail-head">
+          <h4>${item?.name ?? "—"}</h4>
+          <div class="tdt-wiz-detail-chips">${chips.join("")}</div>
+        </div>
+        ${preqR}
+        <div class="tdt-wiz-detail-body">${efeito}</div>
+        ${racePkgHtml}
+      `;
+    }
+
     if (kind === "magia") {
       if (s.escola) chips.push(`<span class="tdt-chip">${s.escola}</span>`);
       if (s.custo) chips.push(`<span class="tdt-chip tdt-chip--cost">${s.custo}</span>`);
@@ -542,6 +678,61 @@ function wireUp(dialog, items) {
     item.addEventListener("focusin", () => { showDetail(item); highlightViewing(item); });
   }
 
+  /* ----- Race change: clear picks of the previously-selected race ----- */
+  let lastRaceId = null;
+  root.addEventListener("change", (ev) => {
+    if (ev.target?.name === "raca") {
+      const newId = ev.target.value || null;
+      if (lastRaceId && lastRaceId !== newId) {
+        delete dialog.tdtRaceChoices[lastRaceId];
+      }
+      lastRaceId = newId;
+      // Re-render the race detail panel to reflect the new selection's package.
+      const item = rIndex[String(newId)];
+      if (item) {
+        const panel = root.querySelector(`[data-role="${PANEL_ROLE.raca}"]`);
+        if (panel) panel.innerHTML = renderDetail(item, "raca");
+      }
+    }
+  });
+
+  /* ----- Race sub-choice interactions (delegated) ----- */
+  root.addEventListener("change", (ev) => {
+    const input = ev.target;
+    if (!input || input.dataset?.role !== "race-choice") return;
+    const raceId = input.dataset.raceId;
+    const choiceId = input.dataset.choiceId;
+    const pickN = Math.max(1, Number(input.dataset.pick) || 1);
+    if (!raceId || !choiceId) return;
+
+    if (!dialog.tdtRaceChoices[raceId]) dialog.tdtRaceChoices[raceId] = {};
+
+    if (pickN === 1) {
+      // Radio: replace
+      dialog.tdtRaceChoices[raceId][choiceId] = input.checked ? [input.value] : [];
+    } else {
+      // Checkbox multi: toggle, respecting cap
+      const current = Array.isArray(dialog.tdtRaceChoices[raceId][choiceId])
+        ? [...dialog.tdtRaceChoices[raceId][choiceId]]
+        : [];
+      if (input.checked) {
+        if (!current.includes(input.value)) current.push(input.value);
+        // Enforce cap: if over, uncheck the current input and re-sync
+        if (current.length > pickN) {
+          input.checked = false;
+          const idx = current.indexOf(input.value);
+          if (idx >= 0) current.splice(idx, 1);
+        }
+      } else {
+        const idx = current.indexOf(input.value);
+        if (idx >= 0) current.splice(idx, 1);
+      }
+      dialog.tdtRaceChoices[raceId][choiceId] = current;
+    }
+    // No need to re-render panel (DOM checked state is already live); just recompute.
+    recompute();
+  });
+
   /* ----- Recompute on change ----- */
   root.addEventListener("change", recompute);
   root.addEventListener("input", (ev) => {
@@ -591,6 +782,21 @@ function extractData(dialog, items) {
   const pickedRaceId = root.querySelector("input[name='raca']:checked")?.value || null;
   const pickedRace = pickedRaceId ? rItems.find((it) => String(it.id) === String(pickedRaceId)) : null;
 
+  // Validate & collect race choice picks.
+  const raceChoicePicks = {};
+  if (pickedRace) {
+    const choices = pickedRace.system?.package?.choices ?? [];
+    const saved = dialog.tdtRaceChoices?.[String(pickedRace.id)] ?? {};
+    for (const ch of choices) {
+      const need = Math.max(1, Number(ch.pick) || 1);
+      const picks = Array.isArray(saved[ch.id]) ? saved[ch.id].slice(0, need) : [];
+      if (picks.length !== need) {
+        console.warn(`3D&T wizard | raça ${pickedRace.name}: escolha "${ch.id}" incompleta (${picks.length}/${need}).`);
+      }
+      raceChoicePicks[ch.id] = picks;
+    }
+  }
+
   const selectedIds = (name) => Array.from(root.querySelectorAll(`input[name="${name}"]:checked`)).map((cb) => cb.value);
 
   // Vantagens normais (checkbox) + empilháveis (stepper com count).
@@ -612,6 +818,7 @@ function extractData(dialog, items) {
     escala,
     abilities,
     raca: pickedRace,
+    raceChoicePicks,
     vantagens,
     desvantagens: selectedIds("desvantagem").map((id) => dItems.find((it) => String(it.id) === String(id))).filter(Boolean),
     pericias: selectedIds("pericia").map((id) => pItems.find((it) => String(it.id) === String(id))).filter(Boolean),
@@ -619,7 +826,8 @@ function extractData(dialog, items) {
   };
 }
 
-async function createActorFromData(data) {
+async function createActorFromData(data, pools = {}) {
+  const { vItems = [], dItems = [], pItems = [] } = pools;
   const r = data.abilities.resistencia;
   const systemData = {
     pontos: data.escala.budget,
@@ -665,8 +873,71 @@ async function createActorFromData(data) {
   for (const item of data.pericias) pushItem(item);
   for (const item of data.magias) pushItem(item);
 
+  /* ----- Materializa o pacote racial ----- */
+  const POOL_BY_TYPE = { vantagem: vItems, desvantagem: dItems, pericia: pItems };
+
+  // B. Itens concedidos automaticamente pela raça.
+  const grantedList = data.raca?.system?.package?.granted ?? [];
+  for (const g of grantedList) {
+    const pool = POOL_BY_TYPE[g.type];
+    if (!pool) continue;
+    const match = pool.find((p) => p.name === g.name);
+    if (!match) {
+      console.warn(`3D&T wizard | raça ${data.raca.name} granted '${g.name}' mas não encontrado no compêndio de ${g.type}.`);
+      continue;
+    }
+    const raw = match.toObject();
+    delete raw._id;
+    raw.flags = raw.flags ?? {};
+    raw.flags["3det-foundry-rework"] = { ...(raw.flags["3det-foundry-rework"] ?? {}), grantedByRace: data.raca.name };
+    toEmbed.push(raw);
+  }
+
+  // C. Opções escolhidas pelo jogador.
+  const choicePicks = data.raceChoicePicks ?? {};
+  const choiceDefs = data.raca?.system?.package?.choices ?? [];
+  for (const def of choiceDefs) {
+    const picks = choicePicks[def.id] ?? [];
+    const pool = POOL_BY_TYPE[def.optionType];
+    if (!pool) continue; // tipo "ability" ou outro: tratado à parte se/quando existir
+    for (const pickedName of picks) {
+      const match = pool.find((p) => p.name === pickedName);
+      if (!match) {
+        console.warn(`3D&T wizard | escolha "${pickedName}" da raça ${data.raca.name} não encontrada.`);
+        continue;
+      }
+      const raw = match.toObject();
+      delete raw._id;
+      raw.flags = raw.flags ?? {};
+      raw.flags["3det-foundry-rework"] = { ...(raw.flags["3det-foundry-rework"] ?? {}), grantedByRaceChoice: { raceName: data.raca.name, choiceId: def.id } };
+      toEmbed.push(raw);
+    }
+  }
+
   if (toEmbed.length) {
     await actor.createEmbeddedDocuments("Item", toEmbed);
+  }
+
+  // A. ActiveEffect para os bônus de característica da raça.
+  const bonuses = data.raca?.system?.package?.abilityBonuses || {};
+  const abilityChanges = Object.entries(bonuses)
+    .filter(([, v]) => Number(v) !== 0)
+    .map(([ability, v]) => ({
+      key: `system.abilities.${ability}.bonus`,
+      mode: 2,             // CONST.ACTIVE_EFFECT_MODES.ADD
+      value: String(v),
+      priority: 20
+    }));
+
+  if (abilityChanges.length) {
+    await actor.createEmbeddedDocuments("ActiveEffect", [{
+      name: `${data.raca.name} — Bônus raciais`,
+      img: "icons/magic/holy/angel-wings-gray.webp",
+      changes: abilityChanges,
+      transfer: false,
+      disabled: false,
+      flags: { "3det-foundry-rework": { racialPackage: true, raceItemName: data.raca.name } }
+    }]);
   }
 
   actor.sheet.render(true);

@@ -142,6 +142,17 @@ export class TresDeTAlphaActorSheet extends HandlebarsApplicationMixin(ActorShee
     };
 
     for (const item of this.document.items) {
+      // Enriquece cada item com flags de estado pra UI do botão ⚡ (ativar/desativar).
+      // `isActivable`: mode ∈ { activatable, reaction } ⇒ mostra ⚡.
+      // `isActive`: algum ActiveEffect transferido do item está habilitado no Actor.
+      // `isConditional`: mode === conditional ⇒ mostra ícone ⓘ (bônus situacional).
+      item.isActivable = ["activatable", "reaction"].includes(item.system?.mode);
+      // V13+: parent aponta pro item; origin não é auto-setado em transferred effects.
+      item.isActive = item.isActivable && this.document.effects.some(
+        e => (e.parent?.id === item.id || e.origin === item.uuid) && !e.disabled
+      );
+      item.isConditional = item.system?.mode === "conditional";
+
       switch (item.type) {
         case "vantagem":      buckets.vantagems.push(item); break;
         case "desvantagem":   buckets.desvantagems.push(item); break;
@@ -197,6 +208,11 @@ export class TresDeTAlphaActorSheet extends HandlebarsApplicationMixin(ActorShee
     // Controles de Active Effect (create/edit/delete/toggle via data-action no partial).
     for (const el of root.querySelectorAll(".effect-control")) {
       el.addEventListener("click", (ev) => onManageActiveEffect(ev, this.document));
+    }
+
+    // Botão ⚡ de ativar/desativar vantagens ativáveis.
+    for (const el of root.querySelectorAll(".tdt-item-activate")) {
+      el.addEventListener("click", this._onItemActivate.bind(this));
     }
 
     // Botões do wizard "Nova vantagem (guiado)".
@@ -297,5 +313,23 @@ export class TresDeTAlphaActorSheet extends HandlebarsApplicationMixin(ActorShee
     if (dataset.roll) {
       return rollFormula(this.document, dataset.roll, dataset.label || "Rolagem");
     }
+  }
+
+  /**
+   * Alterna o estado ativo/inativo de um item ativável (vantagem/desvantagem com
+   * `system.mode ∈ { activatable, reaction }`). Ativar deduz PMs e habilita os
+   * ActiveEffects transferidos ao Actor; desativar reverte. A lógica de PMs e
+   * ActiveEffects vive em `helpers/chat.mjs` (outro agente).
+   * @private
+   */
+  async _onItemActivate(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    const li = event.currentTarget.closest(".item");
+    const item = this.document.items.get(li?.dataset.itemId);
+    if (!item || !item.isActivable) return;
+    const { activateItem, deactivateItem } = await import("../helpers/chat.mjs");
+    if (item.isActive) await deactivateItem(item);
+    else await activateItem(item);
   }
 }
