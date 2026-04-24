@@ -475,3 +475,2139 @@
   font-size: 16px;
   line-height: 24px;
 }
+/* =======================================================================
+   Foundry V14 / ApplicationV2 compat — adicionado em 0.2.0
+   O core V14 não aplica mais as regras de display de tabs automaticamente
+   pra sheets V2 com marcação V1 (data-group/data-tab). Aplicamos aqui.
+   ======================================================================= */
+
+.tresdetalpha .sheet-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  border-bottom: 1px solid #7a7971;
+  padding: 0 0 4px 0;
+  margin: 0 0 6px 0;
+}
+
+.tresdetalpha .sheet-tabs .item {
+  padding: 3px 8px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  margin-right: 2px;
+  text-decoration: none;
+}
+
+.tresdetalpha .sheet-tabs .item.active {
+  text-shadow: 0 0 8px var(--color-shadow-primary, #ff6400);
+  font-weight: bold;
+  border-color: #7a7971;
+}
+
+.tresdetalpha .sheet-body .tab {
+  display: none;
+}
+
+.tresdetalpha .sheet-body .tab.active {
+  display: block;
+}
+
+.tresdetalpha .sheet-body .tab.flexcol.active {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Garante que a section raiz (que substituiu o <form> do template) ocupa 100% */
+.tresdetalpha.sheet > section,
+.tresdetalpha.sheet form > section {
+  width: 100%;
+  height: 100%;
+}
+
+/* Reforça os grids pra evitar interferência do CSS da ApplicationV2 */
+.tresdetalpha .grid {
+  display: grid !important;
+}
+
+.tresdetalpha .grid-2col {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.tresdetalpha .grid-3col {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+/* Garante que as colunas do grid-2col não extrapolam sua largura —
+   evita o overlap visto na ficha V2 quando inputs têm widths default. */
+.tresdetalpha .grid-2col > * {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.tresdetalpha .abilities .ability input[type="text"] {
+  max-width: 3.2em;
+  min-width: 0;
+}
+
+.tresdetalpha .sidebar {
+  min-width: 0;
+}
+
+/* ============================================================
+   3D&T Alpha — ficha shōnen v0.2.0
+   Paleta: brasa (#c1272d), dourado (#d4a94d), preto encardido.
+   Todas as regras escopadas em `.tdt-sheet` pra não colidir
+   com o CSS legado abaixo.
+   ============================================================ */
+
+.tresdetalpha .window-content { padding: 0; }
+
+.tdt-sheet {
+  --tdt-bg: #141210;
+  --tdt-bg-2: #1e1a16;
+  --tdt-bg-3: #2a231b;
+  --tdt-bg-4: #3a2f23;
+  --tdt-ink: #ede4cc;
+  --tdt-ink-dim: #a68f5e;
+  --tdt-ink-faint: #6e5e3d;
+  --tdt-red: #c1272d;
+  --tdt-red-deep: #7a1a1e;
+  --tdt-gold: #d4a94d;
+  --tdt-gold-deep: #9c7d34;
+  --tdt-border: #3d3327;
+  --tdt-border-bright: #5a4830;
+
+  --tdt-display: "Oswald", "Impact", "Signika", sans-serif;
+
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--tdt-bg);
+  color: var(--tdt-ink);
+  font-family: "Signika", "Segoe UI", sans-serif;
+  overflow: hidden;
+}
+
+.tdt-sheet input,
+.tdt-sheet select {
+  color: var(--tdt-ink);
+  background: var(--tdt-bg-3);
+  border: 1px solid var(--tdt-border);
+  border-radius: 0;
+  font-family: inherit;
+}
+.tdt-sheet input:focus,
+.tdt-sheet select:focus {
+  outline: none;
+  border-color: var(--tdt-gold);
+  box-shadow: 0 0 0 1px var(--tdt-gold-deep);
+}
+.tdt-sheet input[disabled] {
+  background: var(--tdt-bg-2);
+  color: var(--tdt-ink);
+  opacity: 1;
+}
+
+/* --------- HEADER --------- */
+.tdt-sheet .tdt-header {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--tdt-bg-2);
+  border-bottom: 2px solid var(--tdt-red);
+  position: relative;
+}
+.tdt-sheet .tdt-header::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: -5px;
+  height: 2px;
+  background: var(--tdt-gold-deep);
+  opacity: 0.7;
+}
+
+.tdt-sheet .tdt-portrait-frame {
+  width: 96px; height: 96px;
+  border: 2px solid var(--tdt-gold);
+  outline: 1px solid var(--tdt-red);
+  outline-offset: 2px;
+  overflow: hidden;
+  background: var(--tdt-bg);
+  flex-shrink: 0;
+}
+.tdt-sheet .tdt-portrait {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  cursor: pointer;
+}
+
+.tdt-sheet .tdt-identity {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+}
+.tdt-sheet .tdt-name {
+  font-family: var(--tdt-display);
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px dashed var(--tdt-border-bright);
+  padding: 2px 0;
+  color: var(--tdt-ink);
+  height: auto;
+  line-height: 1.15;
+}
+.tdt-sheet .tdt-name:focus { border-bottom-color: var(--tdt-gold); box-shadow: none; }
+.tdt-sheet .tdt-name::placeholder { color: var(--tdt-ink-faint); font-style: italic; font-weight: 400; }
+
+.tdt-sheet .tdt-meta {
+  display: flex;
+  gap: 20px;
+  font-size: 11px;
+  color: var(--tdt-ink-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  align-items: center;
+}
+.tdt-sheet .tdt-meta-item {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.tdt-sheet .tdt-meta-item label {
+  color: inherit;
+  font-size: inherit;
+}
+.tdt-sheet .tdt-meta-item input {
+  width: 44px;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--tdt-border-bright);
+  color: var(--tdt-gold);
+  font-weight: 700;
+  font-size: 13px;
+  text-align: center;
+  padding: 0;
+  letter-spacing: normal;
+}
+
+/* --------- BARRA DE COMBATE --------- */
+.tdt-sheet .tdt-combat-bar {
+  padding: 12px 14px;
+  background: var(--tdt-bg-2);
+  border-bottom: 1px solid var(--tdt-border);
+}
+
+.tdt-sheet .tdt-resources {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+.tdt-sheet .tdt-resources--npc {
+  grid-template-columns: 1fr 1fr;
+}
+
+.tdt-sheet .tdt-resource label {
+  font-size: 10px;
+  color: var(--tdt-gold);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 600;
+}
+.tdt-sheet .tdt-resource-fields {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.tdt-sheet .tdt-resource-fields input {
+  width: 48px;
+  height: 30px;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 0;
+}
+.tdt-sheet .tdt-resource-current {
+  color: var(--tdt-ink) !important;
+}
+.tdt-sheet .tdt-sep {
+  color: var(--tdt-ink-dim);
+  font-weight: 700;
+  padding: 0 2px;
+}
+.tdt-sheet .tdt-bonus {
+  margin-left: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.tdt-sheet .tdt-bonus-label {
+  font-size: 10px;
+  color: var(--tdt-ink-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+.tdt-sheet .tdt-bonus input {
+  width: 34px;
+  height: 22px;
+  font-size: 12px;
+  text-align: center;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--tdt-border-bright);
+}
+
+.tdt-sheet .tdt-bar {
+  margin-top: 6px;
+  height: 5px;
+  background: var(--tdt-bg);
+  border: 1px solid var(--tdt-border);
+  position: relative;
+  overflow: hidden;
+}
+.tdt-sheet .tdt-bar-fill {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+.tdt-sheet .tdt-resource--vida .tdt-bar-fill { background: var(--tdt-red); }
+.tdt-sheet .tdt-resource--magia .tdt-bar-fill { background: var(--tdt-gold); }
+
+.tdt-sheet .tdt-xp { width: 60px !important; color: var(--tdt-gold) !important; }
+.tdt-sheet .tdt-xp-hint {
+  font-size: 11px;
+  color: var(--tdt-ink-faint);
+  margin-left: 6px;
+  font-style: italic;
+}
+
+/* --------- CARDS DE CARACTERÍSTICA --------- */
+.tdt-sheet .tdt-abilities {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.tdt-sheet .tdt-ability {
+  background: var(--tdt-bg-3);
+  border: 1px solid var(--tdt-border);
+  padding: 8px 6px 6px;
+  text-align: center;
+  position: relative;
+}
+.tdt-sheet .tdt-ability::before,
+.tdt-sheet .tdt-ability::after {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  pointer-events: none;
+}
+.tdt-sheet .tdt-ability::before {
+  top: -1px; left: -1px;
+  border-top: 2px solid var(--tdt-gold);
+  border-left: 2px solid var(--tdt-gold);
+}
+.tdt-sheet .tdt-ability::after {
+  bottom: -1px; right: -1px;
+  border-bottom: 2px solid var(--tdt-gold);
+  border-right: 2px solid var(--tdt-gold);
+}
+.tdt-sheet .tdt-ability-label {
+  display: block;
+  font-size: 10px;
+  color: var(--tdt-gold);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  margin-bottom: 3px;
+  cursor: pointer;
+  line-height: 1.1;
+  min-height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.tdt-sheet .tdt-ability-label:hover {
+  color: var(--tdt-red);
+}
+.tdt-sheet .tdt-ability-total {
+  background: transparent !important;
+  border: 0 !important;
+  font-family: var(--tdt-display);
+  font-size: 28px;
+  font-weight: 700;
+  text-align: center;
+  width: 100%;
+  padding: 0;
+  color: var(--tdt-ink) !important;
+  line-height: 1;
+  height: 36px;
+  box-shadow: none !important;
+}
+.tdt-sheet .tdt-ability-breakdown {
+  font-size: 11px;
+  color: var(--tdt-ink-dim);
+  display: flex;
+  justify-content: center;
+  gap: 3px;
+  align-items: baseline;
+  margin-top: 2px;
+}
+.tdt-sheet .tdt-ability-breakdown input {
+  width: 28px;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px dotted var(--tdt-border-bright);
+  text-align: center;
+  color: var(--tdt-ink);
+  font-size: 12px;
+  padding: 0;
+  height: 18px;
+}
+.tdt-sheet .tdt-plus { color: var(--tdt-ink-faint); }
+
+.tdt-sheet .tdt-abilities--npc .tdt-ability {
+  padding: 10px 6px;
+}
+
+/* --------- STATS DERIVADAS --------- */
+.tdt-sheet .tdt-combat-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1.6fr;
+  gap: 8px;
+}
+.tdt-sheet .tdt-stat {
+  background: var(--tdt-bg-3);
+  border: 1px solid var(--tdt-border);
+  padding: 6px 10px;
+  text-align: center;
+  position: relative;
+  transition: background 0.15s, border-color 0.15s;
+}
+.tdt-sheet .tdt-stat.rollable { cursor: pointer; }
+.tdt-sheet .tdt-stat.rollable:hover {
+  background: var(--tdt-bg-4);
+  border-color: var(--tdt-red);
+}
+.tdt-sheet .tdt-stat--attack { border-left: 3px solid var(--tdt-red); }
+.tdt-sheet .tdt-stat--defense { border-left: 3px solid var(--tdt-gold); }
+.tdt-sheet .tdt-stat label {
+  font-size: 9px;
+  color: var(--tdt-gold);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  display: block;
+  font-weight: 600;
+}
+.tdt-sheet .tdt-stat-value {
+  font-family: var(--tdt-display);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--tdt-ink);
+  display: block;
+  line-height: 1.1;
+}
+.tdt-sheet .tdt-stat-formula {
+  font-size: 10px;
+  color: var(--tdt-ink-faint);
+  font-style: italic;
+}
+
+.tdt-sheet .tdt-stat--damage {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 5px 8px;
+  justify-content: center;
+  border-left: 3px solid var(--tdt-gold-deep);
+}
+.tdt-sheet .tdt-stat--damage:hover { background: var(--tdt-bg-3); border-color: var(--tdt-border-bright); }
+.tdt-sheet .tdt-damage-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.tdt-sheet .tdt-damage-row label {
+  flex: 0 0 auto;
+  font-size: 9px;
+  color: var(--tdt-gold);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  min-width: 50px;
+  text-align: left;
+}
+.tdt-sheet .tdt-damage-row select {
+  flex: 1;
+  height: 22px;
+  font-size: 11px;
+  padding: 0 4px;
+}
+
+/* --------- TABS --------- */
+.tdt-sheet .tdt-tabs {
+  display: flex;
+  padding: 0 10px;
+  background: var(--tdt-bg-2);
+  border-bottom: 1px solid var(--tdt-border);
+  gap: 0;
+  margin: 0;
+  flex-wrap: wrap;
+  flex: 0 0 auto;
+}
+.tdt-sheet .tdt-tabs .item {
+  padding: 10px 16px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--tdt-ink-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  text-decoration: none !important;
+  border-radius: 0;
+  margin: 0;
+  transition: color 0.15s, border-color 0.15s;
+}
+.tdt-sheet .tdt-tabs .item:hover { color: var(--tdt-ink); }
+.tdt-sheet .tdt-tabs .item.active {
+  color: var(--tdt-red);
+  border-bottom-color: var(--tdt-red);
+  text-shadow: 0 0 1px currentColor;
+}
+
+/* --------- CORPO DAS TABS --------- */
+.tdt-sheet .sheet-body {
+  flex: 1 1 auto;
+  padding: 14px;
+  background: var(--tdt-bg);
+  overflow-y: auto;
+}
+.tdt-sheet .sheet-body .tab { display: none; }
+.tdt-sheet .sheet-body .tab.active { display: block; }
+
+.tdt-sheet .tdt-features-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.tdt-sheet .tdt-features-col {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.tdt-sheet .tdt-list-block { min-width: 0; }
+.tdt-sheet .tdt-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--tdt-red-deep);
+  position: relative;
+}
+.tdt-sheet .tdt-list-header h3 {
+  margin: 0;
+  font-family: var(--tdt-display);
+  font-size: 14px;
+  color: var(--tdt-gold);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-weight: 700;
+  border: 0;
+  line-height: 1;
+}
+.tdt-sheet .tdt-add {
+  color: var(--tdt-red);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 2px 10px;
+  border: 1px solid var(--tdt-red-deep);
+  background: var(--tdt-bg-2);
+  text-decoration: none;
+  transition: all 0.15s;
+  line-height: 1.3;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.tdt-sheet .tdt-add:hover {
+  background: var(--tdt-red);
+  color: var(--tdt-ink);
+  border-color: var(--tdt-red);
+}
+
+.tdt-sheet .tdt-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.tdt-sheet .tdt-list .item {
+  display: flex;
+  align-items: center;
+  padding: 6px 10px;
+  background: var(--tdt-bg-2);
+  margin: 0 0 3px 0;
+  border-left: 2px solid transparent;
+  gap: 8px;
+  transition: border-color 0.15s, background 0.15s;
+}
+.tdt-sheet .tdt-list .item:hover {
+  border-left-color: var(--tdt-red);
+  background: var(--tdt-bg-3);
+}
+.tdt-sheet .tdt-item-name {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--tdt-ink);
+  text-decoration: none !important;
+  font-size: 13px;
+}
+.tdt-sheet .tdt-item-name img {
+  width: 22px; height: 22px;
+  flex-shrink: 0;
+  border: 1px solid var(--tdt-border);
+  background: var(--tdt-bg);
+}
+.tdt-sheet .tdt-item-name span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tdt-sheet .tdt-item-cost,
+.tdt-sheet .tdt-magia-meta {
+  font-size: 11px;
+  color: var(--tdt-ink-dim);
+  flex-shrink: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.tdt-sheet .tdt-magia-meta {
+  padding: 0 4px;
+}
+.tdt-sheet .tdt-item-controls {
+  display: flex;
+  gap: 6px;
+  opacity: 0.3;
+  transition: opacity 0.15s;
+  flex-shrink: 0;
+}
+.tdt-sheet .tdt-list .item:hover .tdt-item-controls { opacity: 1; }
+.tdt-sheet .tdt-item-controls a {
+  color: var(--tdt-ink-dim);
+  cursor: pointer;
+  font-size: 12px;
+  padding: 2px;
+}
+.tdt-sheet .tdt-item-controls a:hover { color: var(--tdt-gold); }
+
+.tdt-sheet .tdt-empty {
+  font-style: italic;
+  color: var(--tdt-ink-faint);
+  font-size: 12px;
+  padding: 8px 10px;
+  background: var(--tdt-bg-2);
+  border: 1px dashed var(--tdt-border);
+  text-align: center;
+}
+
+.tdt-sheet .tdt-biography {
+  background: var(--tdt-bg-2);
+  border: 1px solid var(--tdt-border);
+  padding: 10px;
+  min-height: 200px;
+}
+
+/* --------- EFFECTS (sobrescreve parte do partial legado) --------- */
+.tdt-sheet .effects-list .items-header,
+.tdt-sheet .effects-list .item.effect {
+  background: var(--tdt-bg-2);
+  border: 1px solid var(--tdt-border);
+  border-radius: 0;
+}
+.tdt-sheet .effects-list .items-header {
+  background: var(--tdt-bg-3);
+  font-family: var(--tdt-display);
+  color: var(--tdt-gold);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 12px;
+}
+.tdt-sheet .effects-list .effect-control {
+  color: var(--tdt-ink-dim);
+}
+.tdt-sheet .effects-list .effect-control:hover {
+  color: var(--tdt-gold);
+}
+
+/* --------- SCROLLBAR do sheet-body --------- */
+.tdt-sheet .sheet-body::-webkit-scrollbar { width: 8px; }
+.tdt-sheet .sheet-body::-webkit-scrollbar-track { background: var(--tdt-bg-2); }
+.tdt-sheet .sheet-body::-webkit-scrollbar-thumb {
+  background: var(--tdt-red-deep);
+  border: 1px solid var(--tdt-bg);
+}
+.tdt-sheet .sheet-body::-webkit-scrollbar-thumb:hover { background: var(--tdt-red); }
+
+/* --------- MOVIMENTO strip --------- */
+.tdt-sheet .tdt-movement {
+  margin: 10px 0 12px;
+  padding: 8px 12px;
+  background: var(--tdt-bg-3);
+  border: 1px solid var(--tdt-border);
+  border-left: 3px solid var(--tdt-gold);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: var(--tdt-ink);
+}
+.tdt-sheet .tdt-mov-group {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+}
+.tdt-sheet .tdt-mov-label {
+  color: var(--tdt-gold);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+}
+.tdt-sheet .tdt-mov-value {
+  color: var(--tdt-ink);
+  font-family: var(--tdt-display);
+  font-weight: 700;
+  font-size: 14px;
+}
+.tdt-sheet .tdt-mov-unit {
+  color: var(--tdt-ink-dim);
+  font-size: 10px;
+}
+.tdt-sheet .tdt-mov-sep {
+  color: var(--tdt-ink-faint);
+  opacity: 0.7;
+}
+.tdt-sheet .tdt-mov-main .tdt-mov-value {
+  font-size: 18px;
+  color: var(--tdt-red);
+}
+.tdt-sheet .tdt-mov-bonus {
+  font-size: 10px;
+  color: var(--tdt-gold);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-left: auto;
+  padding-left: 8px;
+}
+
+/* ============================================================
+   Ficha de Item (vantagem/desvantagem/vantagemUnica)
+   ============================================================ */
+.tdt-item-sheet {
+  --tdt-bg: #141210;
+  --tdt-bg-2: #1e1a16;
+  --tdt-bg-3: #2a231b;
+  --tdt-ink: #ede4cc;
+  --tdt-ink-dim: #a68f5e;
+  --tdt-ink-faint: #6e5e3d;
+  --tdt-red: #c1272d;
+  --tdt-gold: #d4a94d;
+  --tdt-border: #3d3327;
+  --tdt-display: "Oswald", "Impact", "Signika", sans-serif;
+
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--tdt-bg);
+  color: var(--tdt-ink);
+  font-family: "Signika", "Segoe UI", sans-serif;
+}
+
+.tdt-item-sheet input,
+.tdt-item-sheet select,
+.tdt-item-sheet textarea {
+  color: var(--tdt-ink);
+  background: var(--tdt-bg-3);
+  border: 1px solid var(--tdt-border);
+  border-radius: 0;
+  font-family: inherit;
+}
+.tdt-item-sheet input:focus,
+.tdt-item-sheet select:focus,
+.tdt-item-sheet textarea:focus {
+  outline: none;
+  border-color: var(--tdt-gold);
+  box-shadow: 0 0 0 1px var(--tdt-gold);
+}
+
+.tdt-item-sheet .tdt-item-header {
+  display: flex;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--tdt-bg-2);
+  border-bottom: 2px solid var(--tdt-red);
+}
+.tdt-item-sheet .tdt-item-portrait {
+  width: 72px; height: 72px;
+  border: 2px solid var(--tdt-gold);
+  overflow: hidden;
+  background: var(--tdt-bg);
+  flex-shrink: 0;
+}
+.tdt-item-sheet .tdt-item-portrait img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  cursor: pointer;
+}
+.tdt-item-sheet .tdt-item-identity {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+}
+.tdt-item-sheet .tdt-item-name {
+  font-family: var(--tdt-display);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px dashed var(--tdt-border);
+  padding: 2px 0;
+}
+
+.tdt-item-sheet .tdt-item-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+  color: var(--tdt-ink-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  flex-wrap: wrap;
+}
+.tdt-item-sheet .tdt-item-type {
+  color: var(--tdt-gold);
+  font-weight: 600;
+}
+.tdt-item-sheet .tdt-item-sep {
+  color: var(--tdt-ink-faint);
+  opacity: 0.7;
+}
+.tdt-item-sheet .tdt-item-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.tdt-item-sheet .tdt-item-field span {
+  color: var(--tdt-ink-dim);
+  font-size: 10px;
+}
+.tdt-item-sheet .tdt-item-field input {
+  width: 44px;
+  height: 22px;
+  padding: 0 4px;
+  font-size: 12px;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--tdt-border);
+  color: var(--tdt-ink);
+  text-transform: none;
+  letter-spacing: normal;
+}
+.tdt-item-sheet .tdt-item-field--wide input { width: 140px; }
+.tdt-item-sheet .tdt-item-unit { color: var(--tdt-ink-faint); font-size: 10px; }
+
+.tdt-item-sheet .tdt-item-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  padding: 12px 14px;
+  background: var(--tdt-bg-2);
+  border-bottom: 1px solid var(--tdt-border);
+}
+.tdt-item-sheet .tdt-item-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.tdt-item-sheet .tdt-item-form-field span {
+  font-size: 10px;
+  color: var(--tdt-gold);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+}
+.tdt-item-sheet .tdt-item-form-field input {
+  height: 28px;
+  padding: 0 8px;
+  font-size: 12px;
+}
+.tdt-item-sheet .tdt-item-form-field input::placeholder {
+  color: var(--tdt-ink-faint);
+  font-style: italic;
+}
+
+.tdt-item-sheet .tdt-item-tabs {
+  display: flex;
+  gap: 0;
+  padding: 0 10px;
+  background: var(--tdt-bg-2);
+  border-bottom: 1px solid var(--tdt-border);
+  margin: 0;
+}
+.tdt-item-sheet .tdt-item-tabs .item {
+  padding: 10px 16px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--tdt-ink-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  text-decoration: none !important;
+  border-radius: 0;
+}
+.tdt-item-sheet .tdt-item-tabs .item.active {
+  color: var(--tdt-red);
+  border-bottom-color: var(--tdt-red);
+}
+
+.tdt-item-sheet .tdt-item-body {
+  flex: 1 1 auto;
+  padding: 14px;
+  background: var(--tdt-bg);
+  overflow-y: auto;
+}
+.tdt-item-sheet .tdt-item-body .tab { display: none; }
+.tdt-item-sheet .tdt-item-body .tab.active { display: block; }
+.tdt-item-sheet .tdt-item-hint {
+  font-size: 11px;
+  color: var(--tdt-ink-faint);
+  font-style: italic;
+  margin-bottom: 8px;
+}
+
+/* ============================================================
+   Wizard "Nova vantagem/desvantagem"
+   ============================================================ */
+.tdt-wizard {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 13px;
+}
+.tdt-wizard-templates {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.tdt-wizard-template {
+  padding: 8px 10px;
+  border: 1px solid var(--color-border, #3d3327);
+  background: rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  text-align: left;
+  font-size: 12px;
+  line-height: 1.3;
+}
+.tdt-wizard-template:hover,
+.tdt-wizard-template.active {
+  border-color: #c1272d;
+  background: rgba(193, 39, 45, 0.15);
+}
+.tdt-wizard-template strong { display: block; margin-bottom: 2px; font-size: 13px; }
+.tdt-wizard-template small { color: #a68f5e; font-size: 10px; }
+.tdt-wizard-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.tdt-wizard label {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #d4a94d;
+  font-weight: 600;
+}
+.tdt-wizard label input,
+.tdt-wizard label select,
+.tdt-wizard label textarea {
+  font-size: 13px;
+  text-transform: none;
+  letter-spacing: normal;
+  font-weight: 400;
+  color: inherit;
+}
+
+/* --------- Toolbar do wizard na aba de features --------- */
+.tdt-sheet .tdt-wizard-toolbar {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.tdt-sheet .tdt-wizard-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--tdt-gold);
+  background: var(--tdt-bg-2);
+  border: 1px solid var(--tdt-gold-deep);
+  text-decoration: none !important;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.tdt-sheet .tdt-wizard-btn:hover {
+  background: var(--tdt-gold-deep);
+  color: var(--tdt-bg);
+  border-color: var(--tdt-gold);
+}
+.tdt-sheet .tdt-wizard-btn i { font-size: 12px; }
+
+/* ============================================================
+   Wizard de criação de personagem
+   ============================================================ */
+
+.tdt-sidebar-guided {
+  margin: 6px 0;
+  padding: 6px 10px;
+  background: #1e1a16;
+  color: #d4a94d;
+  border: 1px solid #9c7d34;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.tdt-sidebar-guided:hover {
+  background: #9c7d34;
+  color: #14110d;
+}
+
+.tdt-wizard--personagem {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  max-height: 78vh;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+.tdt-wizard--personagem .tdt-wiz-section {
+  background: rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(156, 125, 52, 0.4);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.tdt-wizard--personagem h3 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: #d4a94d;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border: 0;
+}
+.tdt-wizard--personagem h3 small {
+  font-size: 11px;
+  color: #a68f5e;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: normal;
+  margin-left: 6px;
+}
+
+.tdt-wiz-abilities {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+.tdt-wiz-ability {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 4px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(156, 125, 52, 0.3);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #d4a94d;
+  font-weight: 600;
+}
+.tdt-wiz-ability span { font-size: 10px; }
+.tdt-wiz-ability input {
+  width: 100%;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 700;
+  font-family: "Oswald", sans-serif;
+  background: transparent;
+  color: #ede4cc;
+  border: 0;
+  padding: 0;
+}
+
+.tdt-wiz-filter input {
+  width: 100%;
+  height: 28px;
+  font-size: 12px;
+  padding: 0 8px;
+}
+
+.tdt-wiz-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  max-height: 220px;
+  overflow-y: auto;
+  padding: 4px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(156, 125, 52, 0.2);
+}
+.tdt-wiz-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  gap: 6px;
+  align-items: center;
+  padding: 6px 8px;
+  font-size: 12px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid transparent;
+  cursor: pointer;
+  color: #ede4cc;
+}
+.tdt-wiz-item:hover { border-color: #9c7d34; }
+.tdt-wiz-item input[type="checkbox"] { margin: 0; }
+.tdt-wiz-item:has(input:checked) {
+  border-color: #c1272d;
+  background: rgba(193, 39, 45, 0.15);
+}
+.tdt-wiz-item-name { font-weight: 500; }
+.tdt-wiz-item-tag {
+  font-size: 10px;
+  color: #a68f5e;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  background: rgba(156, 125, 52, 0.15);
+  padding: 1px 6px;
+  border-radius: 2px;
+}
+.tdt-wiz-item-cost {
+  font-family: "Oswald", sans-serif;
+  font-weight: 700;
+  color: #d4a94d;
+  font-size: 13px;
+}
+.tdt-wiz-empty {
+  color: #a68f5e;
+  font-style: italic;
+  padding: 8px;
+  font-size: 12px;
+}
+
+.tdt-wiz-budget {
+  position: sticky;
+  bottom: 0;
+  background: #1e1a16;
+  border: 2px solid #9c7d34;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  z-index: 10;
+}
+.tdt-wiz-budget-main {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.tdt-wiz-budget-label {
+  font-size: 10px;
+  color: #d4a94d;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+}
+.tdt-wiz-budget-remaining {
+  font-family: "Oswald", sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #ede4cc;
+  line-height: 1;
+}
+.tdt-wiz-budget.is-over .tdt-wiz-budget-remaining { color: #e24b4a; }
+.tdt-wiz-budget.is-ok .tdt-wiz-budget-remaining { color: #97c459; }
+.tdt-wiz-budget-sep, .tdt-wiz-budget-unit {
+  color: #a68f5e;
+  font-size: 13px;
+}
+.tdt-wiz-budget-parts {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 11px;
+  color: #a68f5e;
+}
+.tdt-wiz-budget-parts strong {
+  color: #ede4cc;
+  font-weight: 600;
+  margin-left: 4px;
+}
+
+.tdt-wizard--personagem textarea,
+.tdt-wizard--personagem input,
+.tdt-wizard--personagem select {
+  background: rgba(0, 0, 0, 0.25);
+  color: #ede4cc;
+  border: 1px solid #3d3327;
+  border-radius: 0;
+  font-family: inherit;
+}
+.tdt-wizard--personagem textarea:focus,
+.tdt-wizard--personagem input:focus,
+.tdt-wizard--personagem select:focus {
+  outline: none;
+  border-color: #d4a94d;
+}
+
+/* ============================================================
+   Wizard v2 — refinamentos: dropdown escuro, painel de detalhes,
+   estado unaffordable, controle de pontos.
+   ============================================================ */
+
+/* Fundos escuros com opacidade pra inputs/selects/textareas do wizard. */
+.tdt-wizard--personagem input,
+.tdt-wizard--personagem select,
+.tdt-wizard--personagem textarea {
+  background: rgba(20, 18, 16, 0.88) !important;
+  color: #ede4cc !important;
+  border: 1px solid #3d3327 !important;
+  border-radius: 0 !important;
+}
+.tdt-wizard--personagem input::placeholder,
+.tdt-wizard--personagem textarea::placeholder {
+  color: rgba(166, 143, 94, 0.6);
+  font-style: italic;
+}
+.tdt-wizard--personagem select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 24px;
+  background-image:
+    linear-gradient(45deg, transparent 50%, #d4a94d 50%),
+    linear-gradient(135deg, #d4a94d 50%, transparent 50%);
+  background-position: calc(100% - 12px) 50%, calc(100% - 7px) 50%;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+}
+/* As <option> do dropdown aberto — nem todo browser permite estilizar 100%, 
+   mas os principais (Chrome/Firefox) respeitam background/color. */
+.tdt-wizard--personagem option {
+  background: #1e1a16;
+  color: #ede4cc;
+}
+
+/* Split do picker: lista de itens à esquerda, detalhes à direita. */
+.tdt-wiz-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 8px;
+}
+.tdt-wiz-split .tdt-wiz-list {
+  grid-template-columns: 1fr;
+  max-height: 240px;
+}
+.tdt-wiz-detail {
+  max-height: 240px;
+  overflow-y: auto;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(156, 125, 52, 0.3);
+  padding: 10px 12px;
+  font-size: 12px;
+  color: #ede4cc;
+  line-height: 1.55;
+}
+.tdt-wiz-detail h4 {
+  margin: 0 0 6px;
+  font-size: 14px;
+  color: #d4a94d;
+  font-family: "Oswald", sans-serif;
+  font-weight: 700;
+  border: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.tdt-wiz-detail-hint {
+  color: #6e5e3d;
+  font-style: italic;
+  font-size: 11px;
+  margin: 0;
+  text-align: center;
+  padding-top: 20px;
+}
+.tdt-wiz-detail-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+.tdt-chip {
+  font-size: 10px;
+  padding: 2px 8px;
+  background: rgba(156, 125, 52, 0.2);
+  border: 1px solid rgba(156, 125, 52, 0.5);
+  color: #d4a94d;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-radius: 2px;
+  font-weight: 600;
+}
+.tdt-chip--cost {
+  background: rgba(193, 39, 45, 0.2);
+  border-color: #c1272d;
+  color: #f0999b;
+}
+.tdt-wiz-detail-prereq {
+  font-size: 11px;
+  color: #a68f5e;
+  margin-bottom: 6px;
+  padding: 4px 8px;
+  border-left: 2px solid #9c7d34;
+  background: rgba(156, 125, 52, 0.08);
+}
+.tdt-wiz-detail-prereq strong {
+  color: #d4a94d;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 10px;
+}
+.tdt-wiz-detail-body {
+  font-size: 12px;
+}
+.tdt-wiz-detail-body p { margin: 0 0 6px; }
+.tdt-wiz-detail-body strong { color: #d4a94d; }
+
+/* Estado "não cabe no orçamento" — fade e cursor proibido. */
+.tdt-wiz-item.is-unaffordable {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.tdt-wiz-item.is-unaffordable:hover {
+  border-color: transparent;
+}
+.tdt-wiz-item.is-unaffordable input[type="checkbox"] {
+  pointer-events: none;
+}
+
+/* Orçamento quando está estourado — destaque forte. */
+.tdt-wiz-budget.is-over {
+  border-color: #e24b4a;
+  background: rgba(193, 39, 45, 0.15);
+}
+.tdt-wiz-budget.is-over .tdt-wiz-budget-label {
+  color: #f0999b;
+}
+
+
+/* ============================================================
+   Wizard v3 — barra de orçamento no topo sticky, steppers +/−,
+   painel de detalhes full-width abaixo da lista.
+   ============================================================ */
+
+/* Barra de orçamento no topo, sticky. Sobrepõe a variante antiga. */
+.tdt-wiz-budget-bar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 14px;
+  background: #1e1a16;
+  border: 2px solid #9c7d34;
+  margin-bottom: 14px;
+}
+.tdt-wiz-budget-bar .tdt-wiz-budget-main {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.tdt-wiz-budget-bar .tdt-wiz-budget-label {
+  font-size: 10px;
+  color: #d4a94d;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+}
+.tdt-wiz-budget-bar .tdt-wiz-budget-remaining {
+  font-family: "Oswald", "Impact", sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  color: #ede4cc;
+  line-height: 1;
+}
+.tdt-wiz-budget-bar.is-over .tdt-wiz-budget-remaining { color: #e24b4a; }
+.tdt-wiz-budget-bar.is-ok .tdt-wiz-budget-remaining   { color: #97c459; }
+.tdt-wiz-budget-bar .tdt-wiz-budget-sep,
+.tdt-wiz-budget-bar [data-role="total"] {
+  color: #a68f5e;
+  font-size: 15px;
+}
+.tdt-wiz-budget-bar .tdt-wiz-budget-parts {
+  display: flex;
+  gap: 14px;
+  font-size: 11px;
+  color: #a68f5e;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.tdt-wiz-budget-bar .tdt-wiz-budget-parts strong {
+  color: #ede4cc;
+  font-weight: 700;
+  margin-left: 4px;
+}
+.tdt-wiz-budget-bar.is-over {
+  border-color: #e24b4a;
+  box-shadow: 0 0 0 1px rgba(226, 75, 74, 0.4);
+}
+
+/* ----- Steppers +/− pras características ----- */
+.tdt-steppers {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+.tdt-stepper {
+  background: rgba(20, 18, 16, 0.6);
+  border: 1px solid #3d3327;
+  padding: 8px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.tdt-stepper-label {
+  font-size: 10px;
+  color: #d4a94d;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.1;
+  min-height: 24px;
+  display: flex;
+  align-items: center;
+}
+.tdt-stepper-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.tdt-step-btn {
+  width: 28px;
+  height: 28px;
+  background: #1e1a16;
+  color: #d4a94d;
+  border: 1px solid #9c7d34;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  font-family: inherit;
+  transition: background 0.12s, color 0.12s;
+}
+.tdt-step-btn:hover:not(:disabled) {
+  background: #9c7d34;
+  color: #14110d;
+}
+.tdt-step-btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+.tdt-step-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+.tdt-stepper-value {
+  min-width: 30px;
+  text-align: center;
+  font-family: "Oswald", "Impact", sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: #ede4cc;
+}
+
+/* ----- Lista de itens (vantagem/desvantagem) em grid 2col ----- */
+.tdt-wiz-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  max-height: 220px;
+  overflow-y: auto;
+  padding: 4px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(156, 125, 52, 0.25);
+  margin-top: 8px;
+}
+
+/* ----- Painel de detalhes: full-width abaixo da lista ----- */
+.tdt-wiz-detail {
+  margin-top: 8px;
+  min-height: 140px;
+  max-height: 320px;
+  overflow-y: auto;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid #9c7d34;
+  padding: 12px 14px;
+  font-size: 12px;
+  color: #ede4cc;
+  line-height: 1.6;
+}
+.tdt-wiz-detail-hint {
+  color: #6e5e3d;
+  font-style: italic;
+  text-align: center;
+  margin: 0;
+  padding: 24px 8px;
+}
+.tdt-wiz-detail-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid rgba(156, 125, 52, 0.3);
+  padding-bottom: 6px;
+}
+.tdt-wiz-detail h4 {
+  margin: 0;
+  font-size: 16px;
+  color: #d4a94d;
+  font-family: "Oswald", "Impact", sans-serif;
+  font-weight: 700;
+  border: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.tdt-wiz-detail-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-left: auto;
+}
+.tdt-wiz-detail-prereq {
+  font-size: 11px;
+  color: #a68f5e;
+  margin-bottom: 8px;
+  padding: 6px 10px;
+  border-left: 3px solid #9c7d34;
+  background: rgba(156, 125, 52, 0.1);
+}
+.tdt-wiz-detail-prereq strong {
+  color: #d4a94d;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 10px;
+  margin-right: 4px;
+}
+.tdt-wiz-detail-body {
+  font-size: 12px;
+}
+.tdt-wiz-detail-body p { margin: 0 0 8px; }
+.tdt-wiz-detail-body strong { color: #d4a94d; }
+.tdt-wiz-detail-body em { color: #a68f5e; }
+.tdt-wiz-detail-body br { line-height: 1.3; }
+.tdt-wiz-detail-body code {
+  background: rgba(212, 169, 77, 0.15);
+  color: #d4a94d;
+  padding: 1px 4px;
+  border-radius: 2px;
+  font-size: 11px;
+}
+
+/* Override pro filtro de lista — input estilizado */
+.tdt-wiz-filter-input {
+  width: 100%;
+  height: 28px;
+  padding: 0 10px;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+/* Override pra lista remover o split-column legado */
+.tdt-wiz-split { display: block !important; }
+.tdt-wiz-split > .tdt-wiz-detail { margin-top: 8px; }
+
+
+/* --------- Estado "atualmente vendo" no picker do wizard --------- */
+.tdt-wiz-item.is-viewing {
+  border-color: #d4a94d !important;
+  background: rgba(212, 169, 77, 0.12) !important;
+  box-shadow: inset 3px 0 0 #d4a94d;
+}
+.tdt-wiz-item.is-viewing:has(input:checked) {
+  /* Mantém destaque quando também está marcado */
+  box-shadow: inset 3px 0 0 #d4a94d, inset 0 0 0 1px #c1272d;
+}
+
+/* Reforço da visibilidade do painel de detalhes — com min-height alto
+   pra ficar óbvio que existe, mesmo vazio. */
+.tdt-wiz-detail {
+  min-height: 160px;
+}
+
+/* ============================================================
+   Wizard v4 — fix de scroll + dialog resizable
+   ============================================================ */
+
+/* Remove o overflow interno: agora quem rola é a window-content do DialogV2,
+   o que garante que o footer com o botão "Criar personagem" fique sempre acessível. */
+.tdt-wizard-dialog .tdt-wizard--personagem {
+  max-height: none !important;
+  overflow: visible !important;
+  padding-right: 0 !important;
+  display: flex !important;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* A window-content do DialogV2 vira o elemento scrollável. */
+.tdt-wizard-dialog .window-content {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 12px;
+}
+
+/* Footer do DialogV2 grudado no fim da janela — o OK não some com scroll. */
+.tdt-wizard-dialog .dialog-buttons,
+.tdt-wizard-dialog footer,
+.tdt-wizard-dialog .form-footer {
+  position: sticky;
+  bottom: 0;
+  background: #1e1a16;
+  border-top: 2px solid #9c7d34;
+  padding: 10px 12px;
+  margin: 0 -12px -12px;
+  z-index: 30;
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+.tdt-wizard-dialog .dialog-buttons button,
+.tdt-wizard-dialog footer button,
+.tdt-wizard-dialog .form-footer button {
+  min-width: 160px;
+}
+
+/* Quando o dialog é redimensionado, os painéis de detalhe devem crescer junto. */
+.tdt-wizard-dialog .tdt-wiz-detail {
+  min-height: 140px;
+  max-height: 280px;
+}
+
+/* --------- Estado "trancado por escola" nas magias do wizard --------- */
+.tdt-wiz-item.is-locked {
+  opacity: 0.28;
+  cursor: help;
+  position: relative;
+}
+.tdt-wiz-item.is-locked:hover {
+  border-color: transparent;
+}
+.tdt-wiz-item.is-locked::after {
+  content: "🔒";
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 11px;
+  opacity: 0.7;
+}
+.tdt-wiz-item.is-locked .tdt-wiz-item-cost {
+  color: #6e5e3d;
+}
+
+/* ============================================================
+   Vantagens empilháveis no wizard
+   ============================================================ */
+.tdt-wiz-item--stackable {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  gap: 8px;
+  align-items: center;
+  padding: 4px 8px;
+  cursor: default;
+}
+.tdt-wiz-item--stackable.is-stacked {
+  border-color: #c1272d;
+  background: rgba(193, 39, 45, 0.12);
+}
+.tdt-wiz-item--stackable .tdt-wiz-item-name {
+  grid-column: 2;
+}
+.tdt-wiz-item--stackable:hover { border-color: #9c7d34; }
+.tdt-stack-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+.tdt-stack-count {
+  min-width: 22px;
+  text-align: center;
+  font-family: "Oswald", "Impact", sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  color: #ede4cc;
+  padding: 0 4px;
+}
+.tdt-step-btn--sm {
+  width: 22px;
+  height: 22px;
+  font-size: 14px;
+}
+
+/* ============================================================
+   Chat cards — estilo sóbrio, próximo do Foundry nativo.
+   Use uma barra colorida fina à esquerda pra identidade
+   (vermelho=ataque, dourado=cast, cinza=item) e o resto
+   adapta tema claro/escuro via variáveis do Foundry.
+   ============================================================ */
+
+.tdt-chat-card {
+  font-family: var(--font-primary, "Signika", sans-serif);
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--color-text-primary, inherit);
+  border-left: 3px solid #8a7851;
+  padding: 6px 8px 4px 10px;
+  margin: 2px 0;
+}
+.tdt-chat-card--attack { border-left-color: #a23b3c; }
+.tdt-chat-card--cast   { border-left-color: #b8944a; }
+
+.tdt-chat-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.tdt-chat-img {
+  width: 32px; height: 32px;
+  border: 1px solid var(--color-border-light-2, rgba(0, 0, 0, 0.2));
+  background: var(--color-bg-option, rgba(0, 0, 0, 0.05));
+  flex-shrink: 0;
+  object-fit: cover;
+}
+.tdt-chat-title {
+  flex: 1;
+  min-width: 0;
+}
+.tdt-chat-title h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: inherit;
+  line-height: 1.2;
+  border: 0;
+}
+.tdt-chat-type {
+  font-size: 11px;
+  color: var(--color-text-subtle, rgba(0, 0, 0, 0.55));
+}
+
+.tdt-chat-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  margin: 4px 0 6px;
+}
+.tdt-chat-chip {
+  display: inline-block;
+  font-size: 11px;
+  padding: 1px 7px;
+  background: rgba(127, 127, 127, 0.08);
+  border: 1px solid rgba(127, 127, 127, 0.35);
+  color: inherit;
+  border-radius: 3px;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.tdt-chat-chip--cost   { color: #a23b3c; border-color: rgba(162, 59, 60, 0.4); background: rgba(162, 59, 60, 0.06); }
+.tdt-chat-chip--pm     { color: #3a6ea5; border-color: rgba(58, 110, 165, 0.4); background: rgba(58, 110, 165, 0.06); }
+.tdt-chat-chip--school { color: #7a5a1e; border-color: rgba(122, 90, 30, 0.4);  background: rgba(184, 148, 74, 0.08); }
+.tdt-chat-chip--req    { color: #555;    border-color: rgba(85, 85, 85, 0.35); }
+
+.tdt-chat-desc {
+  margin: 4px 0 6px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.tdt-chat-desc p { margin: 0 0 5px; }
+.tdt-chat-desc p:last-child { margin-bottom: 0; }
+.tdt-chat-desc strong { font-weight: 600; }
+.tdt-chat-desc em { color: var(--color-text-subtle, rgba(0, 0, 0, 0.55)); }
+
+.tdt-chat-actions {
+  display: flex;
+  gap: 4px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+.tdt-chat-btn {
+  flex: 1;
+  min-width: 90px;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 500;
+  background: var(--color-bg-option, rgba(127, 127, 127, 0.1));
+  color: inherit;
+  border: 1px solid var(--color-border-light-2, rgba(127, 127, 127, 0.35));
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border-radius: 3px;
+  font-family: inherit;
+  text-transform: none;
+  letter-spacing: 0;
+  line-height: 1.4;
+}
+.tdt-chat-btn:hover {
+  background: rgba(127, 127, 127, 0.18);
+  border-color: rgba(127, 127, 127, 0.55);
+}
+.tdt-chat-btn i { font-size: 11px; }
+
+/* Rolagem de característica (teste 1d6 vs alvo) */
+.tdt-chat-roll {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.tdt-chat-roll-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+.tdt-chat-roll-head strong {
+  font-size: 13px;
+  font-weight: 600;
+}
+.tdt-chat-roll-head small {
+  color: var(--color-text-subtle, rgba(0, 0, 0, 0.55));
+  font-size: 11px;
+}
+.tdt-chat-roll-body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.tdt-chat-dice {
+  font-family: var(--font-primary, inherit);
+  font-weight: 600;
+  font-size: 18px;
+  padding: 2px 10px;
+  background: rgba(127, 127, 127, 0.08);
+  border: 1px solid rgba(127, 127, 127, 0.35);
+  border-radius: 3px;
+  min-width: 36px;
+  text-align: center;
+}
+.tdt-chat-outcome {
+  font-size: 12px;
+  font-weight: 600;
+}
+.tdt-chat-outcome--ok   { color: #2d7a2d; }
+.tdt-chat-outcome--fail { color: #a23b3c; }
+
+/* Attack card: FA badge + alvos */
+.tdt-chat-card--attack .tdt-chat-head { justify-content: space-between; }
+.tdt-attack-fa {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 2px 8px;
+  background: rgba(162, 59, 60, 0.08);
+  border: 1px solid rgba(162, 59, 60, 0.35);
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+.tdt-attack-fa-label {
+  font-size: 11px;
+  color: #a23b3c;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+.tdt-attack-fa-value {
+  font-weight: 700;
+  font-size: 16px;
+  color: inherit;
+}
+.tdt-attack-fa-value.is-critical {
+  color: #b8944a;
+}
+
+.tdt-attack-targets {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin: 4px 0 6px;
+}
+.tdt-attack-target {
+  padding: 4px 8px;
+  background: rgba(127, 127, 127, 0.06);
+  border: 1px solid rgba(127, 127, 127, 0.2);
+  border-radius: 3px;
+}
+.tdt-attack-target-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+.tdt-attack-target-head strong { font-size: 12px; font-weight: 600; }
+.tdt-attack-target-fd {
+  font-size: 11px;
+  color: var(--color-text-subtle, rgba(0, 0, 0, 0.55));
+}
+.tdt-attack-target-result {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: space-between;
+}
+.tdt-attack-damage-val {
+  font-weight: 600;
+  font-size: 13px;
+  color: #a23b3c;
+}
+.tdt-attack-defended {
+  color: #2d7a2d;
+  font-size: 11px;
+  font-weight: 500;
+}
+.tdt-chat-btn--apply {
+  flex: 0 0 auto;
+  min-width: 72px;
+  padding: 2px 8px;
+  font-size: 10px;
+}
+
+.tdt-attack-no-target {
+  padding: 6px 8px;
+  font-size: 11px;
+  color: var(--color-text-subtle, rgba(0, 0, 0, 0.55));
+  font-style: italic;
+  text-align: center;
+}
+.tdt-attack-no-target kbd {
+  display: inline-block;
+  padding: 0 5px;
+  border: 1px solid var(--color-border-light-2, rgba(0, 0, 0, 0.25));
+  background: var(--color-bg-option, rgba(0, 0, 0, 0.05));
+  font-family: monospace;
+  font-size: 10px;
+  font-style: normal;
+  border-radius: 2px;
+}
+
+/* Dialog de cast: inputs */
+.tdt-cast-dialog .tdt-cast-meta {
+  background: var(--color-bg-option, rgba(0, 0, 0, 0.03));
+  padding: 6px 8px;
+  border: 1px solid var(--color-border-light-2, rgba(0, 0, 0, 0.15));
+  border-radius: 3px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.tdt-cast-dialog .tdt-cast-label {
+  display: block;
+  margin-top: 8px;
+}
+.tdt-cast-dialog .tdt-cast-label > span {
+  display: block;
+  font-size: 11px;
+  color: var(--color-text-subtle, inherit);
+  margin-bottom: 3px;
+  font-weight: 500;
+}
+.tdt-cast-dialog .tdt-cast-label > span small {
+  color: var(--color-text-subtle, rgba(0, 0, 0, 0.5));
+  font-weight: 400;
+}
+.tdt-cast-dialog input[type="text"],
+.tdt-cast-dialog input[type="number"] {
+  width: 100%;
+  height: 26px;
+  padding: 0 6px;
+  font-size: 12px;
+}
+.tdt-cast-dialog input[type="checkbox"] {
+  margin-right: 5px;
+}
+.tdt-cast-dialog .tdt-cast-label input[type="checkbox"] + span {
+  display: inline;
+  font-weight: 400;
+}
+
+/* Multi-attack rows no chat card */
+.tdt-multi-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 4px 0;
+}
+.tdt-multi-row {
+  display: grid;
+  grid-template-columns: 70px 60px 1fr auto;
+  gap: 6px;
+  align-items: center;
+  padding: 2px 6px;
+  background: rgba(127, 127, 127, 0.04);
+  border-radius: 2px;
+  font-size: 12px;
+}
+.tdt-multi-label {
+  font-size: 11px;
+  color: var(--color-text-subtle, rgba(0, 0, 0, 0.55));
+  font-weight: 500;
+}
+.tdt-multi-fa {
+  font-weight: 600;
+  font-size: 12px;
+}
+.tdt-multi-fa.is-critical {
+  color: #b8944a;
+}
+.tdt-multi-crit {
+  font-size: 10px;
+  color: #b8944a;
+  font-weight: 500;
+}
+.tdt-multi-dmg {
+  font-weight: 600;
+  color: #a23b3c;
+}
+.tdt-multi-def {
+  color: #2d7a2d;
+  font-size: 11px;
+  font-weight: 500;
+}
+.tdt-multi-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 6px;
+  margin-top: 4px;
+  border-top: 1px solid var(--color-border-light-2, rgba(127, 127, 127, 0.3));
+  font-size: 12px;
+}
+.tdt-multi-total strong {
+  font-size: 14px;
+  color: #a23b3c;
+}
+
+.tdt-cast-hint {
+  margin-top: 6px;
+  font-size: 11px;
+  color: var(--color-text-subtle, rgba(0, 0, 0, 0.55));
+  font-style: italic;
+}
+
+/* ---------- Área de efeito na ficha de magia ---------- */
+.tdt-item-sheet .tdt-item-grid--template {
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  border-top: 1px solid var(--tdt-border);
+}
+.tdt-item-sheet .tdt-item-template-header {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 4px 0;
+  margin-bottom: 2px;
+}
+.tdt-item-sheet .tdt-item-template-header > span {
+  font-size: 11px;
+  color: var(--tdt-gold);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+}
+.tdt-item-sheet .tdt-item-template-header small {
+  color: var(--tdt-ink-faint);
+  font-size: 10px;
+  font-style: italic;
+}
+.tdt-item-sheet .tdt-item-form-field small {
+  color: var(--tdt-ink-faint);
+  font-size: 9px;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 400;
+}
+
+/* Botão "Aplicar em todos" — mais proeminente que os individuais */
+.tdt-chat-btn--apply-all {
+  background: rgba(162, 59, 60, 0.12);
+  border-color: rgba(162, 59, 60, 0.55);
+  color: #a23b3c;
+  font-weight: 600;
+  flex: 1;
+  width: 100%;
+}
+.tdt-chat-btn--apply-all:hover {
+  background: rgba(162, 59, 60, 0.22);
+  border-color: #a23b3c;
+}

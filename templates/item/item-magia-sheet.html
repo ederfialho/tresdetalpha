@@ -1,48 +1,78 @@
-<form class="{{cssClass}}" autocomplete="off" width="800" height="800" >
-  <header class="sheet-header">
-    <img class="profile-img" src="{{item.img}}" data-edit="img" title="{{item.name}}"/>
-    <div class="header-fields">
-      <h1 class="charname"><input name="name" type="text" value="{{item.name}}" placeholder={{localize "TRESDETALPHA.Nome"}}/></h1>
-      <div class="grid grid-2col">
-        <div class="resource flex-group-center">
-          <label class="resource-label">{{localize "TRESDETALPHA.Escola"}}</label>
-          <input type="text" name="system.escola" value="{{system.escola}}" data-dtype="String"/>
-          <label class="resource-label">{{localize "TRESDETALPHA.Custo"}}</label>
-          <input type="text" name="system.custo" value="{{system.custo}}" data-dtype="String"/>
-          <label class="resource-label">{{localize "TRESDETALPHA.Exigencias"}}</label>
-          <input type="text" name="system.exigencias" value="{{system.exigencias}}" data-dtype="String"/>
-        </div>
-        <div class="resource flex-group-center">
-          <div class="item-subtitle" style="text-align: center;">
-            <h4 class="item-type">{{localize "TYPES.Item.magia"}}</h4>
-          </div>
-          <label class="resource-label">{{localize "TRESDETALPHA.Alcance"}}</label>
-          <input type="text" name="system.alcance" value="{{system.alcance}}" data-dtype="String"/>
-          <label class="resource-label">{{localize "TRESDETALPHA.Duracao"}}</label>
-          <input type="text" name="system.duracao" value="{{system.duracao}}" data-dtype="String"/>
-        </div>
+<section class="tdt-item-sheet tdt-item-sheet--magia {{cssClass}}">
+
+  <header class="tdt-item-header">
+    <div class="tdt-item-portrait">
+      <img src="{{item.img}}" data-edit="img" title="{{item.name}}" />
+    </div>
+    <div class="tdt-item-identity">
+      <input class="tdt-item-name" name="name" type="text" value="{{item.name}}" placeholder="{{localize 'TRESDETALPHA.Nome'}}" />
+      <div class="tdt-item-meta">
+        <span class="tdt-item-type">{{localize "TYPES.Item.magia"}}</span>
       </div>
     </div>
   </header>
 
-  {{!-- Sheet Tab Navigation --}}
-  <nav class="sheet-tabs tabs" data-group="primary">
+  <section class="tdt-item-grid tdt-item-grid--magia">
+    <label class="tdt-item-form-field">
+      <span>{{localize "TRESDETALPHA.Escola"}}</span>
+      <input name="system.escola" type="text" value="{{system.escola}}" data-dtype="String" placeholder="Ex: Branca, Elemental (fogo)" />
+    </label>
+    <label class="tdt-item-form-field">
+      <span>{{localize "TRESDETALPHA.Custo"}} em PMs</span>
+      <input name="system.custo" type="text" value="{{system.custo}}" data-dtype="String" placeholder="Ex: 2 PMs, 1 PM/turno" />
+    </label>
+    <label class="tdt-item-form-field">
+      <span>{{localize "TRESDETALPHA.Alcance"}}</span>
+      <input name="system.alcance" type="text" value="{{system.alcance}}" data-dtype="String" placeholder="Ex: curto, longo, toque" />
+    </label>
+    <label class="tdt-item-form-field">
+      <span>{{localize "TRESDETALPHA.Duracao"}}</span>
+      <input name="system.duracao" type="text" value="{{system.duracao}}" data-dtype="String" placeholder="Ex: instantânea, sustentável" />
+    </label>
+    <label class="tdt-item-form-field tdt-item-form-field--wide">
+      <span>{{localize "TRESDETALPHA.Exigencias"}}</span>
+      <input name="system.exigencias" type="text" value="{{system.exigencias}}" data-dtype="String" placeholder="Ex: Clericato, Arcano" />
+    </label>
+  </section>
+
+  <section class="tdt-item-grid tdt-item-grid--template">
+    <div class="tdt-item-template-header">
+      <span>Área de efeito</span>
+      <small>deixe tipo em branco pra magia de alvo único</small>
+    </div>
+    <label class="tdt-item-form-field">
+      <span>Tipo</span>
+      <select name="system.template.type" data-dtype="String">
+        <option value=""       {{#if (eq system.template.type "")}}selected{{/if}}>— (alvo único)</option>
+        <option value="circle" {{#if (eq system.template.type "circle")}}selected{{/if}}>Círculo (raio)</option>
+        <option value="cone"   {{#if (eq system.template.type "cone")}}selected{{/if}}>Cone</option>
+        <option value="ray"    {{#if (eq system.template.type "ray")}}selected{{/if}}>Linha / raio</option>
+        <option value="rect"   {{#if (eq system.template.type "rect")}}selected{{/if}}>Quadrado</option>
+      </select>
+    </label>
+    <label class="tdt-item-form-field">
+      <span>Distância <small>(m)</small></span>
+      <input name="system.template.distance" type="number" value="{{system.template.distance}}" step="0.5" min="0" data-dtype="Number" />
+    </label>
+    <label class="tdt-item-form-field">
+      <span>Ângulo <small>(cone)</small></span>
+      <input name="system.template.angle" type="number" value="{{system.template.angle}}" min="0" max="360" data-dtype="Number" placeholder="90" />
+    </label>
+    <label class="tdt-item-form-field">
+      <span>Largura <small>(linha, m)</small></span>
+      <input name="system.template.width" type="number" value="{{system.template.width}}" step="0.5" min="0" data-dtype="Number" placeholder="1.5" />
+    </label>
+  </section>
+
+  <nav class="sheet-tabs tabs tdt-item-tabs" data-group="primary">
     <a class="item" data-tab="description">{{localize "TRESDETALPHA.Aba.descricao"}}</a>
-    <!--<a class="item" data-tab="attributes">Attributes</a> -->
   </nav>
 
-  {{!-- Sheet Body --}}
-  <section class="sheet-body">
-
-    {{!-- Description Tab --}}
+  <section class="sheet-body tdt-item-body">
     <div class="tab" data-group="primary" data-tab="description">
+      <div class="tdt-item-hint">Efeito e texto completo da magia.</div>
       {{editor system.description target="system.description" rollData=rollData button=true owner=owner editable=editable}}
-    </div>
-
-    {{!-- Attributes Tab --}}
-    <div class="tab attributes" data-group="primary" data-tab="attributes">
-      {{!-- As you add new fields, add them in here! --}}
     </div>
   </section>
 
-</form>
+</section>
