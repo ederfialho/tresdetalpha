@@ -33,6 +33,10 @@ export class TresDeTAlphaItem extends Item {
     );
   }
 
+  get isConditional() {
+    return this.system?.mode === "conditional";
+  }
+
   /**
    * Ao clicar no item na ficha: posta um card rico no chat com descrição,
    * chips de meta (categoria, custo, escola, etc.) e botões de ação

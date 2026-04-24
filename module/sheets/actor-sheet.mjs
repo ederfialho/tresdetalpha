@@ -142,17 +142,9 @@ export class TresDeTAlphaActorSheet extends HandlebarsApplicationMixin(ActorShee
     };
 
     for (const item of this.document.items) {
-      // Enriquece cada item com flags de estado pra UI do botão ⚡ (ativar/desativar).
-      // `isActivable`: mode ∈ { activatable, reaction } ⇒ mostra ⚡.
-      // `isActive`: algum ActiveEffect transferido do item está habilitado no Actor.
-      // `isConditional`: mode === conditional ⇒ mostra ícone ⓘ (bônus situacional).
-      item.isActivable = ["activatable", "reaction"].includes(item.system?.mode);
-      // V13+: parent aponta pro item; origin não é auto-setado em transferred effects.
-      item.isActive = item.isActivable && this.document.effects.some(
-        e => (e.parent?.id === item.id || e.origin === item.uuid) && !e.disabled
-      );
-      item.isConditional = item.system?.mode === "conditional";
-
+      // Os flags de UI (isActivable / isActive / isConditional) são getters no
+      // Item (module/documents/item.mjs). Handlebars os acessa diretamente via
+      // `{{this.isActivable}}` nos templates — não precisa enriquecer aqui.
       switch (item.type) {
         case "vantagem":      buckets.vantagems.push(item); break;
         case "desvantagem":   buckets.desvantagems.push(item); break;
