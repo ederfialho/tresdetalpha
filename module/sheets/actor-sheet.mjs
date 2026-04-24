@@ -112,10 +112,19 @@ export class TresDeTAlphaActorSheet extends HandlebarsApplicationMixin(ActorShee
     };
 
     // Opções dos selects de tipo de dano (F e PdF). Consumido pelo helper `{{selectOptions}}`.
+    // Puxa da config pra permitir extensão por módulos.
+    const dtConfig = CONFIG.TRESDETALPHA?.damageTypes ?? TRESDETALPHA.damageTypes ?? { forca: [], pdf: [] };
+    const toMap = (arr) => Object.fromEntries((arr ?? []).map((t) => [t, t]));
     context.dano = {
-      forca: { "Corte": "Corte", "Esmagamento": "Esmagamento", "Perfuração": "Perfuração" },
-      pdf:   { "Elétrico": "Elétrico", "Fogo": "Fogo", "Químico": "Químico", "Sônico": "Sônico" }
+      forca: toMap(dtConfig.forca),
+      pdf:   toMap(dtConfig.pdf)
     };
+
+    // Trava o dropdown de tipo de dano quando o personagem NÃO tem Adaptador.
+    // GM sempre pode editar (override manual). Regra do Manual p.75:
+    // "A menos que tenha Adaptador, o tipo escolhido no início da criação é fixo."
+    const hasAdaptador = hasVantagem("adaptador");
+    context.tipoDeDanoLocked = !game.user.isGM && !hasAdaptador;
 
     // Items agrupados por tipo.
     this._prepareItems(context);

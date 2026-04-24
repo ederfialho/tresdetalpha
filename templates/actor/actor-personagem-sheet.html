@@ -121,13 +121,13 @@
       <div class="tdt-stat tdt-stat--damage">
         <div class="tdt-damage-row">
           <label>Dano F</label>
-          <select name="system.attributes.tipoDeDano.forca.value" data-dtype="String">
+          <select name="system.attributes.tipoDeDano.forca.value" data-dtype="String" {{#if tipoDeDanoLocked}}disabled title="Tipo de dano fixo — compre Adaptador para trocar livremente."{{/if}}>
             {{selectOptions dano.forca selected=system.attributes.tipoDeDano.forca.value blank=""}}
           </select>
         </div>
         <div class="tdt-damage-row">
           <label>Dano PdF</label>
-          <select name="system.attributes.tipoDeDano.poderDeFogo.value" data-dtype="String">
+          <select name="system.attributes.tipoDeDano.poderDeFogo.value" data-dtype="String" {{#if tipoDeDanoLocked}}disabled title="Tipo de dano fixo — compre Adaptador para trocar livremente."{{/if}}>
             {{selectOptions dano.pdf selected=system.attributes.tipoDeDano.poderDeFogo.value blank=""}}
           </select>
         </div>
