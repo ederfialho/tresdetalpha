@@ -1,20 +1,22 @@
 /**
- * Define a set of template paths to pre-load
- * Pre-loaded templates are compiled and cached for fast access when rendering
- * @return {Promise}
+ * Pré-carrega os partials Handlebars usados pelas fichas.
+ *
+ * Em Foundry V14 a função canônica é `foundry.applications.handlebars.loadTemplates`.
+ * Mantemos compatibilidade com a global `loadTemplates` caso o runtime seja mais antigo.
  */
- export const preloadHandlebarsTemplates = async function() {
-  return loadTemplates([
-
-    // Actor partials.
-    "systems/tresdetalpha/templates/actor/parts/actor-desvantagens.html",
-    "systems/tresdetalpha/templates/actor/parts/actor-effects.html",
-    "systems/tresdetalpha/templates/actor/parts/actor-features.html",
-    "systems/tresdetalpha/templates/actor/parts/actor-items.html",
-    "systems/tresdetalpha/templates/actor/parts/actor-magias.html",
-    "systems/tresdetalpha/templates/actor/parts/actor-pericias.html",
-    "systems/tresdetalpha/templates/actor/parts/actor-spells.html",
-    "systems/tresdetalpha/templates/actor/parts/actor-vantagemunica.html",
-    "systems/tresdetalpha/templates/actor/parts/actor-vantagens.html",   
-  ]);
+export const preloadHandlebarsTemplates = async function () {
+  const paths = [
+    // Partials da ficha de Actor.
+    "systems/3det-foundry-rework/templates/actor/parts/actor-desvantagens.html",
+    "systems/3det-foundry-rework/templates/actor/parts/actor-effects.html",
+    "systems/3det-foundry-rework/templates/actor/parts/actor-features.html",
+    "systems/3det-foundry-rework/templates/actor/parts/actor-items.html",
+    "systems/3det-foundry-rework/templates/actor/parts/actor-magias.html",
+    "systems/3det-foundry-rework/templates/actor/parts/actor-pericias.html",
+    "systems/3det-foundry-rework/templates/actor/parts/actor-spells.html",
+    "systems/3det-foundry-rework/templates/actor/parts/actor-vantagemunica.html",
+    "systems/3det-foundry-rework/templates/actor/parts/actor-vantagens.html"
+  ];
+  const loader = foundry.applications?.handlebars?.loadTemplates ?? globalThis.loadTemplates;
+  return loader(paths);
 };

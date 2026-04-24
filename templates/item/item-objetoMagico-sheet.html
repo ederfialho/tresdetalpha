@@ -1,42 +1,36 @@
-<form class="{{cssClass}}" autocomplete="off">
-  <header class="sheet-header">
-    <img class="profile-img" src="{{item.img}}" data-edit="img" title="{{item.name}}"/>
-    <div class="header-fields">
-      <h1 class="charname"><input name="name" type="text" value="{{item.name}}" placeholder={{localize "TRESDETALPHA.Nome"}}/></h1>
-      <div class="grid grid-3col">
-        <div class="resource flex-group-center">
-          <label class="resource-label">{{localize "TRESDETALPHA.Custoempe"}}</label>
-          <input type="text" name="system.custo" value="{{system.custo}}" data-dtype="Number"/>
-        </div>
-        <div class="resource flex-group-center">
-          <label class="resource-label">{{localize "TRESDETALPHA.tipo"}}</label>
-          <input type="text" name="system.tipo" value="{{system.tipo}}" data-dtype="String"/>
-        </div>
-        <div class="item-subtitle" style="text-align: center;">
-          <h4 class="item-type-om">{{localize "TYPES.Item.objetoMagico"}}</h4>
-        </div>
+<section class="tdt-item-sheet tdt-item-sheet--objeto {{cssClass}}">
+
+  <header class="tdt-item-header">
+    <div class="tdt-item-portrait">
+      <img src="{{item.img}}" data-edit="img" title="{{item.name}}" />
+    </div>
+    <div class="tdt-item-identity">
+      <input class="tdt-item-name" name="name" type="text" value="{{item.name}}" placeholder="{{localize 'TRESDETALPHA.Nome'}}" />
+      <div class="tdt-item-meta">
+        <span class="tdt-item-type">{{localize "TYPES.Item.objetoMagico"}}</span>
+        <span class="tdt-item-sep">·</span>
+        <label class="tdt-item-field">
+          <span>{{localize "TRESDETALPHA.Custo"}}</span>
+          <input name="system.custo" type="text" value="{{system.custo}}" data-dtype="Number" />
+          <span class="tdt-item-unit">pt</span>
+        </label>
+        <span class="tdt-item-sep">·</span>
+        <label class="tdt-item-field tdt-item-field--wide">
+          <span>{{localize "TRESDETALPHA.tipo"}}</span>
+          <input name="system.tipo" type="text" value="{{system.tipo}}" data-dtype="String" placeholder="Ex: Arma, Amuleto" />
+        </label>
       </div>
     </div>
   </header>
 
-  {{!-- Sheet Tab Navigation --}}
-  <nav class="sheet-tabs tabs" data-group="primary">
+  <nav class="sheet-tabs tabs tdt-item-tabs" data-group="primary">
     <a class="item" data-tab="description">{{localize "TRESDETALPHA.Aba.descricao"}}</a>
-    <!--<a class="item" data-tab="attributes">Attributes</a> -->
   </nav>
 
-  {{!-- Sheet Body --}}
-  <section class="sheet-body">
-
-    {{!-- Description Tab --}}
+  <section class="sheet-body tdt-item-body">
     <div class="tab" data-group="primary" data-tab="description">
       {{editor system.description target="system.description" rollData=rollData button=true owner=owner editable=editable}}
     </div>
-
-    {{!-- Attributes Tab --}}
-    <div class="tab attributes" data-group="primary" data-tab="attributes">
-      {{!-- As you add new fields, add them in here! --}}
-    </div>
   </section>
 
-</form>
+</section>

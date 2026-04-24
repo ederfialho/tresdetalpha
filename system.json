@@ -1,53 +1,56 @@
 {
-  "id": "tresdetalpha",
-  "name": "tresdetalpha",
+  "id": "3det-foundry-rework",
   "title": "3D&T Alpha",
-  "description": "Sistema NÃO OFICIAL de 3D&T Alpha, mas devidamente autorizado, para FoundryVTT!",
-  "authors": [{"name": "Éder - DZR13 - Fialho"},
-              {"name": "Allison Martins - Roundstage"}],
+  "description": "Sistema NÃO OFICIAL de 3D&T Alpha, mas devidamente autorizado, para FoundryVTT.",
+  "authors": [
+    { "name": "Éder - DZR13 - Fialho" },
+    { "name": "Allison Martins - Roundstage" }
+  ],
   "url": "https://github.com/ederfialho/tresdetalpha",
   "license": "LICENSE.txt",
   "readme": "https://github.com/ederfialho/tresdetalpha#readme",
   "bugs": "https://github.com/ederfialho/tresdetalpha/issues",
-  "version": "0.1.7.1",
+  "version": "0.2.0",
   "compatibility": {
-    "minimum": "11",
-    "verified": "13.351",
-    "maximum": "13"
+    "minimum": "14",
+    "verified": "14",
+    "maximum": "14"
   },
   "esmodules": ["module/tresdetalpha.mjs"],
   "styles": ["styles/tresdetalpha.css"],
   "scripts": [],
-  "packs": [
-    {
-      "label": "Vantagens",
-      "type": "Item",
-      "name": "vantagens",
-      "path": "packs/vantagens",
-      "system": "tresdetalpha",
-      "flags": {}
-    },
-    {
-      "label": "Desvantagens",
-      "type": "Item",
-      "name": "desvantagens",
-      "path": "packs/desvantagens",
-      "system": "tresdetalpha",
-      "flags": {}
-    }
-  ],
+  "packs": [],
   "languages": [
     {
       "lang": "pt-BR",
-      "name": "Portugês Brasileiro",
+      "name": "Português Brasileiro",
       "path": "lang/pt-BR.json"
+    },
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
     }
   ],
+  "documentTypes": {
+    "Actor": {
+      "personagem": {},
+      "npc": {}
+    },
+    "Item": {
+      "vantagem": {},
+      "desvantagem": {},
+      "vantagemUnica": {},
+      "pericia": {},
+      "magia": {},
+      "objetoMagico": {}
+    }
+  },
   "socket": false,
-  "manifest": "https://github.com/ederfialho/tresdetalpha/releases/download/release_007_1/system.json",
-  "download": "https://github.com/ederfialho/tresdetalpha/releases/download/release_007_1/system.zip",
-  "grid.Distance": 1.5,
-  "grid.Units": "m",
+  "grid": {
+    "distance": 1.5,
+    "units": "m"
+  },
   "primaryTokenAttribute": "vida",
   "secondaryTokenAttribute": "magia"
 }

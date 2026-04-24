@@ -1,248 +1,290 @@
-import {onManageActiveEffect, prepareActiveEffectCategories} from "../helpers/effects.mjs";
+import { onManageActiveEffect, prepareActiveEffectCategories } from "../helpers/effects.mjs";
+import { TRESDETALPHA } from "../helpers/config.mjs";
+import { novaVantagem } from "../wizards/nova-vantagem.mjs";
+import { rollAbilityTest, rollFormula, rollAttack } from "../helpers/chat.mjs";
+
+const { ActorSheetV2 } = foundry.applications.sheets;
+const { HandlebarsApplicationMixin } = foundry.applications.api;
 
 /**
- * Extend the basic ActorSheet with some very simple modifications
- * @extends {ActorSheet}
+ * Ficha de Actor para 3D&T Alpha.
+ * Baseada em ApplicationV2 + HandlebarsApplicationMixin (Foundry V14).
+ *
+ * Abordagem:
+ *  - Uma PART por tipo (`personagem`, `npc`); `_configureRenderParts` escolhe a correspondente
+ *    ao Actor atual em tempo de renderização.
+ *  - Tabs (marcação V1 — `.sheet-tabs .item[data-tab]`) e os botões de item/effect
+ *    são amarrados manualmente em `_onRender`. Optamos por isso em vez de
+ *    `DEFAULT_OPTIONS.actions` pra reaproveitar os templates existentes sem alterar markup.
  */
-export class TresDeTAlphaActorSheet extends ActorSheet {
+export class TresDeTAlphaActorSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
   /** @override */
-  static get defaultOptions() {
-    return mergeObject(super.defaultOptions, {
-      classes: ["tresdetalpha", "sheet", "actor"],
-      template: "systems/tresdetalpha/templates/actor/actor-sheet.html",
-      width: 600,
-      height: 735,
-      tabs: [{ navSelector: ".sheet-tabs", contentSelector: ".sheet-body", initial: "features" }]
-    });
-  }
+  static DEFAULT_OPTIONS = {
+    classes: ["tresdetalpha", "sheet", "actor"],
+    position: { width: 760, height: 820 },
+    window: { resizable: true },
+    form: { submitOnChange: true, closeOnSubmit: false }
+  };
 
   /** @override */
-  get template() {
-    return `systems/tresdetalpha/templates/actor/actor-${this.actor.type}-sheet.html`;
-  }
+  static PARTS = {
+    personagem: {
+      template: "systems/3det-foundry-rework/templates/actor/actor-personagem-sheet.html"
+    },
+    npc: {
+      template: "systems/3det-foundry-rework/templates/actor/actor-npc-sheet.html"
+    }
+  };
 
   /* -------------------------------------------- */
+  /*  Render lifecycle                            */
+  /* -------------------------------------------- */
+
+  /** Só renderiza a PART que corresponde ao tipo deste Actor. @override */
+  _configureRenderParts(options) {
+    const parts = super._configureRenderParts(options);
+    const type = this.document.type;
+    if (parts[type]) return { [type]: parts[type] };
+    return parts;
+  }
 
   /** @override */
-  getData() {
-    // Retrieve the data structure from the base sheet. You can inspect or log
-    // the context variable to see the structure, but some key properties for
-    // sheets are the actor object, the data object, whether or not it's
-    // editable, the items array, and the effects array.
-    const context = super.getData();
+  async _prepareContext(options) {
+    const context = await super._prepareContext(options);
 
-    // Use a safe clone of the actor data for further operations.
-    const actorData = this.actor.toObject(false);
+    context.actor    = this.document;
+    context.system   = this.document.system;
+    context.flags    = this.document.flags;
+    context.config   = CONFIG.TRESDETALPHA ?? TRESDETALPHA;
+    context.rollData = this.document.getRollData();
+    context.editable = this.isEditable;
+    context.owner    = this.document.isOwner;
+    context.cssClass = this.isEditable ? "editable" : "locked";
 
-    // Add the actor's data to context.data for easier access, as well as flags.
-    context.system = actorData.system;
-    context.flags = actorData.flags;
-
-    // Prepare personagem data and items.
-    if (actorData.type == 'personagem') {
-      this._prepareItems(context);
-      this._prepareCharacterData(context);
+    // Labels localizadas das características.
+    if (context.system.abilities) {
+      for (const [key, ability] of Object.entries(context.system.abilities)) {
+        ability.label = game.i18n.localize(CONFIG.TRESDETALPHA.abilities[key]) ?? key;
+      }
     }
 
-    // Prepare NPC data and items.
-    if (actorData.type == 'npc') {
-      this._prepareItems(context);
-      this._prepareCharacterData(context);
-    }
+    // Percentuais pras barrinhas de PV e PM.
+    const safePct = (value, max) => {
+      const v = Number(value) || 0;
+      const m = Number(max) || 0;
+      if (m <= 0) return 0;
+      return Math.max(0, Math.min(100, Math.round((v / m) * 100)));
+    };
+    context.vidaPercent  = safePct(context.system.vida?.value,  context.system.vida?.max);
+    context.magiaPercent = safePct(context.system.magia?.value, context.system.magia?.max);
 
-    // Add roll data for TinyMCE editors.
-    context.rollData = context.actor.getRollData();
+    // Movimento em metros por turno de combate (3D&T Alpha p.69).
+    //  • Velocidade máxima = max(Habilidade × 10, 5) m/turno
+    //  • Aceleração adiciona H+1 ⇒ +10m; Teleporte H+2 ⇒ +20m
+    //  • Nado = metade; Escalada = um quarto; Voo = igual (tudo derivado na UI)
+    const habilidade = Number(context.system.abilities?.habilidade?.total ?? 0);
+    const baseMov = Math.max(habilidade * 10, 5);
 
-    // Prepare active effects
-    context.effects = prepareActiveEffectCategories(this.actor.effects);
+    // Detecta vantagens de mobilidade cadastradas nos itens, de forma tolerante a capitalização.
+    const hasVantagem = (name) => this.document.items.some(
+      (i) => (i.type === "vantagem" || i.type === "vantagemUnica")
+          && typeof i.name === "string"
+          && i.name.toLowerCase().includes(name)
+    );
+    let bonusMov = 0;
+    const bonuses = [];
+    if (hasVantagem("aceleração") || hasVantagem("aceleracao")) { bonusMov += 10; bonuses.push("Aceleração +10m"); }
+    if (hasVantagem("teleporte")) { bonusMov += 20; bonuses.push("Teleporte +20m"); }
+
+    context.movimento = {
+      combate: baseMov + bonusMov,
+      nado:    Math.max(Math.floor((baseMov + bonusMov) / 2), 3),
+      escalada:Math.max(Math.floor((baseMov + bonusMov) / 4), 2),
+      voo:     hasVantagem("voo") ? baseMov + bonusMov : null,
+      viagem:  Math.max(habilidade * 10, 5), // km/h fora de combate
+      bonuses: bonuses.join(" · ") || null
+    };
+
+    // Items agrupados por tipo.
+    this._prepareItems(context);
+
+    // Active Effects categorizadas.
+    context.effects = prepareActiveEffectCategories(this.document.effects);
 
     return context;
   }
 
   /**
-   * Organize and classify Items for Character sheets.
-   *
-   * @param {Object} actorData The actor to prepare.
-   *
-   * @return {undefined}
-   */
-  _prepareCharacterData(context) {
-    // Handle ability scores.
-    for (let [k, v] of Object.entries(context.system.abilities)) {
-      v.label = game.i18n.localize(CONFIG.TRESDETALPHA.abilities[k]) ?? k;
-    }
-  }
-
-  /**
-   * Organize and classify Items for Character sheets.
-   *
-   * @param {Object} actorData The actor to prepare.
-   *
-   * @return {undefined}
+   * Divide os itens do Actor em buckets por tipo. Mantém as chaves legadas
+   * (`vantagems`, `desvantagems`) pra compatibilidade com os partials existentes.
+   * @private
    */
   _prepareItems(context) {
-    // Initialize containers.
-    const vantagems = [];
-    const desvantagems = [];
-    const vantagemUnica = [];
-    const pericias = [];
-    const magias = [];
-    const objetosMagicos = [];
-    const spells = {
-      0: [],
-      1: [],
-      2: [],
-      3: [],
-      4: [],
-      5: [],
-      6: [],
-      7: [],
-      8: [],
-      9: []
+    const buckets = {
+      vantagems: [],
+      desvantagems: [],
+      vantagemUnica: [],
+      pericias: [],
+      magias: [],
+      objetosMagicos: []
     };
 
-    // Iterate through items, allocating to containers
-    for (let i of context.items) {
-      i.img = i.img || DEFAULT_TOKEN;
-      // Append to vantagens.
-      if (i.type === 'vantagem') {
-        vantagems.push(i);
-      }
-      // Append to desvantagem.
-      else if (i.type === 'desvantagem') {
-        desvantagems.push(i);
-      }
-      // Append to vantagemUnica.
-      else if (i.type === 'vantagemUnica') {
-        vantagemUnica.push(i);
-      }
-      // Append to pericias.
-      else if (i.type === 'pericia') {
-        pericias.push(i);
-      }
-      // Append to magias.
-      else if (i.type === 'magia') {
-        magias.push(i);
-      }
-      // Append to objetosMagicos.
-      else if (i.type === 'objetoMagico') {
-        objetosMagicos.push(i);
+    for (const item of this.document.items) {
+      switch (item.type) {
+        case "vantagem":      buckets.vantagems.push(item); break;
+        case "desvantagem":   buckets.desvantagems.push(item); break;
+        case "vantagemUnica": buckets.vantagemUnica.push(item); break;
+        case "pericia":       buckets.pericias.push(item); break;
+        case "magia":         buckets.magias.push(item); break;
+        case "objetoMagico":  buckets.objetosMagicos.push(item); break;
       }
     }
 
-    // Assign and return
-    context.vantagems = vantagems;
-    context.desvantagems = desvantagems;
-    context.vantagemUnica = vantagemUnica;
-    context.spells = spells;
-    context.pericias = pericias;
-    context.magias = magias;
-    context.objetosMagicos = objetosMagicos;
+    Object.assign(context, buckets);
+    context.spells = {}; // legado; alguns templates podem referenciar.
+  }
+
+  /** Liga todos os ouvintes manualmente; os templates usam seletores por classe (marcação V1). @override */
+  _onRender(context, options) {
+    super._onRender(context, options);
+    const root = this.element;
+    if (!root) return;
+
+    // Tabs.
+    this._activeTab ??= "features";
+    for (const link of root.querySelectorAll(".sheet-tabs .item[data-tab]")) {
+      link.addEventListener("click", (ev) => {
+        ev.preventDefault();
+        this._activateTab(ev.currentTarget.dataset.tab);
+      });
+    }
+    this._activateTab(this._activeTab);
+
+    if (!this.isEditable) return;
+
+    // Criar item (a partir de um header com data-type).
+    for (const el of root.querySelectorAll(".item-create")) {
+      el.addEventListener("click", this._onItemCreate.bind(this));
+    }
+
+    // Editar item.
+    for (const el of root.querySelectorAll(".item-edit")) {
+      el.addEventListener("click", this._onItemEdit.bind(this));
+    }
+
+    // Apagar item.
+    for (const el of root.querySelectorAll(".item-delete")) {
+      el.addEventListener("click", this._onItemDelete.bind(this));
+    }
+
+    // Rolls genéricos (características, ataque, defesa, itens via `.rollable`).
+    for (const el of root.querySelectorAll(".rollable")) {
+      el.addEventListener("click", this._onRoll.bind(this));
+    }
+
+    // Controles de Active Effect (create/edit/delete/toggle via data-action no partial).
+    for (const el of root.querySelectorAll(".effect-control")) {
+      el.addEventListener("click", (ev) => onManageActiveEffect(ev, this.document));
+    }
+
+    // Botões do wizard "Nova vantagem (guiado)".
+    for (const el of root.querySelectorAll(".tdt-wizard-btn[data-wizard-type]")) {
+      el.addEventListener("click", (ev) => {
+        ev.preventDefault();
+        const type = ev.currentTarget.dataset.wizardType;
+        novaVantagem({ type, actor: this.document });
+      });
+    }
+
+    // Drag de itens pra macros.
+    if (this.document.isOwner) {
+      for (const li of root.querySelectorAll("li.item")) {
+        if (li.classList.contains("items-header") || li.classList.contains("inventory-header")) continue;
+        li.setAttribute("draggable", "true");
+        li.addEventListener("dragstart", (ev) => this._onDragStart?.(ev));
+      }
+    }
   }
 
   /* -------------------------------------------- */
+  /*  Tabs (manual)                               */
+  /* -------------------------------------------- */
 
-  /** @override */
-  activateListeners(html) {
-    super.activateListeners(html);
-
-    // Render the item sheet for viewing/editing prior to the editable check.
-    html.find('.item-edit').click(ev => {
-      const li = $(ev.currentTarget).parents(".item");
-      const item = this.actor.items.get(li.data("itemId"));
-      item.sheet.render(true);
-    });
-
-    // -------------------------------------------------------------
-    // Everything below here is only needed if the sheet is editable
-    if (!this.isEditable) return;
-
-    // Add Inventory Item
-    html.find('.item-create').click(this._onItemCreate.bind(this));
-
-    // Delete Inventory Item
-    html.find('.item-delete').click(ev => {
-      const li = $(ev.currentTarget).parents(".item");
-      const item = this.actor.items.get(li.data("itemId"));
-      item.delete();
-      li.slideUp(200, () => this.render(false));
-    });
-
-    // Active Effect management
-    html.find(".effect-control").click(ev => onManageActiveEffect(ev, this.actor));
-
-    // Rollable abilities.
-    html.find('.rollable').click(this._onRoll.bind(this));
-
-    // Drag events for macros.
-    if (this.actor.isOwner) {
-      let handler = ev => this._onDragStart(ev);
-      html.find('li.item').each((i, li) => {
-        if (li.classList.contains("inventory-header")) return;
-        li.setAttribute("draggable", true);
-        li.addEventListener("dragstart", handler, false);
-      });
+  _activateTab(tab) {
+    if (!tab) return;
+    this._activeTab = tab;
+    const root = this.element;
+    if (!root) return;
+    for (const el of root.querySelectorAll(".sheet-tabs .item[data-tab]")) {
+      el.classList.toggle("active", el.dataset.tab === tab);
+    }
+    for (const el of root.querySelectorAll(".sheet-body .tab[data-tab]")) {
+      el.classList.toggle("active", el.dataset.tab === tab);
     }
   }
 
-  /**
-   * Handle creating a new Owned Item for the actor using initial data defined in the HTML dataset
-   * @param {Event} event   The originating click event
-   * @private
-   */
+  /* -------------------------------------------- */
+  /*  Handlers                                    */
+  /* -------------------------------------------- */
+
   async _onItemCreate(event) {
     event.preventDefault();
-    const header = event.currentTarget;
-    // Get the type of item to create.
-    const type = header.dataset.type;
-    // Grab any data associated with this control.
-    const data = duplicate(header.dataset);
-    // Initialize a default name.
-    const name = `Novo(a) ${type.capitalize()}`;
-    // Prepare the item object.
-    const itemData = {
-      name: name,
-      type: type,
-      system: data
-    };
-    // Remove the type from the dataset since it's in the itemData.type prop.
-    delete itemData.system["type"];
-
-    // Finally, create the item!
-    return await Item.create(itemData, {parent: this.actor});
+    const target = event.currentTarget;
+    const type = target.dataset.type;
+    if (!type) return;
+    const initial = foundry.utils.deepClone(target.dataset);
+    delete initial.type;
+    const localizedType = game.i18n.localize(`TYPES.Item.${type}`) || type.capitalize?.() || type;
+    return Item.create({
+      name: `Novo(a) ${localizedType}`,
+      type,
+      system: initial
+    }, { parent: this.document });
   }
 
-  /**
-   * Handle clickable rolls.
-   * @param {Event} event   The originating click event
-   * @private
-   */
-  _onRoll(event) {
+  _onItemEdit(event) {
     event.preventDefault();
-    const element = event.currentTarget;
-    const dataset = element.dataset;
-
-    // Handle item rolls.
-    if (dataset.rollType) {
-      if (dataset.rollType == 'item') {
-        const itemId = element.closest('.item').dataset.itemId;
-        const item = this.actor.items.get(itemId);
-        if (item) return item.roll();
-      }
-    }
-
-    // Handle rolls that supply the formula directly.
-    if (dataset.roll) {
-      let label = dataset.label ? `[Característica] ${dataset.label}` : '';
-      let roll = new Roll(dataset.roll, this.actor.getRollData());
-      roll.toMessage({
-        speaker: ChatMessage.getSpeaker({ actor: this.actor }),
-        flavor: label,
-        rollMode: game.settings.get('core', 'rollMode'),
-      });
-      return roll;
-    }
+    const li = event.currentTarget.closest(".item");
+    const item = this.document.items.get(li?.dataset.itemId);
+    return item?.sheet?.render(true);
   }
 
+  _onItemDelete(event) {
+    event.preventDefault();
+    const li = event.currentTarget.closest(".item");
+    const item = this.document.items.get(li?.dataset.itemId);
+    return item?.deleteDialog();
+  }
+
+  async _onRoll(event) {
+    event.preventDefault();
+    const target = event.currentTarget;
+    const dataset = target.dataset;
+
+    // Roll de item: posta card rico no chat (botões: Abrir ficha, Conjurar pra magias).
+    if (dataset.rollType === "item") {
+      const li = target.closest(".item");
+      const item = this.document.items.get(li?.dataset.itemId);
+      return item?.roll();
+    }
+
+    // Ataque: dispara rollAttack que resolve FD dos alvos e mostra botão "Aplicar dano".
+    // Shift+click abre dialog de múltiplos ataques.
+    if (dataset.rollMode === "attack" && dataset.roll) {
+      const askMulti = !!(event.shiftKey);
+      return rollAttack(this.document, dataset.roll, dataset.label || "Ataque", { askMulti });
+    }
+
+    // Teste de característica: rola 1d6 contra o valor (sucesso se ≤ alvo e !=6).
+    const abilityTarget = Number(dataset.target);
+    if (dataset.roll === "1d6" && Number.isFinite(abilityTarget) && abilityTarget > 0) {
+      return rollAbilityTest(this.document, dataset.label || "Característica", abilityTarget);
+    }
+
+    // Roll de fórmula livre (FD, etc.).
+    if (dataset.roll) {
+      return rollFormula(this.document, dataset.roll, dataset.label || "Rolagem");
+    }
+  }
 }
