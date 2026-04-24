@@ -11,6 +11,7 @@
  */
 
 import { VANTAGENS, DESVANTAGENS, VANTAGENS_UNICAS, PERICIAS, MAGIAS } from "./compendia-seed.mjs";
+import { iconFor } from "./icon-mapping.mjs";
 
 const SYSTEM_ID = "3det-foundry-rework";
 const SETTING_SEEDED = "compendiaSeeded";
@@ -125,15 +126,23 @@ export async function seedCompendia({ force = false, wipe = false } = {}) {
  */
 function buildSystemData(row, type) {
   switch (type) {
-    case "magia":
+    case "magia": {
+      const tpl = row.template ?? {};
       return {
         description: row.efeito ?? row.description ?? "",
         escola: row.escola ?? "",
         custo: String(row.custo ?? ""),
         alcance: row.alcance ?? "",
         duracao: row.duracao ?? "",
-        exigencias: row.exigencias ?? ""
+        exigencias: row.exigencias ?? "",
+        template: {
+          type: tpl.type ?? "",
+          distance: Number(tpl.distance ?? 0),
+          width: Number(tpl.width ?? 0),
+          angle: Number(tpl.angle ?? 0)
+        }
       };
+    }
     case "pericia":
       return {
         description: row.efeito ?? row.description ?? "",
@@ -213,10 +222,18 @@ async function populatePack(pack, def) {
   const toCreate = [];
   for (const row of entries) {
     if (existingNames.has(row.name)) continue;
+
+    // Usa ícone mapeado por categoria/nome (icon-mapping.mjs); cai no default do pack se falhar.
+    const mappedIcon = iconFor({
+      name: row.name,
+      escola: row.escola,
+      categoria: row.categoria
+    }, def.itemType);
+
     toCreate.push({
       name: row.name,
       type: def.itemType,
-      img: row.img ?? def.icon,
+      img: row.img ?? mappedIcon ?? def.icon,
       system: buildSystemData(row, def.itemType),
       effects: (row.effects ?? []).map((e) => ({
         name: e.name,

@@ -2564,3 +2564,36 @@
   color: var(--color-text-subtle, rgba(0, 0, 0, 0.55));
   font-style: italic;
 }
+
+/* ---------- Área de efeito na ficha de magia ---------- */
+.tdt-item-sheet .tdt-item-grid--template {
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  border-top: 1px solid var(--tdt-border);
+}
+.tdt-item-sheet .tdt-item-template-header {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 4px 0;
+  margin-bottom: 2px;
+}
+.tdt-item-sheet .tdt-item-template-header > span {
+  font-size: 11px;
+  color: var(--tdt-gold);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+}
+.tdt-item-sheet .tdt-item-template-header small {
+  color: var(--tdt-ink-faint);
+  font-size: 10px;
+  font-style: italic;
+}
+.tdt-item-sheet .tdt-item-form-field small {
+  color: var(--tdt-ink-faint);
+  font-size: 9px;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 400;
+}

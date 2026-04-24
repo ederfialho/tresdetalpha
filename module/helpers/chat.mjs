@@ -89,15 +89,15 @@ export async function rollFormula(actor, formula, label) {
  * @param {boolean} [options.askMulti=false]  Se true, abre dialog pra múltiplo ataque
  */
 export async function rollAttack(actor, formula, label, options = {}) {
-  const { askMulti = false } = options;
+  const { askMulti = false, tokens = null, extraRollData = {} } = options;
 
   if (!askMulti) {
-    return executeAttack(actor, formula, label, { count: 1, useVantagem: false });
+    return executeAttack(actor, formula, label, { count: 1, useVantagem: false, tokens, extraRollData });
   }
 
   const config = await promptMultiAttack(actor, formula, label);
   if (!config) return;
-  return executeAttack(actor, formula, label, config);
+  return executeAttack(actor, formula, label, { ...config, tokens, extraRollData });
 }
 
 async function promptMultiAttack(actor, formula, label) {
@@ -159,8 +159,8 @@ async function promptMultiAttack(actor, formula, label) {
 }
 
 /** Executa a(s) rolagem(ns) e posta o card. */
-async function executeAttack(actor, formula, label, { count, useVantagem }) {
-  const rollData = actor?.getRollData?.() ?? {};
+async function executeAttack(actor, formula, label, { count, useVantagem, tokens: passedTokens = null, extraRollData = {} }) {
+  const rollData = { ...(actor?.getRollData?.() ?? {}), ...extraRollData };
   const multi = count > 1;
 
   // Sem vantagem e múltiplo: todos sofrem H−2.
@@ -186,7 +186,11 @@ async function executeAttack(actor, formula, label, { count, useVantagem }) {
     attackRolls.push({ total: roll.total, critical: firstDie === 6, roll });
   }
 
-  const targets = Array.from(game.user?.targets ?? []);
+  // Se vieram tokens pré-definidos (de um template de área), usa eles;
+  // senão, fallback pros alvos marcados pelo usuário.
+  const targets = Array.isArray(passedTokens) && passedTokens.length
+    ? passedTokens
+    : Array.from(game.user?.targets ?? []);
   const speaker = ChatMessage.getSpeaker({ actor });
 
   // Sem alvos: só mostra os FAs rolados.
@@ -296,14 +300,58 @@ async function applyDamage(actorUuid, damage) {
 }
 
 /**
- * Aplica dano aos tokens atualmente selecionados (não marcados como alvo).
+ * Aplica dano aos tokens selecionados (não marcados com T). Rola FD de cada um
+ * e subtrai antes de aplicar — mantém o padrão 3D&T de que dano sempre passa por FD.
+ * Posta uma mensagem consolidada no chat com o resultado.
  */
-async function applyDamageToSelected(damage) {
+async function applyDamageToSelected(faTotal) {
   const tokens = canvas?.tokens?.controlled ?? [];
-  if (!tokens.length) { ui.notifications.warn("Selecione um ou mais tokens primeiro."); return; }
-  for (const tok of tokens) {
-    if (tok.actor) await applyDamage(tok.actor.uuid, damage);
+  if (!tokens.length) {
+    ui.notifications.warn("Selecione um ou mais tokens primeiro.");
+    return;
   }
+
+  const rows = [];
+  for (const tok of tokens) {
+    const actor = tok.actor;
+    if (!actor) continue;
+    const fdFormula = "1d6 + @abilities.armadura.total + @abilities.habilidade.total";
+    const fdRoll = await new Roll(fdFormula, actor.getRollData?.() ?? {}).evaluate();
+    const fd = fdRoll.total;
+    const damage = Math.max(0, faTotal - fd);
+    const current = Number(actor.system?.vida?.value ?? 0);
+    const newValue = Math.max(0, current - damage);
+    if (damage > 0) await actor.update({ "system.vida.value": newValue });
+    rows.push({ actor, fd, damage, current, newValue });
+  }
+
+  const rowsHtml = rows.map((r) => `
+    <div class="tdt-attack-target">
+      <div class="tdt-attack-target-head">
+        <strong>${r.actor.name}</strong>
+        <span class="tdt-attack-target-fd">FD ${r.fd}</span>
+      </div>
+      <div class="tdt-attack-target-result">
+        ${r.damage > 0
+          ? `<span class="tdt-attack-damage-val">${r.damage} dano</span>
+             <small>(${r.current} → ${r.newValue} PVs)</small>`
+          : `<span class="tdt-attack-defended"><i class="fas fa-shield"></i> Defendeu</span>`}
+      </div>
+    </div>
+  `).join("");
+
+  const content = `
+    <div class="tdt-chat-card tdt-chat-card--attack">
+      <header class="tdt-chat-head">
+        <div class="tdt-chat-title">
+          <h3>Dano aplicado (FA ${faTotal})</h3>
+          <span class="tdt-chat-type">FD rolada para cada alvo</span>
+        </div>
+      </header>
+      <div class="tdt-attack-targets">${rowsHtml}</div>
+    </div>
+  `;
+  await ChatMessage.create({ content });
 }
 
 /**
@@ -313,17 +361,47 @@ async function applyDamageToSelected(damage) {
  */
 export function parseDamageHint(text) {
   if (!text) return null;
-  const m = String(text).match(/FA\s*=\s*([^.,<\n]+?)(?=[.,<]|\s*$)/i);
+  const m = String(text).match(/FA\s*=\s*([^.,<(\n]+?)(?=[.,<(]|\s*$)/i);
   if (!m) return null;
   let f = m[1].trim();
-  // PdF antes de F pra não quebrar o match
+
+  // Primeiro, detecta escalonamento por PMs na forma "Nd por/para cada M PMs".
+  // Ex: "1d por 2 PMs" → número de dados escala com gasto. Converte pra `floor(@pmCost/M)d`.
+  f = f.replace(
+    /(\d+)d\s+(?:por|pra|para)\s+(?:cada\s+)?(\d+)\s+PMs?/gi,
+    "(floor(@pmCost/$2))d"
+  );
+  // Variante sem o número de dados explícito: "+PMs" (escala 1 por PM)
+  // já é tratada pelo replace de PMs abaixo.
+
+  // Substitui "PMs" standalone pelo custo escolhido.
+  f = f.replace(/\bPMs?\b/gi, "@pmCost");
+
+  // Palavras-chave completas (PT)
+  f = f.replace(/\bArmadura\b/gi, "@abilities.armadura.total");
+  f = f.replace(/\bHabilidade\b/gi, "@abilities.habilidade.total");
+  f = f.replace(/\bForça\b/gi, "@abilities.forca.total");
+  f = f.replace(/\bResistência\b/gi, "@abilities.resistencia.total");
+  f = f.replace(/\bPoder de Fogo\b/gi, "@abilities.poderDeFogo.total");
+
+  // Abreviações: PdF antes de F pra não quebrar o match
   f = f.replace(/\bPdF\b/g, "@abilities.poderDeFogo.total");
   f = f.replace(/\bH\b/g, "@abilities.habilidade.total");
   f = f.replace(/\bF\b/g, "@abilities.forca.total");
   f = f.replace(/\bA\b/g, "@abilities.armadura.total");
   f = f.replace(/\bR\b/g, "@abilities.resistencia.total");
-  // Nd (sem tamanho explícito) → Nd6
+
+  // Nd (sem tamanho explícito ou parentização) → Nd6
+  // Cobre tanto "5d" quanto "(floor(@pmCost/2))d" (não vai ter dígito após o d nesses casos).
   f = f.replace(/(\d+)d(?!\d)/g, "$1d6");
+  f = f.replace(/\)d(?!\d)/g, ")d6");
+
+  // Limpa palavras PT residuais no fim (gastos, extras, no final) que ficam soltas
+  // depois das substituições e quebrariam o Roll do Foundry.
+  f = f.replace(/\s+(gastos?|extras?|m[aá]x(?:imo)?|acima|at[ée]|no|do|da|de|a\s+cada|aliado)\b.*$/gi, "");
+  // Dangling PT connectors no meio ("para cada N" que sobrou).
+  f = f.replace(/\s+(?:para|pra|por)\s+cada\s+\d+\s*$/gi, "");
+
   return f.trim();
 }
 
@@ -425,6 +503,11 @@ export async function castMagia(magia) {
   // Tenta extrair fórmula de dano da descrição (procura "FA=..." na primeira ocorrência).
   const defaultDamage = parseDamageHint(s.description) || parseDamageHint(s.efeito) || "";
 
+  // Info do template de área, se a magia tiver.
+  const tpl = s.template ?? {};
+  const hasTemplate = !!tpl.type;
+  const templateLabel = hasTemplate ? formatTemplateLabel(tpl) : "";
+
   const DialogV2 = foundry.applications.api.DialogV2;
   const content = `
     <div class="tdt-cast-dialog">
@@ -433,6 +516,7 @@ export async function castMagia(magia) {
         ${s.escola ? `<div>Escola: <em>${s.escola}</em></div>` : ""}
         <div>Custo original: <em>${custoStr || "não definido"}</em></div>
         <div>PMs atuais: <strong>${currentPm} / ${maxPm}</strong></div>
+        ${hasTemplate ? `<div>Área: <strong style="color:#7a5a1e;">${templateLabel}</strong></div>` : ""}
       </div>
       <label class="tdt-cast-label">
         <span>PMs a gastar</span>
@@ -444,8 +528,14 @@ export async function castMagia(magia) {
       </label>
       <label class="tdt-cast-label">
         <input type="checkbox" name="rollDamage" ${defaultDamage ? "checked" : ""} />
-        <span>Rolar dano e atacar alvos marcados (se houver)</span>
+        <span>Rolar dano${hasTemplate ? " contra alvos na área" : " contra alvos marcados"}</span>
       </label>
+      ${hasTemplate ? `
+      <label class="tdt-cast-label">
+        <input type="checkbox" name="placeTemplate" checked />
+        <span>Posicionar template de área no canvas</span>
+      </label>
+      ` : ""}
     </div>
   `;
 
@@ -463,7 +553,8 @@ export async function castMagia(magia) {
           return {
             pmCost: Number(get("pmCost")?.value) || 0,
             damageFormula: String(get("damageFormula")?.value || "").trim(),
-            rollDamage: !!get("rollDamage")?.checked
+            rollDamage: !!get("rollDamage")?.checked,
+            placeTemplate: !!get("placeTemplate")?.checked
           };
         }
       },
@@ -508,15 +599,46 @@ export async function castMagia(magia) {
     flags: { [SYSTEM_ID]: { magiaCast: true, magiaUuid: magia.uuid } }
   });
 
+  // Posiciona o template de área, se a magia tem e o usuário marcou.
+  let areaTokens = null;
+  if (hasTemplate && data.placeTemplate) {
+    const { placeMagiaTemplate, getTokensInTemplate } = await import("./measured-templates.mjs");
+    const placed = await placeMagiaTemplate(magia, actor);
+    if (placed) {
+      // Aguarda 1 tick pro PIXI renderizar o shape (senão `getTokensInTemplate`
+      // cai pro fallback manual, o que ainda funciona mas pode variar).
+      await new Promise((r) => setTimeout(r, 100));
+      areaTokens = getTokensInTemplate(placed);
+      const msg = areaTokens.length
+        ? `Área posicionada. ${areaTokens.length} token(s) dentro.`
+        : "Área posicionada. Nenhum token detectado dentro — vai tentar alvos marcados com T.";
+      ui.notifications.info(msg);
+    }
+  }
+
   // Se pediu pra rolar dano e tem fórmula, dispara o ataque.
+  // Se há template com tokens detectados, usa esses como alvos (ignora targets do usuário).
+  // Passa pmCost como extraRollData pra fórmulas que usam "PMs" (Bola de Fogo, etc.) funcionarem.
   if (data.rollDamage && data.damageFormula) {
     try {
-      await rollAttack(actor, data.damageFormula, `${magia.name} — Dano`);
+      await rollAttack(actor, data.damageFormula, `${magia.name} — Dano`, {
+        tokens: areaTokens,
+        extraRollData: { pmCost: cost }
+      });
     } catch (err) {
       console.error("3D&T | erro ao rolar dano da magia:", err);
       ui.notifications.error(`Fórmula inválida: ${data.damageFormula}`);
     }
   }
+}
+
+function formatTemplateLabel(tpl) {
+  const shapes = { circle: "circular", cone: "cone", ray: "linha", rect: "quadrada" };
+  const shape = shapes[tpl.type] || tpl.type;
+  const d = Number(tpl.distance) || 0;
+  const angle = tpl.type === "cone" ? `, ${Number(tpl.angle) || 90}°` : "";
+  const width = tpl.type === "ray" ? `, largura ${Number(tpl.width) || 1.5}m` : "";
+  return `${shape} ${d}m${angle}${width}`;
 }
 
 function escapeAttr2(s) {

@@ -220,7 +220,17 @@ export class TresDeTAlphaMagiaData extends TypeDataModel {
       custo: new fields.StringField({ required: true, initial: "", blank: true }),
       alcance: new fields.StringField({ required: true, initial: "", blank: true }),
       duracao: new fields.StringField({ required: true, initial: "", blank: true }),
-      exigencias: new fields.StringField({ required: true, initial: "", blank: true })
+      exigencias: new fields.StringField({ required: true, initial: "", blank: true }),
+
+      // Template de área (PF2e/D&D style). type vazio = sem área (alvo único).
+      // Valores válidos: "circle" (raio), "cone", "ray" (linha), "rect" (quadrado).
+      // distance em metros (convertido automaticamente pela grid da cena).
+      template: new fields.SchemaField({
+        type:     new fields.StringField({ required: true, initial: "", blank: true }),
+        distance: new fields.NumberField({ required: true, initial: 0 }),
+        width:    new fields.NumberField({ required: true, initial: 0 }),
+        angle:    new fields.NumberField({ required: true, initial: 0 })
+      })
     };
   }
 }

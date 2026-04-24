@@ -8,9 +8,15 @@
  */
 
 /** Helper pra escrever magias de forma compacta. */
-const m = (name, escola, custo, alcance, duracao, efeito, exigencias = "") => ({
-  name, escola, custo, alcance, duracao, efeito, exigencias
+const m = (name, escola, custo, alcance, duracao, efeito, exigencias = "", template = null) => ({
+  name, escola, custo, alcance, duracao, efeito, exigencias, template
 });
+
+/** Helpers pros tipos de template mais comuns. */
+const circle = (distance) => ({ type: "circle", distance });
+const cone   = (distance, angle = 90) => ({ type: "cone", distance, angle });
+const ray    = (distance, width = 1.5) => ({ type: "ray", distance, width });
+const rect   = (distance) => ({ type: "rect", distance });
 
 export const MAGIAS = [
   /* ================ A ================ */
@@ -73,7 +79,7 @@ export const MAGIAS = [
     "<p>Barreira de vento que oferece FD +10. Desvia projéteis. +5 PMs pra cada criatura afetada além do mago.</p>"),
 
   m("Bola de Fogo", "Elemental (fogo)", "1 a 10 PMs", "longo", "instantânea",
-    "<p>Bola de fogo. FA=H+1d+PMs. Atinge tudo num raio de 5m do alvo. Pode provocar incêndios.</p>"),
+    "<p>Bola de fogo. FA=H+1d+PMs. Atinge tudo num raio de 5m do alvo. Pode provocar incêndios.</p>", "", circle(5)),
 
   m("Bola de Lama", "Elemental (terra)", "1 PM", "curto", "instantânea",
     "<p>Bolas de matéria barrenta malcheirosa com FA=1d, ignora Armadura. Vítima fica suja e fedorenta por 1 hora (Monstruosa). Até H bolas por lançamento.</p>"),
@@ -85,22 +91,22 @@ export const MAGIAS = [
     "<p>Bolas de luz que explodem espalhando chamas. FA=1d+2. Dano pequeno mas visual impressionante.</p>"),
 
   m("Bomba Aérea", "Elemental (ar)", "1 a 10 PMs", "longo", "instantânea",
-    "<p>Bola de ar que explode no local. Permite ataque com FA=H+1d+PMs. Principal uso: proteção contra flechas e magias (FD=A+1d+PMs no próximo turno).</p>"),
+    "<p>Bola de ar que explode no local. Permite ataque com FA=H+1d+PMs. Principal uso: proteção contra flechas e magias (FD=A+1d+PMs no próximo turno).</p>", "", circle(3)),
 
   m("Bomba de Luz", "Elemental (fogo)", "1 a 5 PMs", "longo", "instantânea",
-    "<p>Explosão de luz que ataca todas criaturas num raio de 3m com FA=H+PMs. Não afeta objetos (perfeita pra abater inimigos sem destruir pertences).</p>"),
+    "<p>Explosão de luz que ataca todas criaturas num raio de 3m com FA=H+PMs. Não afeta objetos (perfeita pra abater inimigos sem destruir pertences).</p>", "", circle(3)),
 
   m("Bomba de Terra", "Elemental (terra)", "10 PMs", "longo", "instantânea",
-    "<p>Trecho de rocha/terra explode com FA=H+15. Só em solo natural.</p>"),
+    "<p>Trecho de rocha/terra explode com FA=H+15. Só em solo natural.</p>", "", circle(5)),
 
   m("Bomba de Vento", "Elemental (ar)", "1 a 10 PMs", "longo", "instantânea",
-    "<p>Vento empurra com F=PMs gastos. Criaturas em 50m testam F; arremessadas a metros proporcionais. Sofrem 1d de dano.</p>"),
+    "<p>Vento empurra com F=PMs gastos. Criaturas em 50m testam F; arremessadas a metros proporcionais. Sofrem 1d de dano.</p>", "", cone(50, 60)),
 
   m("Brilho de Espírito", "Elemental (espírito)", "10 PMs", "longo", "instantânea",
     "<p>Raio de luz azul. FA=H+3d. Além de PVs, vítima perde a mesma quantidade em PMs.</p>"),
 
   m("Brilho Explosivo", "Elemental (fogo)", "25 PMs", "longo", "instantânea",
-    "<p>Bola de luz em chamas azuis/brancas. FA=10d, ignora qualquer Armadura.</p>"),
+    "<p>Bola de luz em chamas azuis/brancas. FA=10d, ignora qualquer Armadura.</p>", "", circle(5)),
 
   m("Buraco Negro", "Negra", "60 PMs", "veja abaixo", "3 turnos",
     "<p>Vácuo poderoso que puxa tudo em 90m (teste F com penalidade). Falha = sugados pra sempre. Dura 3 turnos. Terrível e rara.</p>",
@@ -123,7 +129,7 @@ export const MAGIAS = [
     "<p>Ofusca ou obscurece a visão do alvo. R para resistir. Cego sofre H−1 em ataques corpo-a-corpo, H−3 à distância e esquivas.</p>"),
 
   m("Chuva Congelante", "Elemental (água)", "10+ PMs", "pessoal", "permanente",
-    "<p>Esfera de gelo acima do mago solta pedras de gelo. Ataca tudo com FA=3d. Cancelável com magia de fogo (mín. 10 PMs).</p>"),
+    "<p>Esfera de gelo acima do mago solta pedras de gelo. Ataca tudo com FA=3d. Cancelável com magia de fogo (mín. 10 PMs).</p>", "", circle(5)),
 
   m("Chuva Quente", "Elemental (água e fogo)", "0", "pessoal", "sustentável",
     "<p>Chuva de água quente num aposento. Apenas conforto e higiene — ótima pra banho. Não serve pra matar sede nem apagar chamas.</p>"),
@@ -239,10 +245,10 @@ export const MAGIAS = [
     "Clericato"),
 
   m("Escuridão", "Negra", "2 PMs", "curto", "permanente até cancelada",
-    "<p>Objeto tocado irradia escuridão em 6m de raio. Criaturas com Visão Aguçada, Infravisão, Ver o Invisível e Raio X enxergam normalmente. Luzes normais não funcionam.</p>"),
+    "<p>Objeto tocado irradia escuridão em 6m de raio. Criaturas com Visão Aguçada, Infravisão, Ver o Invisível e Raio X enxergam normalmente. Luzes normais não funcionam.</p>", "", circle(6)),
 
   m("Explosão", "Elemental (todas) ou Negra", "2 PMs por 1d de dano", "longo", "instantânea",
-    "<p>Ataque devastador. Explode no ponto de impacto em grande bola de fogo/água/rocha/trevas. FA=H+1d por 2 PMs (máximo 10 PMs=H+5d). Dano reduz em 1d a cada 3m do impacto.</p>"),
+    "<p>Ataque devastador. Explode no ponto de impacto em grande bola de fogo/água/rocha/trevas. FA=H+1d por 2 PMs (máximo 10 PMs=H+5d). Dano reduz em 1d a cada 3m do impacto.</p>", "", circle(5)),
 
   /* ================ F ================ */
   m("Fada Servil", "Branca ou Elemental (espírito)", "1 PM", "longo", "sustentável",
@@ -261,7 +267,7 @@ export const MAGIAS = [
     "<p>Chuva de dardos pelos dedos. FA=H+2d. R−1 pra evitar envenenamento. Vítima envenenada: −1 em tudo, perde 1 PV/turno até morrer ou ser curada.</p>"),
 
   m("Fios de Gelo", "Elemental (água)", "10 PMs", "curto", "instantânea",
-    "<p>Ao tocar superfície, fios de gelo em 10m. Todos em contato testam R. Falha = estátua de gelo por 1d horas.</p>"),
+    "<p>Ao tocar superfície, fios de gelo em 10m. Todos em contato testam R. Falha = estátua de gelo por 1d horas.</p>", "", circle(10)),
 
   m("Flecha de Vento", "Elemental (ar)", "0", "curto", "instantânea",
     "<p>Magia simples. Flecha de vento com FA=2. Fraca — só pra demonstrar hostilidade ou romper objetos similares.</p>"),
@@ -276,7 +282,7 @@ export const MAGIAS = [
     "<p>Braço de pedra, tentáculo de trevas... Força = metade dos PMs (limite 16 PMs = F8 pra levantar 2.000 quilos). Ataque tem FA=F+H0+1d.</p>"),
 
   m("Fúria de Beluhga", "Elemental (água)", "30 PMs", "longo", "instantânea",
-    "<p>Mais poderosa e brutal magia de gelo. Bola gigante explode com FA=10d. Criaturas reduzidas a 0 PVs morrem instantaneamente (sem Teste de Morte).</p>"),
+    "<p>Mais poderosa e brutal magia de gelo. Bola gigante explode com FA=10d. Criaturas reduzidas a 0 PVs morrem instantaneamente (sem Teste de Morte).</p>", "", circle(10)),
 
   m("Fúria Guerreira", "Elemental (espírito)", "2 PMs", "curto", "sustentável",
     "<p>Desperta fúria em pessoa afetada. Luta melhor (H+1, F+1, PdF+1) mas não pensa claramente, ataca primeiro inimigo visível. Não esquiva, não usa magia.</p>"),
@@ -400,10 +406,10 @@ export const MAGIAS = [
 
   /* ================ N ================ */
   m("Nevasca", "Elemental (água)", "5 PMs", "longo", "sustentável",
-    "<p>Tempestade de gelo em 30m. Sem dano real, mas dificulta enormemente visibilidade e movimentação. Velocidade/2, criaturas voadoras sem F5 caem. Fogo não-mágico se extingue.</p>"),
+    "<p>Tempestade de gelo em 30m. Sem dano real, mas dificulta enormemente visibilidade e movimentação. Velocidade/2, criaturas voadoras sem F5 caem. Fogo não-mágico se extingue.</p>", "", circle(15)),
 
   m("Nevoeiro de Hyninn", "Elemental (água)", "1 PM por turno", "curto", "sustentável",
-    "<p>Névoa densa em 10m impedindo visibilidade. Mago também cego. Fácil de dispersar mas custo baixo.</p>"),
+    "<p>Névoa densa em 10m impedindo visibilidade. Mago também cego. Fácil de dispersar mas custo baixo.</p>", "", circle(10)),
 
   m("Nevoeiro de Sszzaas", "Elemental (água) ou Negra", "2 PMs por turno", "curto", "sustentável",
     "<p>Variante venenosa de Nevoeiro de Hyninn. Todos cegos e perdem 1 PV por turno (exceto mago, exposto ao veneno também). Imunes: homens-serpente, mortos-vivos, etc.</p>"),
@@ -542,10 +548,10 @@ export const MAGIAS = [
     "<p>Alcança outros planos. 2d6 pra sucesso (1 = falha). Não acessa deuses nem oferece proteção contra planos hostis.</p>"),
 
   m("Tempestade Explosiva", "Elemental (fogo)", "60 PMs", "longo", "instantânea",
-    "<p>A mais destrutiva Elemental (fogo). Até 2d esferas de luz aniquiladora. Cada uma com Brilho Explosivo (FA=10d, ignora Armadura).</p>"),
+    "<p>A mais destrutiva Elemental (fogo). Até 2d esferas de luz aniquiladora. Cada uma com Brilho Explosivo (FA=10d, ignora Armadura).</p>", "", circle(20)),
 
   m("Terremoto", "Elemental (fogo ou terra)", "4 a 40 PMs", "longo", "instantânea",
-    "<p>Versão massiva de Explosão, afeta apenas solo. FA=2d+4 para cada 4 PMs. Dano reduz em 1d+2 para cada 10m. Alvos podem se esquivar (+1 em FD).</p>"),
+    "<p>Versão massiva de Explosão, afeta apenas solo. FA=2d+4 para cada 4 PMs. Dano reduz em 1d+2 para cada 10m. Alvos podem se esquivar (+1 em FD).</p>", "", circle(10)),
 
   m("Terreno Escorregadio de Neo", "Elemental (água ou terra)", "1 PM ou mais", "longo", "sustentável",
     "<p>Área circular (1m diâmetro por PM). Criaturas testam H−2 (H+1 com Esporte). Falha = caem indefesas por 1 turno até levantarem.</p>"),

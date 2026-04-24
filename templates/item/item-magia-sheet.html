@@ -35,6 +35,35 @@
     </label>
   </section>
 
+  <section class="tdt-item-grid tdt-item-grid--template">
+    <div class="tdt-item-template-header">
+      <span>Área de efeito</span>
+      <small>deixe tipo em branco pra magia de alvo único</small>
+    </div>
+    <label class="tdt-item-form-field">
+      <span>Tipo</span>
+      <select name="system.template.type" data-dtype="String">
+        <option value=""       {{#if (eq system.template.type "")}}selected{{/if}}>— (alvo único)</option>
+        <option value="circle" {{#if (eq system.template.type "circle")}}selected{{/if}}>Círculo (raio)</option>
+        <option value="cone"   {{#if (eq system.template.type "cone")}}selected{{/if}}>Cone</option>
+        <option value="ray"    {{#if (eq system.template.type "ray")}}selected{{/if}}>Linha / raio</option>
+        <option value="rect"   {{#if (eq system.template.type "rect")}}selected{{/if}}>Quadrado</option>
+      </select>
+    </label>
+    <label class="tdt-item-form-field">
+      <span>Distância <small>(m)</small></span>
+      <input name="system.template.distance" type="number" value="{{system.template.distance}}" step="0.5" min="0" data-dtype="Number" />
+    </label>
+    <label class="tdt-item-form-field">
+      <span>Ângulo <small>(cone)</small></span>
+      <input name="system.template.angle" type="number" value="{{system.template.angle}}" min="0" max="360" data-dtype="Number" placeholder="90" />
+    </label>
+    <label class="tdt-item-form-field">
+      <span>Largura <small>(linha, m)</small></span>
+      <input name="system.template.width" type="number" value="{{system.template.width}}" step="0.5" min="0" data-dtype="Number" placeholder="1.5" />
+    </label>
+  </section>
+
   <nav class="sheet-tabs tabs tdt-item-tabs" data-group="primary">
     <a class="item" data-tab="description">{{localize "TRESDETALPHA.Aba.descricao"}}</a>
   </nav>
