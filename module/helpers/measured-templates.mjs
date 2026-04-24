@@ -143,7 +143,7 @@ export async function placeMagiaTemplate(magia, actor) {
       const delta = Math.sign(event.deltaY) * 15;
       try {
         const cur = preview.document.direction ?? 0;
-        preview.document.updateSource({ direction: (cur + delta) % 360 });
+        preview.document.updateSource({ direction: ((cur + delta) % 360 + 360) % 360 });
         preview.refresh();
       } catch (_e) {}
     };

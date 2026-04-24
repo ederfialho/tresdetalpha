@@ -103,26 +103,38 @@ export function registerCompendiaSeeding() {
  */
 export async function seedCompendia({ force = false, wipe = false } = {}) {
   if (!game.user?.isGM) return;
+  const primaryGM = game.users?.activeGM;
+  if (primaryGM && primaryGM !== game.user) return;
   const already = game.settings.get(SYSTEM_ID, SETTING_SEEDED);
   if (already && !force) return;
 
   const msg = wipe ? "rebuilding (apagando e recriando)" : "semeando compêndios do mundo";
   ui.notifications.info(`3D&T Alpha: ${msg}...`);
-  let totalCreated = 0;
 
-  for (const def of COMPENDIA) {
-    try {
-      const pack = await ensurePack(def);
-      if (!pack) continue;
-      if (wipe) await wipePack(pack);
-      const created = await populatePack(pack, def);
-      totalCreated += created;
-    } catch (err) {
-      console.error(`3D&T Alpha | Falha ao semear ${def.name}`, err);
+  // Marca o flag cedo para evitar corrida com refreshes simultâneos. Se tudo
+  // falhar no primeiro run, revertemos no `finally` pra permitir nova tentativa.
+  await game.settings.set(SYSTEM_ID, SETTING_SEEDED, true);
+  let totalCreated = 0;
+  let anyError = false;
+  try {
+    for (const def of COMPENDIA) {
+      try {
+        const pack = await ensurePack(def);
+        if (!pack) continue;
+        if (wipe) await wipePack(pack);
+        totalCreated += await populatePack(pack, def);
+      } catch (err) {
+        anyError = true;
+        console.error(`3D&T Alpha | Falha ao semear ${def.name}`, err);
+      }
+    }
+  } finally {
+    if (anyError && totalCreated === 0 && !already) {
+      // Falha total no primeiro run: reverte o flag para o usuário poder tentar de novo.
+      await game.settings.set(SYSTEM_ID, SETTING_SEEDED, false);
     }
   }
 
-  await game.settings.set(SYSTEM_ID, SETTING_SEEDED, true);
   ui.notifications.info(`3D&T Alpha: compêndios prontos (${totalCreated} itens criados).`);
 }
 

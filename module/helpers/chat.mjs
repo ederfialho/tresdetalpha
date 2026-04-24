@@ -33,7 +33,7 @@ export async function rollAbilityTest(actor, label, target) {
   const flavor = `
     <div class="tdt-chat-roll">
       <div class="tdt-chat-roll-head">
-        <strong>Teste de ${label}</strong>
+        <strong>Teste de ${escapeHTML(label)}</strong>
         <small>alvo ≤ ${target}</small>
       </div>
       <div class="tdt-chat-roll-body">
@@ -60,8 +60,8 @@ export async function rollFormula(actor, formula, label) {
   const flavor = `
     <div class="tdt-chat-roll">
       <div class="tdt-chat-roll-head">
-        <strong>${label}</strong>
-        <small>${formula}</small>
+        <strong>${escapeHTML(label)}</strong>
+        <small>${escapeHTML(formula)}</small>
       </div>
     </div>
   `;
@@ -71,6 +71,74 @@ export async function rollFormula(actor, formula, label) {
     rollMode: game.settings.get("core", "rollMode")
   });
   return roll;
+}
+
+/**
+ * Agrega os damage modifiers dos items do actor (vantagens/desvantagens/vantagemUnica)
+ * e aplica as regras do manual p.75–76 contra um ataque com `attackTypes`.
+ *
+ * @param {Actor} actor
+ * @param {string[]} attackTypes  Tipos de dano do ataque (ex: ["Fogo", "Magia"])
+ * @returns {{ armorBonus: boolean, ignoresArmor: boolean, invulnerabilidade: boolean, tags: string[] }}
+ */
+export function computeDamageModifiers(actor, attackTypes) {
+  const armor = new Set(), vuln = new Set(), invuln = new Set();
+  for (const item of actor?.items ?? []) {
+    const mods = item.system?.damageModifiers ?? [];
+    for (const m of mods) {
+      const set = { armaduraExtra: armor, vulnerabilidade: vuln, invulnerabilidade: invuln }[m.kind];
+      if (!set) continue;
+      for (const t of (m.types ?? [])) set.add(t);
+    }
+  }
+
+  const types = new Set(attackTypes ?? []);
+  const aeMatches    = [...types].filter(t => armor.has(t));
+  const vulnMatches  = [...types].filter(t => vuln.has(t));
+  const invulnMatches = [...types].filter(t => invuln.has(t));
+
+  const tags = [];
+  let armorBonus = false, ignoresArmor = false, invulnerabilidade = false;
+
+  if (aeMatches.length && vulnMatches.length) {
+    // Cancelamento: a Armadura Extra e a Vulnerabilidade se anulam (FD normal).
+    tags.push(`Armadura Extra (${aeMatches.join(", ")}) cancela Vulnerabilidade (${vulnMatches.join(", ")})`);
+  } else if (aeMatches.length) {
+    armorBonus = true;
+    tags.push(`Armadura Extra vs ${aeMatches.join(", ")} (FD com armadura dobrada)`);
+  } else if (vulnMatches.length) {
+    ignoresArmor = true;
+    tags.push(`Vulnerabilidade a ${vulnMatches.join(", ")} (FD ignora armadura)`);
+  }
+
+  if (invulnMatches.length) {
+    invulnerabilidade = true;
+    tags.push(`Invulnerabilidade a ${invulnMatches.join(", ")} (dano ÷ 10)`);
+  }
+
+  return { armorBonus, ignoresArmor, invulnerabilidade, tags };
+}
+
+/**
+ * Resolve os tipos de dano de um ataque baseado na fórmula e no actor.
+ * - Fórmula contém `poderDeFogo` → tipo de PdF do actor.
+ * - Fórmula contém `forca` (de forcaDeAtaque.forca ou abilities.forca) → tipo de F.
+ * - Override via `options.damageTypes` (usado pra magias).
+ */
+export function resolveAttackDamageTypes(actor, formula, options = {}) {
+  if (Array.isArray(options.damageTypes) && options.damageTypes.length) {
+    return options.damageTypes;
+  }
+  const tipoDeDano = actor?.system?.attributes?.tipoDeDano ?? {};
+  if (formula.includes("poderDeFogo")) {
+    const t = tipoDeDano.poderDeFogo?.value;
+    return t ? [t] : [];
+  }
+  if (formula.includes("forcaDeAtaque.forca") || formula.includes("abilities.forca")) {
+    const t = tipoDeDano.forca?.value;
+    return t ? [t] : [];
+  }
+  return [];
 }
 
 /**
@@ -89,25 +157,28 @@ export async function rollFormula(actor, formula, label) {
  * @param {boolean} [options.askMulti=false]  Se true, abre dialog pra múltiplo ataque
  */
 export async function rollAttack(actor, formula, label, options = {}) {
-  const { askMulti = false, tokens = null, extraRollData = {} } = options;
+  const { askMulti = false, tokens = null, extraRollData = {}, damageTypes = null } = options;
 
   if (!askMulti) {
-    return executeAttack(actor, formula, label, { count: 1, useVantagem: false, tokens, extraRollData });
+    return executeAttack(actor, formula, label, { count: 1, useVantagem: false, tokens, extraRollData, damageTypes });
   }
 
   const config = await promptMultiAttack(actor, formula, label);
   if (!config) return;
-  return executeAttack(actor, formula, label, { ...config, tokens, extraRollData });
+  return executeAttack(actor, formula, label, { ...config, tokens, extraRollData, damageTypes });
 }
 
 async function promptMultiAttack(actor, formula, label) {
   const isRanged = formula.includes("poderDeFogo");
   const requiredName = isRanged ? "Tiro Múltiplo" : "Ataque Múltiplo";
-  const hasVantagem = (actor.items ?? []).some((i) =>
-    (i.type === "vantagem" || i.type === "vantagemUnica")
-    && typeof i.name === "string"
-    && i.name.toLowerCase().includes(requiredName.toLowerCase())
-  );
+  const needleLower = requiredName.toLowerCase();
+  const hasVantagem = (actor.items ?? []).some((i) => {
+    if (i.type !== "vantagem" && i.type !== "vantagemUnica") return false;
+    const nameLower = String(i.name ?? "").toLowerCase();
+    // word-boundary match: name equals OR starts/ends with boundary
+    const regex = new RegExp(`\\b${needleLower.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`);
+    return regex.test(nameLower);
+  });
   const habilidade = Number(actor.system?.abilities?.habilidade?.total ?? 1);
   const maxAttacks = Math.max(1, habilidade);
   const currentPm = Number(actor.system?.magia?.value ?? 0);
@@ -116,10 +187,10 @@ async function promptMultiAttack(actor, formula, label) {
   const content = `
     <div class="tdt-cast-dialog">
       <div class="tdt-cast-meta">
-        <div><strong>${label}</strong></div>
+        <div><strong>${escapeHTML(label)}</strong></div>
         <div>Habilidade: <strong>${habilidade}</strong> — máx. <strong>${maxAttacks}</strong> ataques/rodada</div>
         <div>PMs atuais: <strong>${currentPm} / ${maxPm}</strong></div>
-        <div>${requiredName}: ${hasVantagem ? "<strong style='color:#2d7a2d'>✓ você tem</strong>" : "<em style='color:#a23b3c'>você não tem</em>"}</div>
+        <div>${escapeHTML(requiredName)}: ${hasVantagem ? "<strong style='color:#2d7a2d'>✓ você tem</strong>" : "<em style='color:#a23b3c'>você não tem</em>"}</div>
       </div>
       <label class="tdt-cast-label">
         <span>Número de ataques</span>
@@ -127,10 +198,10 @@ async function promptMultiAttack(actor, formula, label) {
       </label>
       <label class="tdt-cast-label">
         <input type="checkbox" name="useVantagem" ${hasVantagem ? "checked" : ""} />
-        <span>Usar ${requiredName} — gasta 1 PM por ataque e remove a penalidade H−2</span>
+        <span>Usar ${escapeHTML(requiredName)} — gasta 1 PM por ataque e remove a penalidade H−2</span>
       </label>
       <div class="tdt-cast-hint">
-        Sem ${requiredName}: todos os ataques (incluindo o primeiro) sofrem penalidade de H−2 quando há mais de um.
+        Sem ${escapeHTML(requiredName)}: todos os ataques (incluindo o primeiro) sofrem penalidade de H−2 quando há mais de um.
       </div>
     </div>
   `;
@@ -159,7 +230,7 @@ async function promptMultiAttack(actor, formula, label) {
 }
 
 /** Executa a(s) rolagem(ns) e posta o card. */
-async function executeAttack(actor, formula, label, { count, useVantagem, tokens: passedTokens = null, extraRollData = {} }) {
+async function executeAttack(actor, formula, label, { count, useVantagem, tokens: passedTokens = null, extraRollData = {}, damageTypes = null }) {
   const rollData = { ...(actor?.getRollData?.() ?? {}), ...extraRollData };
   const multi = count > 1;
 
@@ -168,14 +239,14 @@ async function executeAttack(actor, formula, label, { count, useVantagem, tokens
   const penalty = (multi && !useVantagem) ? 2 : 0;
   const effectiveFormula = penalty > 0 ? `${formula} - ${penalty}` : formula;
 
-  // Deduz PMs se usando vantagem.
+  // Pré-check de PMs (deduz depois, só se todos os rolls tiverem sucesso).
+  let currentPmForDeduct = 0;
   if (multi && useVantagem) {
-    const currentPm = Number(actor.system?.magia?.value ?? 0);
-    if (currentPm < count) {
-      ui.notifications.warn(`PMs insuficientes: ${currentPm} atuais, ${count} necessários para ${count} ataques.`);
+    currentPmForDeduct = Number(actor.system?.magia?.value ?? 0);
+    if (currentPmForDeduct < count) {
+      ui.notifications.warn(`PMs insuficientes: ${currentPmForDeduct} atuais, ${count} necessários para ${count} ataques.`);
       return;
     }
-    await actor.update({ "system.magia.value": currentPm - count });
   }
 
   // Rola N ataques.
@@ -185,6 +256,14 @@ async function executeAttack(actor, formula, label, { count, useVantagem, tokens
     const firstDie = roll.dice?.[0]?.results?.[0]?.result;
     attackRolls.push({ total: roll.total, critical: firstDie === 6, roll });
   }
+
+  // Deduz PMs agora que todos os rolls foram avaliados.
+  if (multi && useVantagem) {
+    await actor.update({ "system.magia.value": currentPmForDeduct - count });
+  }
+
+  // Resolve os tipos de dano do ataque (via override explícito ou via tipos do actor).
+  const attackTypes = resolveAttackDamageTypes(actor, formula, { damageTypes });
 
   // Se vieram tokens pré-definidos (de um template de área), usa eles;
   // senão, fallback pros alvos marcados pelo usuário.
@@ -207,7 +286,7 @@ async function executeAttack(actor, formula, label, { count, useVantagem, tokens
       <div class="tdt-chat-card tdt-chat-card--attack">
         <header class="tdt-chat-head">
           <div class="tdt-chat-title">
-            <h3>${label}${multi ? ` × ${count}` : ""}</h3>
+            <h3>${escapeHTML(label)}${multi ? ` × ${count}` : ""}</h3>
             <span class="tdt-chat-type">${multi ? (useVantagem ? `${count} PMs gastos` : `penalidade H−2`) : "Ataque"}</span>
           </div>
         </header>
@@ -224,21 +303,27 @@ async function executeAttack(actor, formula, label, { count, useVantagem, tokens
     return;
   }
 
-  // Com alvos: pra cada alvo, rola UMA FD e compara com cada ataque.
+  // Com alvos: pra cada alvo, rola UMA FD (ajustada pelos modifiers de tipo) e compara com cada ataque.
   const targetResults = [];
   for (const tok of targets) {
     const victim = tok.actor;
     if (!victim) continue;
-    const fdFormula = "1d6 + @abilities.armadura.total + @abilities.habilidade.total";
+    const modifiers = computeDamageModifiers(victim, attackTypes);
+    const baseFd = "1d6 + @abilities.habilidade.total";
+    let fdFormula;
+    if (modifiers.ignoresArmor) fdFormula = baseFd;
+    else if (modifiers.armorBonus) fdFormula = `${baseFd} + 2*@abilities.armadura.total`;
+    else fdFormula = `${baseFd} + @abilities.armadura.total`;
+
     const fdRoll = await new Roll(fdFormula, victim.getRollData?.() ?? {}).evaluate();
     const fdTotal = fdRoll.total;
-    const hits = attackRolls.map((atk) => ({
-      fa: atk.total,
-      critical: atk.critical,
-      damage: Math.max(0, atk.total - fdTotal)
-    }));
+    const hits = attackRolls.map((atk) => {
+      let damage = Math.max(0, atk.total - fdTotal);
+      if (modifiers.invulnerabilidade) damage = Math.floor(damage / 10);
+      return { fa: atk.total, critical: atk.critical, damage };
+    });
     const totalDamage = hits.reduce((s, h) => s + h.damage, 0);
-    targetResults.push({ victim, uuid: victim.uuid, fdTotal, hits, totalDamage });
+    targetResults.push({ victim, uuid: victim.uuid, fdTotal, hits, totalDamage, modifierTags: modifiers.tags });
   }
 
   // Conta alvos que sofreram dano (pra decidir se mostra "Aplicar a todos").
@@ -268,8 +353,11 @@ async function executeAttack(actor, formula, label, { count, useVantagem, tokens
     return `
       <div class="tdt-attack-target">
         <div class="tdt-attack-target-head">
-          <strong>${r.victim.name}</strong>
+          <strong>${escapeHTML(r.victim.name)}</strong>
           <span class="tdt-attack-target-fd">FD ${r.fdTotal}</span>
+          ${r.modifierTags?.length
+            ? `<div class="tdt-attack-mod-tags">${r.modifierTags.map(t => `<span class="tdt-chat-chip tdt-chat-chip--mod">${escapeHTML(t)}</span>`).join("")}</div>`
+            : ""}
         </div>
         <div class="tdt-multi-list">${rows}</div>
         ${r.totalDamage > 0 ? `
@@ -297,7 +385,8 @@ async function executeAttack(actor, formula, label, { count, useVantagem, tokens
     <div class="tdt-chat-card tdt-chat-card--attack">
       <header class="tdt-chat-head">
         <div class="tdt-chat-title">
-          <h3>${label}${multi ? ` × ${count}` : ""}</h3>
+          <h3>${escapeHTML(label)}${multi ? ` × ${count}` : ""}</h3>
+          ${attackTypes.length ? `<span class="tdt-chat-type-chips">${attackTypes.map(t => `<span class="tdt-chat-chip">${escapeHTML(t)}</span>`).join("")}</span>` : ""}
           <span class="tdt-chat-type">${multi ? (useVantagem ? `${count} PMs gastos — sem penalidade` : `${count} ataques com H−2`) : "Ataque simples"}</span>
         </div>
       </header>
@@ -313,6 +402,10 @@ async function executeAttack(actor, formula, label, { count, useVantagem, tokens
  * Aplica dano direto ao Actor especificado.
  */
 async function applyDamage(actorUuid, damage) {
+  if (!game.user.isGM) {
+    ui.notifications.warn("Apenas o Mestre pode aplicar dano. Peça ao GM para clicar.");
+    return;
+  }
   const actor = await fromUuid(actorUuid);
   if (!actor) { ui.notifications.warn("Alvo não encontrado (pode ter sido apagado)."); return; }
   const current = Number(actor.system?.vida?.value ?? 0);
@@ -327,6 +420,10 @@ async function applyDamage(actorUuid, damage) {
  * Posta uma mensagem consolidada no chat com o resultado.
  */
 async function applyDamageToSelected(faTotal) {
+  if (!game.user.isGM) {
+    ui.notifications.warn("Apenas o Mestre pode aplicar dano. Peça ao GM para clicar.");
+    return;
+  }
   const tokens = canvas?.tokens?.controlled ?? [];
   if (!tokens.length) {
     ui.notifications.warn("Selecione um ou mais tokens primeiro.");
@@ -459,13 +556,17 @@ export async function postItemChatCard(item) {
   if (item.type === "magia" && hasActor) {
     actions.push(button("cast-magia", "fa-sparkles", "Conjurar"));
   }
+  if (hasActor && ["activatable", "reaction"].includes(item.system?.mode)) {
+    const isActive = effectsFromItem(actor, item).some(e => !e.disabled);
+    actions.push(button(isActive ? "deactivate-item" : "activate-item", "fa-bolt", isActive ? "Desativar" : "Ativar"));
+  }
 
   const content = `
     <div class="tdt-chat-card" data-item-uuid="${item.uuid}" data-actor-uuid="${actor?.uuid ?? ""}">
       <header class="tdt-chat-head">
-        <img class="tdt-chat-img" src="${item.img}" />
+        <img class="tdt-chat-img" src="${escapeHTML(item.img)}" />
         <div class="tdt-chat-title">
-          <h3>${item.name}</h3>
+          <h3>${escapeHTML(item.name)}</h3>
           <span class="tdt-chat-type">${localizeType(item.type)}</span>
         </div>
       </header>
@@ -484,7 +585,7 @@ export async function postItemChatCard(item) {
 
 function chip(text, kind = "") {
   const cls = kind ? `tdt-chat-chip tdt-chat-chip--${kind}` : "tdt-chat-chip";
-  return `<span class="${cls}">${text}</span>`;
+  return `<span class="${cls}">${escapeHTML(text)}</span>`;
 }
 
 function button(action, icon, label) {
@@ -534,11 +635,11 @@ export async function castMagia(magia) {
   const content = `
     <div class="tdt-cast-dialog">
       <div class="tdt-cast-meta">
-        <div><strong>${magia.name}</strong></div>
-        ${s.escola ? `<div>Escola: <em>${s.escola}</em></div>` : ""}
-        <div>Custo original: <em>${custoStr || "não definido"}</em></div>
+        <div><strong>${escapeHTML(magia.name)}</strong></div>
+        ${s.escola ? `<div>Escola: <em>${escapeHTML(s.escola)}</em></div>` : ""}
+        <div>Custo original: <em>${escapeHTML(custoStr) || "não definido"}</em></div>
         <div>PMs atuais: <strong>${currentPm} / ${maxPm}</strong></div>
-        ${hasTemplate ? `<div>Área: <strong style="color:#7a5a1e;">${templateLabel}</strong></div>` : ""}
+        ${hasTemplate ? `<div>Área: <strong style="color:#7a5a1e;">${escapeHTML(templateLabel)}</strong></div>` : ""}
       </div>
       <label class="tdt-cast-label">
         <span>PMs a gastar</span>
@@ -598,18 +699,18 @@ export async function castMagia(magia) {
   const cardContent = `
     <div class="tdt-chat-card tdt-chat-card--cast" data-item-uuid="${magia.uuid}">
       <header class="tdt-chat-head">
-        <img class="tdt-chat-img" src="${magia.img}" />
+        <img class="tdt-chat-img" src="${escapeHTML(magia.img)}" />
         <div class="tdt-chat-title">
-          <h3>${magia.name}</h3>
+          <h3>${escapeHTML(magia.name)}</h3>
           <span class="tdt-chat-type"><i class="fas fa-sparkles"></i> conjurada</span>
         </div>
       </header>
       <div class="tdt-chat-chips">
         <span class="tdt-chat-chip tdt-chat-chip--cost">${cost} PMs gastos</span>
         <span class="tdt-chat-chip tdt-chat-chip--pm">PMs restantes: ${currentPm - cost} / ${maxPm}</span>
-        ${s.escola ? `<span class="tdt-chat-chip tdt-chat-chip--school">${s.escola}</span>` : ""}
-        ${s.alcance ? `<span class="tdt-chat-chip">Alcance: ${s.alcance}</span>` : ""}
-        ${s.duracao ? `<span class="tdt-chat-chip">Duração: ${s.duracao}</span>` : ""}
+        ${s.escola ? `<span class="tdt-chat-chip tdt-chat-chip--school">${escapeHTML(s.escola)}</span>` : ""}
+        ${s.alcance ? `<span class="tdt-chat-chip">Alcance: ${escapeHTML(s.alcance)}</span>` : ""}
+        ${s.duracao ? `<span class="tdt-chat-chip">Duração: ${escapeHTML(s.duracao)}</span>` : ""}
       </div>
       <div class="tdt-chat-desc">${s.description || s.efeito || ""}</div>
     </div>
@@ -627,9 +728,6 @@ export async function castMagia(magia) {
     const { placeMagiaTemplate, getTokensInTemplate } = await import("./measured-templates.mjs");
     const placed = await placeMagiaTemplate(magia, actor);
     if (placed) {
-      // Aguarda 1 tick pro PIXI renderizar o shape (senão `getTokensInTemplate`
-      // cai pro fallback manual, o que ainda funciona mas pode variar).
-      await new Promise((r) => setTimeout(r, 100));
       areaTokens = getTokensInTemplate(placed);
       const msg = areaTokens.length
         ? `Área posicionada. ${areaTokens.length} token(s) dentro.`
@@ -643,15 +741,141 @@ export async function castMagia(magia) {
   // Passa pmCost como extraRollData pra fórmulas que usam "PMs" (Bola de Fogo, etc.) funcionarem.
   if (data.rollDamage && data.damageFormula) {
     try {
+      const magiaTypes = (magia.system?.damageTypes ?? []).slice();
+      // Sempre inclui "Magia" pra efeito de regras (armas mágicas são "dano físico + magia").
+      if (!magiaTypes.includes("Magia")) magiaTypes.push("Magia");
+
       await rollAttack(actor, data.damageFormula, `${magia.name} — Dano`, {
         tokens: areaTokens,
-        extraRollData: { pmCost: cost }
+        extraRollData: { pmCost: cost },
+        damageTypes: magiaTypes
       });
     } catch (err) {
       console.error("3D&T | erro ao rolar dano da magia:", err);
       ui.notifications.error(`Fórmula inválida: ${data.damageFormula}`);
     }
   }
+}
+
+/* -------------------------------------------- */
+/*  Ativação de vantagens                       */
+/* -------------------------------------------- */
+
+/**
+ * Retorna os ActiveEffects do actor originários de um item específico.
+ * No Foundry V13+, effects transferidos de items aparecem em `actor.effects`
+ * com `parent` apontando para o item, mas `origin` não é auto-setado.
+ * Checamos os dois para robustez.
+ */
+function effectsFromItem(actor, item) {
+  if (!actor || !item) return [];
+  return actor.effects.filter(e =>
+    e.parent?.id === item.id || e.origin === item.uuid
+  );
+}
+
+/**
+ * Ativa uma vantagem/desvantagem ativável do actor:
+ *  - Verifica PMs disponíveis contra `custoPMsAtivacao`.
+ *  - Deduz o custo.
+ *  - Habilita todos os ActiveEffects transferidos do item.
+ *  - Posta um card no chat com botão "Desativar".
+ *
+ * Aviso: per regra 3D&T, desativar NÃO reembolsa PMs gastos na ativação.
+ */
+export async function activateItem(item) {
+  if (!item) return;
+  const actor = item.actor;
+  if (!actor) {
+    ui.notifications.warn("Item precisa estar numa ficha de ator para ser ativado.");
+    return;
+  }
+  const mode = item.system?.mode;
+  if (!["activatable", "reaction"].includes(mode)) return;
+
+  const activationCost = Number(item.system?.activation?.custoPMsAtivacao ?? 0);
+  const perTurnCost = Number(item.system?.activation?.custoPMsPorTurno ?? 0);
+  const currentPm = Number(actor.system?.magia?.value ?? 0);
+
+  if (activationCost > currentPm) {
+    ui.notifications.warn(`PMs insuficientes para ativar ${item.name}: ${currentPm} atuais, ${activationCost} necessários.`);
+    return;
+  }
+
+  // Habilita effects transferidos do item.
+  const transferred = effectsFromItem(actor, item);
+  if (!transferred.length) {
+    ui.notifications.warn(`${item.name} não tem efeitos mecânicos — marque como "passive" ou adicione ActiveEffects.`);
+    // segue mesmo assim (pode ser uma reação sem efeito mecânico)
+  }
+  if (transferred.length) {
+    await actor.updateEmbeddedDocuments("ActiveEffect",
+      transferred.map(e => ({ _id: e.id, disabled: false }))
+    );
+  }
+
+  // Deduz PMs da ativação.
+  if (activationCost > 0) {
+    await actor.update({ "system.magia.value": currentPm - activationCost });
+  }
+
+  // Card de ativação.
+  const perTurnHint = perTurnCost > 0 ? ` · drena ${perTurnCost} PM/turno` : "";
+  const costHint = activationCost > 0 ? `${activationCost} PM gasto${perTurnHint}` : (perTurnHint || "gratuito");
+  const content = `
+    <div class="tdt-chat-card tdt-chat-card--activate" data-item-uuid="${escapeHTML(item.uuid)}" data-actor-uuid="${escapeHTML(actor.uuid)}">
+      <header class="tdt-chat-head">
+        <img class="tdt-chat-img" src="${escapeHTML(item.img)}" />
+        <div class="tdt-chat-title">
+          <h3>${escapeHTML(item.name)}</h3>
+          <span class="tdt-chat-type"><i class="fas fa-bolt"></i> ativada</span>
+        </div>
+      </header>
+      <div class="tdt-chat-chips">
+        <span class="tdt-chat-chip tdt-chat-chip--cost">${escapeHTML(costHint)}</span>
+        <span class="tdt-chat-chip tdt-chat-chip--pm">PMs restantes: ${Math.max(0, currentPm - activationCost)} / ${Number(actor.system?.magia?.max ?? 0)}</span>
+      </div>
+      <div class="tdt-chat-desc">${item.system?.efeito || item.system?.description || ""}</div>
+      <footer class="tdt-chat-actions">
+        <button type="button" class="tdt-chat-btn" data-tdt-action="deactivate-item"><i class="fas fa-power-off"></i> Desativar</button>
+      </footer>
+    </div>
+  `;
+  return ChatMessage.create({
+    speaker: ChatMessage.getSpeaker({ actor }),
+    content,
+    flags: { "3det-foundry-rework": { activeItemUuid: item.uuid } }
+  });
+}
+
+/**
+ * Desativa uma vantagem previamente ativada. NÃO reembolsa PMs.
+ */
+export async function deactivateItem(item) {
+  if (!item) return;
+  const actor = item.actor;
+  if (!actor) return;
+  const transferred = effectsFromItem(actor, item).filter(e => !e.disabled);
+  if (transferred.length) {
+    await actor.updateEmbeddedDocuments("ActiveEffect",
+      transferred.map(e => ({ _id: e.id, disabled: true }))
+    );
+  }
+  const content = `
+    <div class="tdt-chat-card tdt-chat-card--deactivate">
+      <header class="tdt-chat-head">
+        <div class="tdt-chat-title">
+          <h3>${escapeHTML(item.name)}</h3>
+          <span class="tdt-chat-type"><i class="fas fa-power-off"></i> desativada</span>
+        </div>
+      </header>
+      <div class="tdt-chat-desc tdt-chat-desc--muted">Efeito encerrado. PMs gastos não são reembolsados.</div>
+    </div>
+  `;
+  return ChatMessage.create({
+    speaker: ChatMessage.getSpeaker({ actor }),
+    content
+  });
 }
 
 function formatTemplateLabel(tpl) {
@@ -667,6 +891,73 @@ function escapeAttr2(s) {
   return String(s ?? "").replace(/"/g, "&quot;");
 }
 
+function escapeHTML(s) {
+  return String(s ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+/**
+ * Pergunta ao usuário contra quais tipos de dano um item (Armadura Extra,
+ * Invulnerabilidade, Vulnerabilidade) se aplica. Escreve os tipos escolhidos
+ * no primeiro entry de `item.system.damageModifiers`.
+ */
+export async function promptMissingDamageTypes(item) {
+  if (!item) return;
+  const mods = item.system?.damageModifiers ?? [];
+  if (!mods.length) return;
+  const dtConfig = CONFIG.TRESDETALPHA?.damageTypes ?? { forca: [], pdf: [], magia: [] };
+  const allTypes = [...(dtConfig.forca ?? []), ...(dtConfig.pdf ?? []), ...(dtConfig.magia ?? [])];
+  const kindLabels = {
+    armaduraExtra: "Armadura Extra",
+    vulnerabilidade: "Vulnerabilidade",
+    invulnerabilidade: "Invulnerabilidade"
+  };
+  const label = kindLabels[mods[0].kind] ?? mods[0].kind;
+
+  const content = `
+    <div class="tdt-dtype-dialog">
+      <p>Escolha os tipos de dano aos quais esta <strong>${escapeHTML(label)}</strong> se aplica:</p>
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; margin-top: 8px;">
+        ${allTypes.map(t => `
+          <label style="display: flex; align-items: center; gap: 6px; padding: 4px;">
+            <input type="checkbox" name="type" value="${escapeHTML(t)}" />
+            <span>${escapeHTML(t)}</span>
+          </label>
+        `).join("")}
+      </div>
+    </div>
+  `;
+
+  const DialogV2 = foundry.applications.api.DialogV2;
+  let types = null;
+  try {
+    types = await DialogV2.prompt({
+      window: { title: `${item.name} — tipos afetados`, icon: "fas fa-shield-halved" },
+      position: { width: 440 },
+      content,
+      ok: {
+        label: "Confirmar",
+        icon: "fas fa-check",
+        callback: (_ev, _btn, dialog) => {
+          return Array.from(dialog.element.querySelectorAll('input[name="type"]:checked')).map(i => i.value);
+        }
+      },
+      rejectClose: false
+    });
+  } catch (_e) { return; }
+
+  if (!Array.isArray(types) || !types.length) return;
+
+  // Escreve os tipos no primeiro entry de damageModifiers.
+  const newMods = foundry.utils.deepClone(mods);
+  newMods[0] = { ...newMods[0], types };
+  await item.update({ "system.damageModifiers": newMods });
+}
+
 /* -------------------------------------------- */
 /*  Hook: amarra botões nos cards               */
 /* -------------------------------------------- */
@@ -677,7 +968,7 @@ export function registerChatActions() {
     if (!root) return;
     for (const btn of root.querySelectorAll("button[data-tdt-action]")) {
       const action = btn.dataset.tdtAction;
-      if (action === "apply-damage" || action === "apply-damage-selected") {
+      if (action === "apply-damage" || action === "apply-damage-selected" || action === "apply-damage-all") {
         btn.addEventListener("click", onCardActionClick);
       } else {
         btn.addEventListener("click", onChatActionClick);
@@ -712,6 +1003,16 @@ async function onChatActionClick(event) {
     case "cast-magia":
       await castMagia(item);
       break;
+    case "activate-item": {
+      if (!item) return;
+      await activateItem(item);
+      break;
+    }
+    case "deactivate-item": {
+      if (!item) return;
+      await deactivateItem(item);
+      break;
+    }
   }
 }
 
@@ -742,6 +1043,10 @@ async function onCardActionClick(event) {
     case "apply-damage-all": {
       event.preventDefault();
       event.stopPropagation();
+      if (!game.user.isGM) {
+        ui.notifications.warn("Apenas o Mestre pode aplicar dano. Peça ao GM para clicar.");
+        return;
+      }
       const payload = String(btn.dataset.targets || "");
       if (!payload) break;
       const pairs = payload.split(",").filter(Boolean);

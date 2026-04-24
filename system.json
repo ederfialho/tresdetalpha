@@ -47,6 +47,8 @@
     }
   },
   "socket": false,
+  "manifest": "https://github.com/ederfialho/tresdetalpha/releases/download/release_007_1/system.json",
+  "download": "https://github.com/ederfialho/tresdetalpha/releases/download/release_007_1/system.zip",
   "grid": {
     "distance": 1.5,
     "units": "m"

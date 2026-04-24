@@ -67,7 +67,10 @@ Hooks.once("init", async function () {
 
   // Namespace global de conveniência (o id do manifest tem hífen/dígito inicial,
   // então usamos `game.tresdetalpha` por ergonomia — é só convenção interna).
-  game.tresdetalpha = {
+  // Usamos `??= {}` + Object.assign para não sobrescrever chaves já definidas
+  // por outros módulos init (ex.: `reseedCompendia` de seed-compendia.mjs).
+  game.tresdetalpha ??= {};
+  Object.assign(game.tresdetalpha, {
     TresDeTAlphaActor,
     TresDeTAlphaItem,
     rollItemMacro,
@@ -75,7 +78,7 @@ Hooks.once("init", async function () {
     novoPersonagem,
     postItemChatCard,
     castMagia
-  };
+  });
 
   // Registra listeners globais nos cards de chat (botões Abrir ficha / Conjurar / etc).
   registerChatActions();
@@ -161,19 +164,6 @@ function registerHandlebarsHelpers() {
   Handlebars.registerHelper("eq", function (a, b) {
     return a === b;
   });
-
-  // Foundry V13 tinha um helper built-in `{{#select value}}...options...{{/select}}` que
-  // marcava a <option> com value correspondente como `selected`. O V14 removeu esse helper
-  // em favor de `{{selectOptions}}`. Re-registramos aqui pra manter os templates antigos funcionando.
-  if (!Handlebars.helpers.select) {
-    Handlebars.registerHelper("select", function (selected, options) {
-      const escapeRegex = (str) => String(str).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-      const escaped = escapeRegex(String(selected ?? ""));
-      const rgx = new RegExp(` value=["']${escaped}["']`);
-      const html = options.fn(this);
-      return html.replace(rgx, "$& selected");
-    });
-  }
 }
 
 /* -------------------------------------------- */
@@ -193,6 +183,10 @@ Hooks.once("ready", async function () {
   // Isso inclui vantagens como Aceleração, Arena, Ataque Especial, etc. que só
   // aplicam bônus enquanto ativas em combate.
   Hooks.on("deleteCombat", disableCombatOnlyEffects);
+
+  Hooks.on("updateCombat", onCombatTurnAdvance);
+
+  Hooks.on("createItem", onItemCreated);
 
   // Popula os compêndios do mundo com vantagens/desvantagens do Manual Core
   // na primeira abertura. Depois disso, o GM pode editar à vontade.
@@ -358,6 +352,75 @@ async function disableCombatOnlyEffects(combat) {
     if (toDisable.length) {
       await actor.updateEmbeddedDocuments("ActiveEffect", toDisable);
     }
+  }
+}
+
+/**
+ * Ao avançar de turno/round no combate, dreena PMs de vantagens ativáveis
+ * com `custoPMsPorTurno > 0`. Se o personagem não tem PMs suficientes, a
+ * vantagem é automaticamente desativada.
+ *
+ * Processa só no GM ativo primário (permissão + evitar duplicação).
+ */
+async function onCombatTurnAdvance(combat, updates, _options, _userId) {
+  const primaryGM = game.users?.activeGM;
+  if (primaryGM && primaryGM !== game.user) return;
+  if (!primaryGM && !game.user.isGM) return;
+  // Só processa quando turn ou round avançou.
+  if (!("turn" in updates) && !("round" in updates)) return;
+
+  const actors = new Set();
+  for (const combatant of combat.combatants.values()) {
+    if (combatant.actor) actors.add(combatant.actor);
+  }
+
+  for (const actor of actors) {
+    for (const item of actor.items) {
+      if (item.system?.mode !== "activatable") continue;
+      const drain = Number(item.system?.activation?.custoPMsPorTurno ?? 0);
+      if (drain <= 0) continue;
+      // Item ativo? (algum effect transferido dele está enabled)
+      // V13+: parent aponta pro item; origin não é auto-setado em transferred effects.
+      const activeEffects = actor.effects.filter(e =>
+        (e.parent?.id === item.id || e.origin === item.uuid) && !e.disabled
+      );
+      if (!activeEffects.length) continue;
+
+      const currentPm = Number(actor.system?.magia?.value ?? 0);
+      if (currentPm < drain) {
+        // Sem PMs — desativa automaticamente.
+        await actor.updateEmbeddedDocuments("ActiveEffect",
+          activeEffects.map(e => ({ _id: e.id, disabled: true }))
+        );
+        await ChatMessage.create({
+          speaker: ChatMessage.getSpeaker({ actor }),
+          content: `<div class="tdt-chat-card tdt-chat-card--deactivate">
+            <strong>${actor.name}</strong> ficou sem PMs — <em>${item.name}</em> desativou-se sozinha.
+          </div>`
+        });
+      } else {
+        await actor.update({ "system.magia.value": currentPm - drain });
+      }
+    }
+  }
+}
+
+/**
+ * Quando um item é criado num actor e tem `damageModifiers` com `types: []`,
+ * abre um diálogo pra o usuário escolher contra quais tipos de dano se aplica.
+ * Só roda no cliente que criou (pra evitar diálogos duplicados em outros GMs).
+ */
+async function onItemCreated(item, _options, userId) {
+  if (game.user.id !== userId) return;
+  if (!item.actor) return; // só pra items embutidos
+  const mods = item.system?.damageModifiers ?? [];
+  const needsTypes = mods.some(m => (m.types?.length ?? 0) === 0);
+  if (!needsTypes) return;
+  try {
+    const { promptMissingDamageTypes } = await import("./helpers/chat.mjs");
+    await promptMissingDamageTypes(item);
+  } catch (err) {
+    console.warn("3D&T | promptMissingDamageTypes falhou:", err);
   }
 }
 

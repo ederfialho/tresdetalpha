@@ -15,8 +15,26 @@ export class TresDeTAlphaItem extends Item {
   getRollData() {
     if (!this.actor) return null;
     const rollData = this.actor.getRollData();
-    rollData.item = foundry.utils.deepClone(this.system);
+    rollData.item = this.system;
     return rollData;
+  }
+
+  get isActivable() {
+    return ["activatable", "reaction"].includes(this.system?.mode);
+  }
+
+  get isActive() {
+    const actor = this.actor;
+    if (!actor || !this.isActivable) return false;
+    // V13+: effects transferidos de items têm `parent` apontando pro item,
+    // mas `origin` não é auto-setado. Checa os dois para robustez.
+    return actor.effects.some(e =>
+      (e.parent?.id === this.id || e.origin === this.uuid) && !e.disabled
+    );
+  }
+
+  get isConditional() {
+    return this.system?.mode === "conditional";
   }
 
   /**

@@ -33,6 +33,7 @@
   "TRESDETALPHA.Pontos.vida.nome": "Vida",
   "TRESDETALPHA.Pontos.vida.label": "Ponto(s) de Vida",
   "TRESDETALPHA.Pontos.vida.abreviacao": "PV",
+  "TRESDETALPHA.XP.hint": "ponto(s) a gastar",
   "TRESDETALPHA.Forca.ataque.label": "Força de Ataque",
   "TRESDETALPHA.Forca.ataque.abreviacao": "FA",
   "TRESDETALPHA.Forca.defesa.label": "Força de Defesa",

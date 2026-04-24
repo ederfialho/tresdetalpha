@@ -87,11 +87,16 @@ export class TresDeTAlphaActorSheet extends HandlebarsApplicationMixin(ActorShee
     const baseMov = Math.max(habilidade * 10, 5);
 
     // Detecta vantagens de mobilidade cadastradas nos itens, de forma tolerante a capitalização.
-    const hasVantagem = (name) => this.document.items.some(
-      (i) => (i.type === "vantagem" || i.type === "vantagemUnica")
-          && typeof i.name === "string"
-          && i.name.toLowerCase().includes(name)
-    );
+    // Usa word-boundary regex pra evitar matches espúrios (ex: "voo" dentro de "Devoto").
+    const hasVantagem = (name) => {
+      const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const regex = new RegExp(`\\b${escaped}\\b`, "i");
+      return this.document.items.some(
+        (i) => (i.type === "vantagem" || i.type === "vantagemUnica")
+            && typeof i.name === "string"
+            && regex.test(i.name)
+      );
+    };
     let bonusMov = 0;
     const bonuses = [];
     if (hasVantagem("aceleração") || hasVantagem("aceleracao")) { bonusMov += 10; bonuses.push("Aceleração +10m"); }
@@ -105,6 +110,21 @@ export class TresDeTAlphaActorSheet extends HandlebarsApplicationMixin(ActorShee
       viagem:  Math.max(habilidade * 10, 5), // km/h fora de combate
       bonuses: bonuses.join(" · ") || null
     };
+
+    // Opções dos selects de tipo de dano (F e PdF). Consumido pelo helper `{{selectOptions}}`.
+    // Puxa da config pra permitir extensão por módulos.
+    const dtConfig = CONFIG.TRESDETALPHA?.damageTypes ?? TRESDETALPHA.damageTypes ?? { forca: [], pdf: [] };
+    const toMap = (arr) => Object.fromEntries((arr ?? []).map((t) => [t, t]));
+    context.dano = {
+      forca: toMap(dtConfig.forca),
+      pdf:   toMap(dtConfig.pdf)
+    };
+
+    // Trava o dropdown de tipo de dano quando o personagem NÃO tem Adaptador.
+    // GM sempre pode editar (override manual). Regra do Manual p.75:
+    // "A menos que tenha Adaptador, o tipo escolhido no início da criação é fixo."
+    const hasAdaptador = hasVantagem("adaptador");
+    context.tipoDeDanoLocked = !game.user.isGM && !hasAdaptador;
 
     // Items agrupados por tipo.
     this._prepareItems(context);
@@ -131,6 +151,9 @@ export class TresDeTAlphaActorSheet extends HandlebarsApplicationMixin(ActorShee
     };
 
     for (const item of this.document.items) {
+      // Os flags de UI (isActivable / isActive / isConditional) são getters no
+      // Item (module/documents/item.mjs). Handlebars os acessa diretamente via
+      // `{{this.isActivable}}` nos templates — não precisa enriquecer aqui.
       switch (item.type) {
         case "vantagem":      buckets.vantagems.push(item); break;
         case "desvantagem":   buckets.desvantagems.push(item); break;
@@ -186,6 +209,11 @@ export class TresDeTAlphaActorSheet extends HandlebarsApplicationMixin(ActorShee
     // Controles de Active Effect (create/edit/delete/toggle via data-action no partial).
     for (const el of root.querySelectorAll(".effect-control")) {
       el.addEventListener("click", (ev) => onManageActiveEffect(ev, this.document));
+    }
+
+    // Botão ⚡ de ativar/desativar vantagens ativáveis.
+    for (const el of root.querySelectorAll(".tdt-item-activate")) {
+      el.addEventListener("click", this._onItemActivate.bind(this));
     }
 
     // Botões do wizard "Nova vantagem (guiado)".
@@ -286,5 +314,23 @@ export class TresDeTAlphaActorSheet extends HandlebarsApplicationMixin(ActorShee
     if (dataset.roll) {
       return rollFormula(this.document, dataset.roll, dataset.label || "Rolagem");
     }
+  }
+
+  /**
+   * Alterna o estado ativo/inativo de um item ativável (vantagem/desvantagem com
+   * `system.mode ∈ { activatable, reaction }`). Ativar deduz PMs e habilita os
+   * ActiveEffects transferidos ao Actor; desativar reverte. A lógica de PMs e
+   * ActiveEffects vive em `helpers/chat.mjs` (outro agente).
+   * @private
+   */
+  async _onItemActivate(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    const li = event.currentTarget.closest(".item");
+    const item = this.document.items.get(li?.dataset.itemId);
+    if (!item || !item.isActivable) return;
+    const { activateItem, deactivateItem } = await import("../helpers/chat.mjs");
+    if (item.isActive) await deactivateItem(item);
+    else await activateItem(item);
   }
 }

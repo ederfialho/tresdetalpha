@@ -2611,3 +2611,32 @@
   background: rgba(162, 59, 60, 0.22);
   border-color: #a23b3c;
 }
+
+/* Botão ⚡ (ativar/desativar) e ícone ⓘ (condicional) nas listas de vantagens. */
+.tresdetalpha .tdt-item-activate,
+.tresdetalpha .tdt-item-conditional {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  margin-right: 6px;
+  border-radius: 50%;
+  font-size: 11px;
+  cursor: pointer;
+  color: #888;
+  background: rgba(0, 0, 0, 0.06);
+  transition: color 120ms ease, background 120ms ease, box-shadow 120ms ease;
+}
+.tresdetalpha .tdt-item-conditional {
+  cursor: help;
+}
+.tresdetalpha .tdt-item-activate:hover {
+  color: #d4a94d;
+  background: rgba(212, 169, 77, 0.18);
+}
+.tresdetalpha .tdt-item-activate.is-active {
+  color: #fff;
+  background: #d4a94d;
+  box-shadow: 0 0 6px rgba(212, 169, 77, 0.6);
+}

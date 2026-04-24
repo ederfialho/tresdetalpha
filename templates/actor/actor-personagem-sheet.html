@@ -58,7 +58,7 @@
         <label>{{localize "TRESDETALPHA.Pontos.experiencia.label"}}</label>
         <div class="tdt-resource-fields">
           <input class="tdt-resource-current tdt-xp" name="system.experiencia.value" type="text" value="{{system.experiencia.value}}" data-dtype="Number" />
-          <span class="tdt-xp-hint">ponto(s) a gastar</span>
+          <span class="tdt-xp-hint">{{localize "TRESDETALPHA.XP.hint"}}</span>
         </div>
       </div>
     </div>
@@ -121,25 +121,14 @@
       <div class="tdt-stat tdt-stat--damage">
         <div class="tdt-damage-row">
           <label>Dano F</label>
-          <select name="system.attributes.tipoDeDano.forca.value" data-dtype="String">
-            {{#select system.attributes.tipoDeDano.forca.value}}
-            <option value=""></option>
-            <option value="Corte">Corte</option>
-            <option value="Esmagamento">Esmagamento</option>
-            <option value="Perfuração">Perfuração</option>
-            {{/select}}
+          <select name="system.attributes.tipoDeDano.forca.value" data-dtype="String" {{#if tipoDeDanoLocked}}disabled title="Tipo de dano fixo — compre Adaptador para trocar livremente."{{/if}}>
+            {{selectOptions dano.forca selected=system.attributes.tipoDeDano.forca.value blank=""}}
           </select>
         </div>
         <div class="tdt-damage-row">
           <label>Dano PdF</label>
-          <select name="system.attributes.tipoDeDano.poderDeFogo.value" data-dtype="String">
-            {{#select system.attributes.tipoDeDano.poderDeFogo.value}}
-            <option value=""></option>
-            <option value="Elétrico">Elétrico</option>
-            <option value="Fogo">Fogo</option>
-            <option value="Químico">Químico</option>
-            <option value="Sônico">Sônico</option>
-            {{/select}}
+          <select name="system.attributes.tipoDeDano.poderDeFogo.value" data-dtype="String" {{#if tipoDeDanoLocked}}disabled title="Tipo de dano fixo — compre Adaptador para trocar livremente."{{/if}}>
+            {{selectOptions dano.pdf selected=system.attributes.tipoDeDano.poderDeFogo.value blank=""}}
           </select>
         </div>
       </div>
@@ -179,6 +168,11 @@
               <ol class="tdt-list">
                 {{#each vantagemUnica}}
                 <li class="item" data-item-id="{{this._id}}">
+                  {{#if this.isActivable}}
+                    <a class="tdt-item-activate{{#if this.isActive}} is-active{{/if}}" title="{{#if this.isActive}}Desativar{{else}}Ativar{{/if}}"><i class="fas fa-bolt"></i></a>
+                  {{else if this.isConditional}}
+                    <span class="tdt-item-conditional" title="Bônus situacional — aplicado manualmente"><i class="fas fa-circle-info"></i></span>
+                  {{/if}}
                   <a class="rollable tdt-item-name" data-roll-type="item">
                     <img src="{{this.img}}" />
                     <span>{{this.name}}</span>
@@ -206,6 +200,11 @@
               <ol class="tdt-list">
                 {{#each vantagems}}
                 <li class="item" data-item-id="{{this._id}}">
+                  {{#if this.isActivable}}
+                    <a class="tdt-item-activate{{#if this.isActive}} is-active{{/if}}" title="{{#if this.isActive}}Desativar{{else}}Ativar{{/if}}"><i class="fas fa-bolt"></i></a>
+                  {{else if this.isConditional}}
+                    <span class="tdt-item-conditional" title="Bônus situacional — aplicado manualmente"><i class="fas fa-circle-info"></i></span>
+                  {{/if}}
                   <a class="rollable tdt-item-name" data-roll-type="item">
                     <img src="{{this.img}}" />
                     <span>{{this.name}}</span>
@@ -233,6 +232,11 @@
               <ol class="tdt-list">
                 {{#each desvantagems}}
                 <li class="item" data-item-id="{{this._id}}">
+                  {{#if this.isActivable}}
+                    <a class="tdt-item-activate{{#if this.isActive}} is-active{{/if}}" title="{{#if this.isActive}}Desativar{{else}}Ativar{{/if}}"><i class="fas fa-bolt"></i></a>
+                  {{else if this.isConditional}}
+                    <span class="tdt-item-conditional" title="Bônus situacional — aplicado manualmente"><i class="fas fa-circle-info"></i></span>
+                  {{/if}}
                   <a class="rollable tdt-item-name" data-roll-type="item">
                     <img src="{{this.img}}" />
                     <span>{{this.name}}</span>
