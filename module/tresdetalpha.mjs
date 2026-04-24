@@ -67,7 +67,10 @@ Hooks.once("init", async function () {
 
   // Namespace global de conveniência (o id do manifest tem hífen/dígito inicial,
   // então usamos `game.tresdetalpha` por ergonomia — é só convenção interna).
-  game.tresdetalpha = {
+  // Usamos `??= {}` + Object.assign para não sobrescrever chaves já definidas
+  // por outros módulos init (ex.: `reseedCompendia` de seed-compendia.mjs).
+  game.tresdetalpha ??= {};
+  Object.assign(game.tresdetalpha, {
     TresDeTAlphaActor,
     TresDeTAlphaItem,
     rollItemMacro,
@@ -75,7 +78,7 @@ Hooks.once("init", async function () {
     novoPersonagem,
     postItemChatCard,
     castMagia
-  };
+  });
 
   // Registra listeners globais nos cards de chat (botões Abrir ficha / Conjurar / etc).
   registerChatActions();
@@ -161,19 +164,6 @@ function registerHandlebarsHelpers() {
   Handlebars.registerHelper("eq", function (a, b) {
     return a === b;
   });
-
-  // Foundry V13 tinha um helper built-in `{{#select value}}...options...{{/select}}` que
-  // marcava a <option> com value correspondente como `selected`. O V14 removeu esse helper
-  // em favor de `{{selectOptions}}`. Re-registramos aqui pra manter os templates antigos funcionando.
-  if (!Handlebars.helpers.select) {
-    Handlebars.registerHelper("select", function (selected, options) {
-      const escapeRegex = (str) => String(str).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-      const escaped = escapeRegex(String(selected ?? ""));
-      const rgx = new RegExp(` value=["']${escaped}["']`);
-      const html = options.fn(this);
-      return html.replace(rgx, "$& selected");
-    });
-  }
 }
 
 /* -------------------------------------------- */

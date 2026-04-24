@@ -368,7 +368,7 @@ function wireUp(dialog, items) {
     }
 
     /* Desvantagens: bloqueia novas que estouram o cap −6 */
-    const desvRemaining = MAX_DESVANTAGENS_POINTS - absDesvantagens;
+    const desvRemaining = Math.max(0, MAX_DESVANTAGENS_POINTS - desvantagensCapped);
     for (const item of $$(".tdt-wiz-item[data-kind='desvantagem']")) {
       const cb = item.querySelector("input");
       if (cb.checked) { item.classList.remove("is-unaffordable"); cb.disabled = false; continue; }

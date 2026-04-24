@@ -87,11 +87,16 @@ export class TresDeTAlphaActorSheet extends HandlebarsApplicationMixin(ActorShee
     const baseMov = Math.max(habilidade * 10, 5);
 
     // Detecta vantagens de mobilidade cadastradas nos itens, de forma tolerante a capitalização.
-    const hasVantagem = (name) => this.document.items.some(
-      (i) => (i.type === "vantagem" || i.type === "vantagemUnica")
-          && typeof i.name === "string"
-          && i.name.toLowerCase().includes(name)
-    );
+    // Usa word-boundary regex pra evitar matches espúrios (ex: "voo" dentro de "Devoto").
+    const hasVantagem = (name) => {
+      const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const regex = new RegExp(`\\b${escaped}\\b`, "i");
+      return this.document.items.some(
+        (i) => (i.type === "vantagem" || i.type === "vantagemUnica")
+            && typeof i.name === "string"
+            && regex.test(i.name)
+      );
+    };
     let bonusMov = 0;
     const bonuses = [];
     if (hasVantagem("aceleração") || hasVantagem("aceleracao")) { bonusMov += 10; bonuses.push("Aceleração +10m"); }
@@ -104,6 +109,12 @@ export class TresDeTAlphaActorSheet extends HandlebarsApplicationMixin(ActorShee
       voo:     hasVantagem("voo") ? baseMov + bonusMov : null,
       viagem:  Math.max(habilidade * 10, 5), // km/h fora de combate
       bonuses: bonuses.join(" · ") || null
+    };
+
+    // Opções dos selects de tipo de dano (F e PdF). Consumido pelo helper `{{selectOptions}}`.
+    context.dano = {
+      forca: { "Corte": "Corte", "Esmagamento": "Esmagamento", "Perfuração": "Perfuração" },
+      pdf:   { "Elétrico": "Elétrico", "Fogo": "Fogo", "Químico": "Químico", "Sônico": "Sônico" }
     };
 
     // Items agrupados por tipo.

@@ -33,7 +33,7 @@ export async function rollAbilityTest(actor, label, target) {
   const flavor = `
     <div class="tdt-chat-roll">
       <div class="tdt-chat-roll-head">
-        <strong>Teste de ${label}</strong>
+        <strong>Teste de ${escapeHTML(label)}</strong>
         <small>alvo ≤ ${target}</small>
       </div>
       <div class="tdt-chat-roll-body">
@@ -60,8 +60,8 @@ export async function rollFormula(actor, formula, label) {
   const flavor = `
     <div class="tdt-chat-roll">
       <div class="tdt-chat-roll-head">
-        <strong>${label}</strong>
-        <small>${formula}</small>
+        <strong>${escapeHTML(label)}</strong>
+        <small>${escapeHTML(formula)}</small>
       </div>
     </div>
   `;
@@ -103,11 +103,14 @@ export async function rollAttack(actor, formula, label, options = {}) {
 async function promptMultiAttack(actor, formula, label) {
   const isRanged = formula.includes("poderDeFogo");
   const requiredName = isRanged ? "Tiro Múltiplo" : "Ataque Múltiplo";
-  const hasVantagem = (actor.items ?? []).some((i) =>
-    (i.type === "vantagem" || i.type === "vantagemUnica")
-    && typeof i.name === "string"
-    && i.name.toLowerCase().includes(requiredName.toLowerCase())
-  );
+  const needleLower = requiredName.toLowerCase();
+  const hasVantagem = (actor.items ?? []).some((i) => {
+    if (i.type !== "vantagem" && i.type !== "vantagemUnica") return false;
+    const nameLower = String(i.name ?? "").toLowerCase();
+    // word-boundary match: name equals OR starts/ends with boundary
+    const regex = new RegExp(`\\b${needleLower.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`);
+    return regex.test(nameLower);
+  });
   const habilidade = Number(actor.system?.abilities?.habilidade?.total ?? 1);
   const maxAttacks = Math.max(1, habilidade);
   const currentPm = Number(actor.system?.magia?.value ?? 0);
@@ -116,10 +119,10 @@ async function promptMultiAttack(actor, formula, label) {
   const content = `
     <div class="tdt-cast-dialog">
       <div class="tdt-cast-meta">
-        <div><strong>${label}</strong></div>
+        <div><strong>${escapeHTML(label)}</strong></div>
         <div>Habilidade: <strong>${habilidade}</strong> — máx. <strong>${maxAttacks}</strong> ataques/rodada</div>
         <div>PMs atuais: <strong>${currentPm} / ${maxPm}</strong></div>
-        <div>${requiredName}: ${hasVantagem ? "<strong style='color:#2d7a2d'>✓ você tem</strong>" : "<em style='color:#a23b3c'>você não tem</em>"}</div>
+        <div>${escapeHTML(requiredName)}: ${hasVantagem ? "<strong style='color:#2d7a2d'>✓ você tem</strong>" : "<em style='color:#a23b3c'>você não tem</em>"}</div>
       </div>
       <label class="tdt-cast-label">
         <span>Número de ataques</span>
@@ -127,10 +130,10 @@ async function promptMultiAttack(actor, formula, label) {
       </label>
       <label class="tdt-cast-label">
         <input type="checkbox" name="useVantagem" ${hasVantagem ? "checked" : ""} />
-        <span>Usar ${requiredName} — gasta 1 PM por ataque e remove a penalidade H−2</span>
+        <span>Usar ${escapeHTML(requiredName)} — gasta 1 PM por ataque e remove a penalidade H−2</span>
       </label>
       <div class="tdt-cast-hint">
-        Sem ${requiredName}: todos os ataques (incluindo o primeiro) sofrem penalidade de H−2 quando há mais de um.
+        Sem ${escapeHTML(requiredName)}: todos os ataques (incluindo o primeiro) sofrem penalidade de H−2 quando há mais de um.
       </div>
     </div>
   `;
@@ -168,14 +171,14 @@ async function executeAttack(actor, formula, label, { count, useVantagem, tokens
   const penalty = (multi && !useVantagem) ? 2 : 0;
   const effectiveFormula = penalty > 0 ? `${formula} - ${penalty}` : formula;
 
-  // Deduz PMs se usando vantagem.
+  // Pré-check de PMs (deduz depois, só se todos os rolls tiverem sucesso).
+  let currentPmForDeduct = 0;
   if (multi && useVantagem) {
-    const currentPm = Number(actor.system?.magia?.value ?? 0);
-    if (currentPm < count) {
-      ui.notifications.warn(`PMs insuficientes: ${currentPm} atuais, ${count} necessários para ${count} ataques.`);
+    currentPmForDeduct = Number(actor.system?.magia?.value ?? 0);
+    if (currentPmForDeduct < count) {
+      ui.notifications.warn(`PMs insuficientes: ${currentPmForDeduct} atuais, ${count} necessários para ${count} ataques.`);
       return;
     }
-    await actor.update({ "system.magia.value": currentPm - count });
   }
 
   // Rola N ataques.
@@ -184,6 +187,11 @@ async function executeAttack(actor, formula, label, { count, useVantagem, tokens
     const roll = await new Roll(effectiveFormula, rollData).evaluate();
     const firstDie = roll.dice?.[0]?.results?.[0]?.result;
     attackRolls.push({ total: roll.total, critical: firstDie === 6, roll });
+  }
+
+  // Deduz PMs agora que todos os rolls foram avaliados.
+  if (multi && useVantagem) {
+    await actor.update({ "system.magia.value": currentPmForDeduct - count });
   }
 
   // Se vieram tokens pré-definidos (de um template de área), usa eles;
@@ -207,7 +215,7 @@ async function executeAttack(actor, formula, label, { count, useVantagem, tokens
       <div class="tdt-chat-card tdt-chat-card--attack">
         <header class="tdt-chat-head">
           <div class="tdt-chat-title">
-            <h3>${label}${multi ? ` × ${count}` : ""}</h3>
+            <h3>${escapeHTML(label)}${multi ? ` × ${count}` : ""}</h3>
             <span class="tdt-chat-type">${multi ? (useVantagem ? `${count} PMs gastos` : `penalidade H−2`) : "Ataque"}</span>
           </div>
         </header>
@@ -268,7 +276,7 @@ async function executeAttack(actor, formula, label, { count, useVantagem, tokens
     return `
       <div class="tdt-attack-target">
         <div class="tdt-attack-target-head">
-          <strong>${r.victim.name}</strong>
+          <strong>${escapeHTML(r.victim.name)}</strong>
           <span class="tdt-attack-target-fd">FD ${r.fdTotal}</span>
         </div>
         <div class="tdt-multi-list">${rows}</div>
@@ -297,7 +305,7 @@ async function executeAttack(actor, formula, label, { count, useVantagem, tokens
     <div class="tdt-chat-card tdt-chat-card--attack">
       <header class="tdt-chat-head">
         <div class="tdt-chat-title">
-          <h3>${label}${multi ? ` × ${count}` : ""}</h3>
+          <h3>${escapeHTML(label)}${multi ? ` × ${count}` : ""}</h3>
           <span class="tdt-chat-type">${multi ? (useVantagem ? `${count} PMs gastos — sem penalidade` : `${count} ataques com H−2`) : "Ataque simples"}</span>
         </div>
       </header>
@@ -313,6 +321,10 @@ async function executeAttack(actor, formula, label, { count, useVantagem, tokens
  * Aplica dano direto ao Actor especificado.
  */
 async function applyDamage(actorUuid, damage) {
+  if (!game.user.isGM) {
+    ui.notifications.warn("Apenas o Mestre pode aplicar dano. Peça ao GM para clicar.");
+    return;
+  }
   const actor = await fromUuid(actorUuid);
   if (!actor) { ui.notifications.warn("Alvo não encontrado (pode ter sido apagado)."); return; }
   const current = Number(actor.system?.vida?.value ?? 0);
@@ -327,6 +339,10 @@ async function applyDamage(actorUuid, damage) {
  * Posta uma mensagem consolidada no chat com o resultado.
  */
 async function applyDamageToSelected(faTotal) {
+  if (!game.user.isGM) {
+    ui.notifications.warn("Apenas o Mestre pode aplicar dano. Peça ao GM para clicar.");
+    return;
+  }
   const tokens = canvas?.tokens?.controlled ?? [];
   if (!tokens.length) {
     ui.notifications.warn("Selecione um ou mais tokens primeiro.");
@@ -463,9 +479,9 @@ export async function postItemChatCard(item) {
   const content = `
     <div class="tdt-chat-card" data-item-uuid="${item.uuid}" data-actor-uuid="${actor?.uuid ?? ""}">
       <header class="tdt-chat-head">
-        <img class="tdt-chat-img" src="${item.img}" />
+        <img class="tdt-chat-img" src="${escapeHTML(item.img)}" />
         <div class="tdt-chat-title">
-          <h3>${item.name}</h3>
+          <h3>${escapeHTML(item.name)}</h3>
           <span class="tdt-chat-type">${localizeType(item.type)}</span>
         </div>
       </header>
@@ -484,7 +500,7 @@ export async function postItemChatCard(item) {
 
 function chip(text, kind = "") {
   const cls = kind ? `tdt-chat-chip tdt-chat-chip--${kind}` : "tdt-chat-chip";
-  return `<span class="${cls}">${text}</span>`;
+  return `<span class="${cls}">${escapeHTML(text)}</span>`;
 }
 
 function button(action, icon, label) {
@@ -534,11 +550,11 @@ export async function castMagia(magia) {
   const content = `
     <div class="tdt-cast-dialog">
       <div class="tdt-cast-meta">
-        <div><strong>${magia.name}</strong></div>
-        ${s.escola ? `<div>Escola: <em>${s.escola}</em></div>` : ""}
-        <div>Custo original: <em>${custoStr || "não definido"}</em></div>
+        <div><strong>${escapeHTML(magia.name)}</strong></div>
+        ${s.escola ? `<div>Escola: <em>${escapeHTML(s.escola)}</em></div>` : ""}
+        <div>Custo original: <em>${escapeHTML(custoStr) || "não definido"}</em></div>
         <div>PMs atuais: <strong>${currentPm} / ${maxPm}</strong></div>
-        ${hasTemplate ? `<div>Área: <strong style="color:#7a5a1e;">${templateLabel}</strong></div>` : ""}
+        ${hasTemplate ? `<div>Área: <strong style="color:#7a5a1e;">${escapeHTML(templateLabel)}</strong></div>` : ""}
       </div>
       <label class="tdt-cast-label">
         <span>PMs a gastar</span>
@@ -598,18 +614,18 @@ export async function castMagia(magia) {
   const cardContent = `
     <div class="tdt-chat-card tdt-chat-card--cast" data-item-uuid="${magia.uuid}">
       <header class="tdt-chat-head">
-        <img class="tdt-chat-img" src="${magia.img}" />
+        <img class="tdt-chat-img" src="${escapeHTML(magia.img)}" />
         <div class="tdt-chat-title">
-          <h3>${magia.name}</h3>
+          <h3>${escapeHTML(magia.name)}</h3>
           <span class="tdt-chat-type"><i class="fas fa-sparkles"></i> conjurada</span>
         </div>
       </header>
       <div class="tdt-chat-chips">
         <span class="tdt-chat-chip tdt-chat-chip--cost">${cost} PMs gastos</span>
         <span class="tdt-chat-chip tdt-chat-chip--pm">PMs restantes: ${currentPm - cost} / ${maxPm}</span>
-        ${s.escola ? `<span class="tdt-chat-chip tdt-chat-chip--school">${s.escola}</span>` : ""}
-        ${s.alcance ? `<span class="tdt-chat-chip">Alcance: ${s.alcance}</span>` : ""}
-        ${s.duracao ? `<span class="tdt-chat-chip">Duração: ${s.duracao}</span>` : ""}
+        ${s.escola ? `<span class="tdt-chat-chip tdt-chat-chip--school">${escapeHTML(s.escola)}</span>` : ""}
+        ${s.alcance ? `<span class="tdt-chat-chip">Alcance: ${escapeHTML(s.alcance)}</span>` : ""}
+        ${s.duracao ? `<span class="tdt-chat-chip">Duração: ${escapeHTML(s.duracao)}</span>` : ""}
       </div>
       <div class="tdt-chat-desc">${s.description || s.efeito || ""}</div>
     </div>
@@ -627,9 +643,6 @@ export async function castMagia(magia) {
     const { placeMagiaTemplate, getTokensInTemplate } = await import("./measured-templates.mjs");
     const placed = await placeMagiaTemplate(magia, actor);
     if (placed) {
-      // Aguarda 1 tick pro PIXI renderizar o shape (senão `getTokensInTemplate`
-      // cai pro fallback manual, o que ainda funciona mas pode variar).
-      await new Promise((r) => setTimeout(r, 100));
       areaTokens = getTokensInTemplate(placed);
       const msg = areaTokens.length
         ? `Área posicionada. ${areaTokens.length} token(s) dentro.`
@@ -665,6 +678,15 @@ function formatTemplateLabel(tpl) {
 
 function escapeAttr2(s) {
   return String(s ?? "").replace(/"/g, "&quot;");
+}
+
+function escapeHTML(s) {
+  return String(s ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
 /* -------------------------------------------- */
@@ -742,6 +764,10 @@ async function onCardActionClick(event) {
     case "apply-damage-all": {
       event.preventDefault();
       event.stopPropagation();
+      if (!game.user.isGM) {
+        ui.notifications.warn("Apenas o Mestre pode aplicar dano. Peça ao GM para clicar.");
+        return;
+      }
       const payload = String(btn.dataset.targets || "");
       if (!payload) break;
       const pairs = payload.split(",").filter(Boolean);

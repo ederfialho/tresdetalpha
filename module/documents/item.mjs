@@ -15,7 +15,7 @@ export class TresDeTAlphaItem extends Item {
   getRollData() {
     if (!this.actor) return null;
     const rollData = this.actor.getRollData();
-    rollData.item = foundry.utils.deepClone(this.system);
+    rollData.item = this.system;
     return rollData;
   }
 

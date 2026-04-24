@@ -58,7 +58,7 @@
         <label>{{localize "TRESDETALPHA.Pontos.experiencia.label"}}</label>
         <div class="tdt-resource-fields">
           <input class="tdt-resource-current tdt-xp" name="system.experiencia.value" type="text" value="{{system.experiencia.value}}" data-dtype="Number" />
-          <span class="tdt-xp-hint">ponto(s) a gastar</span>
+          <span class="tdt-xp-hint">{{localize "TRESDETALPHA.XP.hint"}}</span>
         </div>
       </div>
     </div>
@@ -122,24 +122,13 @@
         <div class="tdt-damage-row">
           <label>Dano F</label>
           <select name="system.attributes.tipoDeDano.forca.value" data-dtype="String">
-            {{#select system.attributes.tipoDeDano.forca.value}}
-            <option value=""></option>
-            <option value="Corte">Corte</option>
-            <option value="Esmagamento">Esmagamento</option>
-            <option value="Perfuração">Perfuração</option>
-            {{/select}}
+            {{selectOptions dano.forca selected=system.attributes.tipoDeDano.forca.value blank=""}}
           </select>
         </div>
         <div class="tdt-damage-row">
           <label>Dano PdF</label>
           <select name="system.attributes.tipoDeDano.poderDeFogo.value" data-dtype="String">
-            {{#select system.attributes.tipoDeDano.poderDeFogo.value}}
-            <option value=""></option>
-            <option value="Elétrico">Elétrico</option>
-            <option value="Fogo">Fogo</option>
-            <option value="Químico">Químico</option>
-            <option value="Sônico">Sônico</option>
-            {{/select}}
+            {{selectOptions dano.pdf selected=system.attributes.tipoDeDano.poderDeFogo.value blank=""}}
           </select>
         </div>
       </div>
