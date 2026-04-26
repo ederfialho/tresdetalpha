@@ -61,6 +61,6 @@
   "TRESDETALPHA.Efeito.fonte": "Source",
   "TRESDETALPHA.Efeito.duracao": "Duration",
 
-  "3det-foundry-rework.TresDeTAlphaActorSheet": "Default Actor Sheet",
-  "3det-foundry-rework.TresDeTAlphaItemSheet": "Default Item Sheet"
+  "tresdetalpha.TresDeTAlphaActorSheet": "Default Actor Sheet",
+  "tresdetalpha.TresDeTAlphaItemSheet": "Default Item Sheet"
 }

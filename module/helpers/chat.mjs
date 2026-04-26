@@ -10,7 +10,7 @@
  * Chamar `registerChatActions()` uma vez em `init` já liga tudo.
  */
 
-const SYSTEM_ID = "3det-foundry-rework";
+const SYSTEM_ID = "tresdetalpha";
 
 /* -------------------------------------------- */
 /*  Rolagens                                    */
@@ -844,7 +844,7 @@ export async function activateItem(item) {
   return ChatMessage.create({
     speaker: ChatMessage.getSpeaker({ actor }),
     content,
-    flags: { "3det-foundry-rework": { activeItemUuid: item.uuid } }
+    flags: { "tresdetalpha": { activeItemUuid: item.uuid } }
   });
 }
 

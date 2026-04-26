@@ -14,7 +14,7 @@ import { VANTAGENS, DESVANTAGENS, VANTAGENS_UNICAS, PERICIAS, MAGIAS } from "./c
 import { BESTIARIO } from "./bestiario.mjs";
 import { iconFor } from "./icon-mapping.mjs";
 
-const SYSTEM_ID = "3det-foundry-rework";
+const SYSTEM_ID = "tresdetalpha";
 const SETTING_SEEDED = "compendiaSeeded";
 
 const COMPENDIA = [

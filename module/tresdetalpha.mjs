@@ -22,7 +22,7 @@ import { novaVantagem } from "./wizards/nova-vantagem.mjs";
 import { novoPersonagem } from "./wizards/novo-personagem.mjs";
 import { registerChatActions, postItemChatCard, castMagia } from "./helpers/chat.mjs";
 
-const SYSTEM_ID = "3det-foundry-rework";
+const SYSTEM_ID = "tresdetalpha";
 
 /* -------------------------------------------- */
 /*  i18n Safety Net                             */

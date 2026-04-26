@@ -19,14 +19,14 @@ export class TresDeTAlphaItemSheet extends HandlebarsApplicationMixin(ItemSheetV
 
   /** @override */
   static PARTS = {
-    vantagem:      { template: "systems/3det-foundry-rework/templates/item/item-vantagem-sheet.html" },
-    desvantagem:   { template: "systems/3det-foundry-rework/templates/item/item-desvantagem-sheet.html" },
-    vantagemUnica: { template: "systems/3det-foundry-rework/templates/item/item-vantagemUnica-sheet.html" },
-    pericia:       { template: "systems/3det-foundry-rework/templates/item/item-pericia-sheet.html" },
-    magia:         { template: "systems/3det-foundry-rework/templates/item/item-magia-sheet.html" },
-    objetoMagico:  { template: "systems/3det-foundry-rework/templates/item/item-objetoMagico-sheet.html" },
+    vantagem:      { template: "systems/tresdetalpha/templates/item/item-vantagem-sheet.html" },
+    desvantagem:   { template: "systems/tresdetalpha/templates/item/item-desvantagem-sheet.html" },
+    vantagemUnica: { template: "systems/tresdetalpha/templates/item/item-vantagemUnica-sheet.html" },
+    pericia:       { template: "systems/tresdetalpha/templates/item/item-pericia-sheet.html" },
+    magia:         { template: "systems/tresdetalpha/templates/item/item-magia-sheet.html" },
+    objetoMagico:  { template: "systems/tresdetalpha/templates/item/item-objetoMagico-sheet.html" },
     // Fallback genérico caso apareça um tipo inesperado.
-    fallback:      { template: "systems/3det-foundry-rework/templates/item/item-sheet.html" }
+    fallback:      { template: "systems/tresdetalpha/templates/item/item-sheet.html" }
   };
 
   /** @override */
