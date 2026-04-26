@@ -61,8 +61,8 @@
   "TRESDETALPHA.Efeito.fonte": "Fonte",
   "TRESDETALPHA.Efeito.duracao": "Duração",
 
-  "3det-foundry-rework.TresDeTAlphaActorSheet": "Ficha Personagem Padrão",
-  "3det-foundry-rework.TresDeTAlphaItemSheet": "Ficha Item Padrão",
+  "tresdetalpha.TresDeTAlphaActorSheet": "Ficha Personagem Padrão",
+  "tresdetalpha.TresDeTAlphaItemSheet": "Ficha Item Padrão",
 
   "Settings": {}
 }

@@ -16,7 +16,7 @@ const ICON_ADV = "icons/sundries/books/book-red-exclamation.webp";
 const ICON_DIS = "icons/sundries/books/book-worn-brown-gray.webp";
 
 const MODE = { MULTIPLY: 1, ADD: 2, DOWNGRADE: 3, UPGRADE: 4, OVERRIDE: 5 };
-const FLAG_COMBAT = { "3det-foundry-rework": { combatOnly: true, activable: true } };
+const FLAG_COMBAT = { "tresdetalpha": { combatOnly: true, activable: true } };
 
 /**
  * Helpers pra criar ActiveEffects embutidos nos itens.

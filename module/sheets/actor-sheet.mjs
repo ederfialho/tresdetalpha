@@ -30,10 +30,10 @@ export class TresDeTAlphaActorSheet extends HandlebarsApplicationMixin(ActorShee
   /** @override */
   static PARTS = {
     personagem: {
-      template: "systems/3det-foundry-rework/templates/actor/actor-personagem-sheet.html"
+      template: "systems/tresdetalpha/templates/actor/actor-personagem-sheet.html"
     },
     npc: {
-      template: "systems/3det-foundry-rework/templates/actor/actor-npc-sheet.html"
+      template: "systems/tresdetalpha/templates/actor/actor-npc-sheet.html"
     }
   };
 

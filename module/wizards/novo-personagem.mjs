@@ -1024,7 +1024,7 @@ async function createActorFromData(data, pools = {}) {
     const raw = match.toObject();
     delete raw._id;
     raw.flags = raw.flags ?? {};
-    raw.flags["3det-foundry-rework"] = { ...(raw.flags["3det-foundry-rework"] ?? {}), grantedByRace: data.raca.name };
+    raw.flags["tresdetalpha"] = { ...(raw.flags["tresdetalpha"] ?? {}), grantedByRace: data.raca.name };
 
     // Preconfigura damageModifiers[0].types se a entrada granted declarou damageTypes.
     if (Array.isArray(g.damageTypes) && g.damageTypes.length
@@ -1054,8 +1054,8 @@ async function createActorFromData(data, pools = {}) {
         const raw = match.toObject();
         delete raw._id;
         raw.flags = raw.flags ?? {};
-        raw.flags["3det-foundry-rework"] = {
-          ...(raw.flags["3det-foundry-rework"] ?? {}),
+        raw.flags["tresdetalpha"] = {
+          ...(raw.flags["tresdetalpha"] ?? {}),
           grantedByRaceBonus: { raceName: data.raca.name, choiceId: def.id }
         };
         toEmbed.push(raw);
@@ -1074,7 +1074,7 @@ async function createActorFromData(data, pools = {}) {
       const raw = match.toObject();
       delete raw._id;
       raw.flags = raw.flags ?? {};
-      raw.flags["3det-foundry-rework"] = { ...(raw.flags["3det-foundry-rework"] ?? {}), grantedByRaceChoice: { raceName: data.raca.name, choiceId: def.id } };
+      raw.flags["tresdetalpha"] = { ...(raw.flags["tresdetalpha"] ?? {}), grantedByRaceChoice: { raceName: data.raca.name, choiceId: def.id } };
       toEmbed.push(raw);
     }
   }
@@ -1101,7 +1101,7 @@ async function createActorFromData(data, pools = {}) {
       changes: abilityChanges,
       transfer: false,
       disabled: false,
-      flags: { "3det-foundry-rework": { racialPackage: true, raceItemName: data.raca.name } }
+      flags: { "tresdetalpha": { racialPackage: true, raceItemName: data.raca.name } }
     }]);
   }
 

@@ -8,7 +8,7 @@
  * Formas: circle | cone | ray | rect
  */
 
-const SYSTEM_ID = "3det-foundry-rework";
+const SYSTEM_ID = "tresdetalpha";
 
 /**
  * Cria preview interativo de um template baseado no schema `system.template`

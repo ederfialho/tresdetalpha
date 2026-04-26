@@ -6,7 +6,7 @@
  */
 export const preloadHandlebarsTemplates = async function () {
   const paths = [
-    "systems/3det-foundry-rework/templates/actor/parts/actor-effects.html"
+    "systems/tresdetalpha/templates/actor/parts/actor-effects.html"
   ];
   const loader = foundry.applications?.handlebars?.loadTemplates ?? globalThis.loadTemplates;
   return loader(paths);
